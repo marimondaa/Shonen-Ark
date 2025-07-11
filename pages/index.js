@@ -12,7 +12,7 @@ export default function Home() {
 
       <Navbar />
 
-      {/* Hero Carousel */}
+      {/* Hero Section */}
       <section className="bg-black text-white py-10 px-6 text-center">
         <h2 className="text-3xl font-bold mb-4">🔥 Dive into the Latest Theories</h2>
         <p className="text-gray-400 max-w-2xl mx-auto">
@@ -56,9 +56,15 @@ export default function Home() {
       {/* Newsletter Section */}
       <section className="bg-gray-900 py-10 px-6 text-center">
         <h3 className="text-xl font-semibold mb-2">Join the Ark Newsletter</h3>
-        <p className="text-sm text-gray-400 mb-4">Get exclusive theories, early AI videos, and digital magazines in your inbox.</p>
+        <p className="text-sm text-gray-400 mb-4">
+          Get exclusive theories, early AI videos, and digital magazines in your inbox.
+        </p>
         <form className="flex justify-center max-w-md mx-auto">
-          <input type="email" placeholder="you@example.com" className="p-2 rounded-l bg-white text-black w-full max-w-sm" />
+          <input
+            type="email"
+            placeholder="you@example.com"
+            className="p-2 rounded-l bg-white text-black w-full max-w-sm"
+          />
           <button className="bg-red-500 px-4 rounded-r text-white font-semibold">Subscribe</button>
         </form>
       </section>
