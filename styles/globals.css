@@ -1,13 +1,8 @@
-import '@/styles/globals.css'
-import '../styles/globals.css'
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles (optional) */
+/* Custom global styles if needed */
 body {
-  @apply bg-gray-950 text-white font-sans;
+  font-family: 'Inter', sans-serif;
 }
-
