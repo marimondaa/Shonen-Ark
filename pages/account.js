@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
+import PaymentsModal from '../components/PaymentsModal'
 
 export default function Account() {
   // Simulate user session - in real app, this would come from NextAuth
@@ -22,6 +23,7 @@ export default function Account() {
   })
 
   const [activeTab, setActiveTab] = useState('overview')
+  const [showPaymentsModal, setShowPaymentsModal] = useState(false)
 
   const followedCreators = [
     { id: 1, name: 'TheoryMaster99', avatar: '🧠', theories: 45, followers: '2.1K' },
@@ -199,6 +201,19 @@ export default function Account() {
                 <div className="text-sm text-gray-400">Followers</div>
               </div>
             </div>
+
+            {/* Upgrade Button */}
+            {user.accountType === 'fan' && (
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={() => setShowPaymentsModal(true)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105"
+                >
+                  ✨ Upgrade to Creator Pro
+                </button>
+                <p className="text-sm text-gray-400 mt-2">Unlock exclusive features</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -240,12 +255,59 @@ export default function Account() {
           
           {activeTab === 'billing' && (
             <div className="bg-gray-800 rounded-2xl p-8">
-              <h2 className="text-2xl font-bold mb-6">💳 Billing & Subscription</h2>
-              <p className="text-gray-400">Billing management coming soon...</p>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">💳 Billing & Subscription</h2>
+                <button
+                  onClick={() => setShowPaymentsModal(true)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+                >
+                  Upgrade Plan
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="bg-gray-700 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-2">Current Plan</h3>
+                  <p className="text-3xl font-bold text-blue-400 mb-2">Fan Plan</p>
+                  <p className="text-gray-400">Free forever • Basic features</p>
+                </div>
+
+                <div className="bg-gray-700 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-4">Plan Features</h3>
+                  <ul className="space-y-2 text-gray-300">
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-400">✓</span>
+                      Create and share fan theories
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-400">✓</span>
+                      Follow up to 10 creators
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-gray-500">✗</span>
+                      <span className="text-gray-500">Priority support</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-gray-500">✗</span>
+                      <span className="text-gray-500">Exclusive content access</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-gray-500">✗</span>
+                      <span className="text-gray-500">Creator analytics</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </main>
+
+      {/* Payments Modal */}
+      <PaymentsModal 
+        isOpen={showPaymentsModal} 
+        onClose={() => setShowPaymentsModal(false)} 
+      />
     </div>
   )
 }

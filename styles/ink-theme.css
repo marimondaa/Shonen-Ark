@@ -1,0 +1,81 @@
+/* Ink Theme - Design Yokocho + Phantom 980 Fusion */
+
+:root {
+  /* Existing mystical variables */
+  --bg-dark: #0e0e0e;
+  --bg-dark-secondary: #1a1a1a;
+  --accent-pink: #db929d;
+  --accent-beige: #fbf4e4;
+  --accent-rose: #c8969e;
+  --text-light: #fbf4e4;
+  --text-muted: #a0a0a0;
+  --text-accent: #db929d;
+  --glow-pink: rgba(219, 146, 157, 0.3);
+  --glow-beige: rgba(251, 244, 228, 0.2);
+  
+  /* New fusion theme variables */
+  --ink-black: #0a0a0a;
+  --sumi-gray: #2b2b2b;
+  --stone-wash: #6e6e6e;
+  --parchment: #f2e9db;
+  --forest-accent: #1f4f3d;
+  --violet-glow: #6c5ce7;
+  --line-highlight: #ddddcc;
+  
+  /* Motion and glow effects */
+  --violet-glow-shadow: 0 0 20px rgba(108, 92, 231, 0.4);
+  --forest-glow-shadow: 0 0 15px rgba(31, 79, 61, 0.6);
+}
+
+/* Ink brush texture classes */
+.ink-brush-edge {
+  position: relative;
+}
+
+.ink-brush-edge::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, var(--line-highlight) 20%, var(--line-highlight) 80%, transparent 100%);
+  opacity: 0.6;
+  filter: blur(1px);
+}
+
+/* Shrine glow effects */
+.shrine-glow {
+  filter: drop-shadow(var(--violet-glow-shadow));
+  transition: filter 0.3s ease;
+}
+
+.shrine-glow:hover {
+  filter: drop-shadow(var(--violet-glow-shadow)) drop-shadow(var(--forest-glow-shadow));
+}
+
+/* Cinematic scroll effects */
+.cinematic-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cinematic-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ukiyo-e texture overlay */
+.ukiyo-overlay {
+  position: relative;
+}
+
+.ukiyo-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(31, 79, 61, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(108, 92, 231, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
