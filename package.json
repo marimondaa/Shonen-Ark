@@ -1,7 +1,7 @@
 { 
   "name": "shonen-ark", 
   "version": "1.0.0",
-  "description": "The ultimate fan theory and media hub for anime enthusiasts",
+  "description": "Mystical anime fan platform featuring fusion UI design (Design Yokocho × Phantom 980). Interactive theory hub, animation analysis, creator community with subscription tiers. Built with Next.js, Tailwind CSS, and Framer Motion.",
   "main": "pages/index.js",
   "scripts": { 
     "dev": "next dev", 
@@ -33,10 +33,29 @@
   "keywords": [
     "anime",
     "manga",
+    "shonen",
     "fan-theories",
+    "animation-analysis",
+    "creator-platform",
+    "subscription-model",
     "next.js",
+    "react",
     "tailwindcss",
-    "community"
+    "framer-motion",
+    "fusion-ui",
+    "design-yokocho",
+    "phantom-980",
+    "mystical-design",
+    "japanese-aesthetics",
+    "motion-design",
+    "community-platform",
+    "content-discovery",
+    "responsive-design",
+    "progressive-web-app",
+    "cinematic-ui",
+    "ukiyo-e",
+    "torii-gate",
+    "ink-brush-design"
   ],
   "author": "marimondaa",
   "license": "MIT"
