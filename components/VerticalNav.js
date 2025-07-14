@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import ThemeAwareLogo from './ThemeAwareLogo';
+import ThemeToggle from './ThemeToggle';
 
 const VerticalNav = () => {
   const router = useRouter();
@@ -9,12 +11,14 @@ const VerticalNav = () => {
 
   const navItems = [
     { name: 'Home', path: '/', icon: '🏠' },
-    { name: 'Creators', path: '/creators', icon: '✨' },
-    { name: 'Fan Feed', path: '/theories', icon: '📜' },
-    { name: 'Theory Vault', path: '/animations', icon: '🔮' },
+    { name: 'Theories', path: '/theories', icon: '📜' },
+    { name: 'Animations', path: '/animations', icon: '🎬' },
     { name: 'Calendar', path: '/calendar', icon: '📅' },
-    { name: 'Payments', path: '/account', icon: '💫' },
-    { name: 'About', path: '/about', icon: '⛩️' }
+    { name: 'Account', path: '/account', icon: '👤' },
+    { name: 'Fan Creations', path: '/fan-feed', icon: '🎨' },
+    { name: 'Sound', path: '/gigs', icon: '🎵' },
+    { name: 'Character Design', path: '/arcs', icon: '🎭' },
+    { name: 'Shrine', path: '/about', icon: '⛩️' }
   ];
 
   const containerVariants = {
@@ -43,7 +47,7 @@ const VerticalNav = () => {
     <>
       {/* Mobile Toggle Button */}
       <motion.button
-        className="fixed top-4 right-4 z-50 md:hidden w-12 h-12 bg-sumi-gray border border-line-highlight rounded-lg flex items-center justify-center text-parchment"
+        className="fixed top-4 left-20 z-50 md:hidden w-12 h-12 bg-[#0a0a0a] border border-[#ddddcc] rounded-lg flex items-center justify-center text-[#ddddcc]"
         onClick={() => setIsExpanded(!isExpanded)}
         whileTap={{ scale: 0.95 }}
         animate={{ rotate: isExpanded ? 90 : 0 }}
@@ -53,9 +57,9 @@ const VerticalNav = () => {
 
       {/* Navigation Container */}
       <motion.nav
-        className={`fixed top-0 right-0 h-full w-64 bg-ink-black/95 backdrop-blur-lg border-l border-line-highlight/30 z-40 transform transition-transform duration-300 ${
-          isExpanded ? 'translate-x-0' : 'translate-x-full'
-        } md:translate-x-0 md:w-20 hover:md:w-64 group`}
+        className={`fixed top-0 left-0 h-full bg-[#0a0a0a] backdrop-blur-lg border-r border-[#ddddcc]/30 z-40 transition-all duration-300 ease-in-out group ${
+          isExpanded ? 'w-64' : 'w-16 md:w-20 hover:w-64'
+        }`}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -91,13 +95,13 @@ const VerticalNav = () => {
                   <div
                     className={`flex items-center p-3 rounded-lg transition-all duration-300 cursor-pointer group/item ${
                       isActive 
-                        ? 'bg-forest-accent border-l-4 border-violet-glow text-parchment' 
-                        : 'hover:bg-sumi-gray text-stone-wash hover:text-parchment'
+                        ? 'bg-[var(--accent)] border-l-4 border-[var(--accent)] text-[var(--bg)]' 
+                        : 'hover:bg-[var(--hover-bg)] text-[var(--text-secondary)] hover:text-[var(--text)]'
                     }`}
                   >
                     {/* Icon */}
                     <motion.span
-                      className="text-xl mr-4 flex-shrink-0"
+                      className="text-xl flex-shrink-0 justify-center group-hover:mr-4"
                       whileHover={{ scale: 1.2, rotate: 5 }}
                       transition={{ duration: 0.2 }}
                     >
@@ -105,14 +109,14 @@ const VerticalNav = () => {
                     </motion.span>
                     
                     {/* Label */}
-                    <span className="font-brush text-sm md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    <span className="font-brush text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap ml-3">
                       {item.name}
                     </span>
 
                     {/* Active Indicator */}
                     {isActive && (
                       <motion.div
-                        className="ml-auto w-2 h-2 bg-violet-glow rounded-full"
+                        className="ml-auto w-2 h-2 bg-[var(--accent)] rounded-full opacity-0 group-hover:opacity-100"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
@@ -120,7 +124,7 @@ const VerticalNav = () => {
 
                     {/* Hover Glow */}
                     <motion.div
-                      className="absolute inset-0 bg-violet-glow rounded-lg opacity-0 pointer-events-none"
+                      className="absolute inset-0 bg-[var(--accent)] rounded-lg opacity-0 pointer-events-none"
                       whileHover={{ opacity: 0.1 }}
                       transition={{ duration: 0.3 }}
                     />
@@ -132,25 +136,25 @@ const VerticalNav = () => {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-line-highlight/30">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--border)]/30">
           <motion.div
             className="text-center"
             whileHover={{ scale: 1.05 }}
           >
-            <div className="text-stone-wash text-xs font-mono opacity-60 md:opacity-0 md:group-hover:opacity-60 transition-opacity duration-300">
+            <div className="text-[var(--text-secondary)] text-xs font-mono opacity-60 group-hover:opacity-100 transition-opacity duration-300">
               v1.0.0
             </div>
           </motion.div>
         </div>
 
-        {/* Ink Brush Effect */}
-        <div className="absolute left-0 top-1/4 w-1 h-1/2 bg-gradient-to-b from-transparent via-forest-accent to-transparent opacity-30" />
+        {/* Accent Line */}
+        <div className="absolute left-0 top-1/4 w-1 h-1/2 bg-gradient-to-b from-transparent via-[var(--accent)] to-transparent opacity-30" />
       </motion.nav>
 
       {/* Mobile Overlay */}
       {isExpanded && (
         <motion.div
-          className="fixed inset-0 bg-ink-black/50 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-[var(--bg)]/50 backdrop-blur-sm z-30 md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={() => setIsExpanded(false)}

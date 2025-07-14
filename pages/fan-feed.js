@@ -1,19 +1,15 @@
 ﻿import Head from 'next/head';
-import VerticalNav from '../components/VerticalNav';
 
 export default function FanFeed() {
   return (
-    <div>
+    <>
       <Head>
         <title>Fan Feed - Shonen Ark</title>
       </Head>
-      <VerticalNav />
-      <main className="md:ml-20 min-h-screen bg-gray-950 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <h1 className="text-4xl font-bold mb-6">Fan Feed</h1>
-          <p className="text-gray-300">Welcome to the Fan Feed!</p>
-        </div>
-      </main>
-    </div>
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <h1 className="text-4xl font-bold mb-6">Fan Feed</h1>
+        <p className="text-[var(--text-secondary)]">Welcome to the Fan Feed!</p>
+      </div>
+    </>
   );
 }
