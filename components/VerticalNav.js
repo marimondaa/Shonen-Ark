@@ -16,9 +16,9 @@ const VerticalNav = () => {
     { name: 'Calendar', path: '/calendar', icon: '📅' },
     { name: 'Account', path: '/account', icon: '👤' },
     { name: 'Fan Creations', path: '/fan-feed', icon: '🎨' },
-    { name: 'Sound', path: '/gigs', icon: '🎵' },
+    { name: 'Gigs', path: '/gigs', icon: '🎵' },
     { name: 'Character Design', path: '/arcs', icon: '🎭' },
-    { name: 'Shrine', path: '/about', icon: '⛩️' }
+    { name: 'About Us', path: '/about', icon: '⛩️' }
   ];
 
   const containerVariants = {
