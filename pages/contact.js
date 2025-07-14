@@ -67,8 +67,12 @@ export default function Contact() {
       answer: 'Creators can apply for verification after publishing 5+ high-quality theories or creations and gaining 100+ followers.'
     },
     {
+      question: 'How much does the Creator Pro account cost?',
+      answer: 'Creator Pro accounts are $4/month and unlock creator tools, unlimited follows, priority support, and access to our monetization features.'
+    },
+    {
       question: 'Can I monetize my content on Shonen Ark?',
-      answer: 'Yes! Creator accounts have access to our revenue-sharing program and can receive tips from fans.'
+      answer: 'Yes! Creator Pro accounts have access to our revenue-sharing program, can receive tips from fans, and get advanced analytics to grow their audience.'
     },
     {
       question: 'What anime/manga series do you support?',
@@ -76,7 +80,7 @@ export default function Contact() {
     },
     {
       question: 'Is Shonen Ark free to use?',
-      answer: 'Yes! Basic features are free. We offer premium Creator Pro accounts with advanced features for $9.99/month.'
+      answer: 'Yes! Basic Fan accounts are completely free. We offer Creator Pro accounts ($4/month) with advanced features, upload tools, and monetization options.'
     }
   ]
 

@@ -5,25 +5,25 @@ import Navbar from '../components/Navbar'
 export default function About() {
   const teamMembers = [
     {
-      name: 'Alex Chen',
+      name: 'You (Founder)',
       role: 'Founder & CEO',
-      bio: 'Long-time anime enthusiast with 15+ years in tech. Former senior engineer at major streaming platforms.',
-      avatar: '👨‍💻',
-      social: { twitter: '@alexchen', discord: 'AlexChen#1234' }
+      bio: 'Passionate anime enthusiast and visionary behind Shonen Ark. Dedicated to creating the ultimate platform for fan theories, creators, and anime community.',
+      avatar: '⛩️',
+      social: { twitter: '@shonenark', discord: 'Founder#0001' }
     },
     {
-      name: 'Maria Rodriguez',
-      role: 'Head of Community',
-      bio: 'Community management expert and manga translator. Fluent in Japanese and passionate about shonen storytelling.',
-      avatar: '👩‍🎨',
-      social: { twitter: '@mariarodz', discord: 'Maria#5678' }
+      name: 'Community Team',
+      role: 'Community Management',
+      bio: 'Dedicated team of moderators and community managers who ensure Shonen Ark remains a welcoming space for all fans.',
+      avatar: '�',
+      social: { twitter: '@shonenark', discord: 'Community#0002' }
     },
     {
-      name: 'Dr. Kenji Tanaka',
-      role: 'Cultural Advisor',
-      bio: 'Japanese literature professor and anime historian. Provides cultural context and authenticity to our content.',
-      avatar: '👨‍🏫',
-      social: { twitter: '@drtanaka', discord: 'DrTanaka#9012' }
+      name: 'Development Team',
+      role: 'Technical Development',
+      bio: 'Full-stack developers and AI specialists working to bring cutting-edge features to the anime fan community.',
+      avatar: '⚡',
+      social: { twitter: '@shonenark', discord: 'DevTeam#0003' }
     }
   ]
 
@@ -60,9 +60,11 @@ export default function About() {
             <h2 className="text-3xl font-bold mb-6 text-center">🎯 Our Mission</h2>
             <p className="text-lg text-gray-300 leading-relaxed text-center mb-8">
               Shonen Ark is an AI-powered fan platform designed for deep dives, community commentary, 
-              and comprehensive arc breakdowns across top anime and manga series. We believe that every 
+              and comprehensive analysis across top anime and manga series. We believe that every 
               fan theory deserves a voice, every creative work deserves recognition, and every community 
-              deserves a space to thrive.
+              deserves a space to thrive. Our platform showcases high-quality AI-assisted theories, 
+              fan-created animations, and immersive soundscapes, while allowing creators to build their 
+              audience and monetize their passion.
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 mt-12">
