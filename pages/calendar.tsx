@@ -1,81 +1,34 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
+import { fetchAniList } from '../utils/anilist'
 
 export default function Calendar() {
   const [activeTab, setActiveTab] = useState('episodes')
 
-  const animeEpisodes = [
-    {
-      id: 1,
-      title: 'Jujutsu Kaisen Season 3',
-      episode: 'Episode 5: "Domain Clash"',
-      coverImage: '/placeholder-jjk-ep.jpg',
-      releaseDay: 'Thursday',
-      releaseTime: '11:00 PM JST',
-      countdown: '2 days',
-      studio: 'MAPPA',
-      status: 'upcoming'
-    },
-    {
-      id: 2,
-      title: 'One Piece',
-      episode: 'Episode 1087: "Luffy\'s New Power"',
-      coverImage: '/placeholder-op-ep.jpg',
-      releaseDay: 'Sunday',
-      releaseTime: '9:30 AM JST',
-      countdown: '5 days',
-      studio: 'Toei Animation',
-      status: 'upcoming'
-    },
-    {
-      id: 3,
-      title: 'Solo Leveling',
-      episode: 'Episode 12: "The Final Battle"',
-      coverImage: '/placeholder-sl-ep.jpg',
-      releaseDay: 'Saturday',
-      releaseTime: '10:00 PM JST',
-      countdown: '4 days',
-      studio: 'A-1 Pictures',
-      status: 'season_finale'
-    }
-  ]
+  const [animeEpisodes, setAnimeEpisodes] = useState<any[]>([])
+  const [mangaChapters, setMangaChapters] = useState<any[]>([])
 
-  const mangaChapters = [
-    {
-      id: 1,
-      title: 'Jujutsu Kaisen',
-      chapter: 'Chapter 245: "The Strongest Returns"',
-      coverImage: '/placeholder-jjk-manga.jpg',
-      releaseDay: 'Monday',
-      releaseTime: '12:00 PM JST',
-      countdown: '6 days',
-      magazine: 'Weekly Shonen Jump',
-      status: 'upcoming'
-    },
-    {
-      id: 2,
-      title: 'One Piece',
-      chapter: 'Chapter 1100: "The Truth Revealed"',
-      coverImage: '/placeholder-op-manga.jpg',
-      releaseDay: 'Monday',
-      releaseTime: '12:00 PM JST',
-      countdown: '6 days',
-      magazine: 'Weekly Shonen Jump',
-      status: 'milestone'
-    },
-    {
-      id: 3,
-      title: 'Chainsaw Man',
-      chapter: 'Chapter 148: "Devil\'s Promise"',
-      coverImage: '/placeholder-csm-manga.jpg',
-      releaseDay: 'Wednesday',
-      releaseTime: '12:00 PM JST',
-      countdown: '1 day',
-      magazine: 'Weekly Shonen Jump+',
-      status: 'upcoming'
+  useEffect(() => {
+    async function load() {
+      const query = `query ($page:Int){Page(page:$page){media(type:ANIME,status:RELEASING){id title{romaji} nextAiringEpisode{episode airingAt}}}}`
+      const data = await fetchAniList(query, { page: 1 })
+      if (data.Page?.media) {
+        const mapped = data.Page.media.map((m:any) => ({
+          id: m.id,
+          title: m.title.romaji,
+          episode: `Episode ${m.nextAiringEpisode?.episode}`,
+          releaseDay: '',
+          releaseTime: '',
+          countdown: '',
+          studio: '',
+          status: 'upcoming'
+        }))
+        setAnimeEpisodes(mapped)
+      }
     }
-  ]
+    load()
+  }, [])
 
   const getCurrentData = () => {
     return activeTab === 'episodes' ? animeEpisodes : mangaChapters

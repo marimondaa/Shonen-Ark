@@ -1,69 +1,25 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
+import { supabase } from '../../utils/supabaseClient'
 
 export default function Theories() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('newest')
   const [selectedAnime, setSelectedAnime] = useState('all')
 
-  const theories = [
-    {
-      id: 1,
-      slug: 'gojo-return-theory',
-      title: 'How Gojo Will Return: The Six Eyes Resurrection Theory',
-      thumbnail: '/placeholder-theory-1.jpg',
-      tags: ['Jujutsu Kaisen', 'Gojo', 'Theory', 'Spoilers'],
-      author: 'TheoryMaster99',
-      likes: 234,
-      comments: 45,
-      hasSpoilers: true,
-      preview: 'After analyzing the latest chapters, I believe Gojo\'s return is inevitable through the power of the Six Eyes...',
-      createdAt: '2025-07-10'
-    },
-    {
-      id: 2,
-      slug: 'one-piece-final-war',
-      title: 'The Final War: Why Luffy Will Fight All Four Emperors',
-      thumbnail: '/placeholder-theory-2.jpg',
-      tags: ['One Piece', 'Luffy', 'Final War', 'Emperors'],
-      author: 'PirateKingAnalyst',
-      likes: 189,
-      comments: 32,
-      hasSpoilers: false,
-      preview: 'The setup for the final war suggests that Luffy will need to prove himself against every Emperor to claim the One Piece...',
-      createdAt: '2025-07-09'
-    },
-    {
-      id: 3,
-      slug: 'chainsaw-man-makima-return',
-      title: 'Makima\'s Consciousness Lives On: The Control Devil Theory',
-      thumbnail: '/placeholder-theory-3.jpg',
-      tags: ['Chainsaw Man', 'Makima', 'Control Devil', 'Part 2'],
-      author: 'DevilHunterFan',
-      likes: 167,
-      comments: 28,
-      hasSpoilers: true,
-      preview: 'Evidence suggests that Makima\'s essence wasn\'t completely destroyed and may manifest in Part 2...',
-      createdAt: '2025-07-08'
-    },
-    {
-      id: 4,
-      slug: 'solo-leveling-monarch-hierarchy',
-      title: 'The True Hierarchy of Monarchs: Shadow vs Destruction',
-      thumbnail: '/placeholder-theory-4.jpg',
-      tags: ['Solo Leveling', 'Monarchs', 'Shadow', 'Power Scaling'],
-      author: 'ShadowAnalyst',
-      likes: 145,
-      comments: 19,
-      hasSpoilers: false,
-      preview: 'Breaking down the power structure of the Monarchs and why the Shadow Monarch might not be the strongest...',
-      createdAt: '2025-07-07'
-    }
-  ]
+  const [theories, setTheories] = useState<any[]>([])
 
-  const filteredTheories = theories.filter(theory => {
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase.from('theories').select('*').limit(20)
+      if (data) setTheories(data)
+    }
+    load()
+  }, [])
+
+  const filteredTheories = theories.filter((theory: any) => {
     const matchesSearch = theory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          theory.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesAnime = selectedAnime === 'all' || 
@@ -71,8 +27,8 @@ export default function Theories() {
     return matchesSearch && matchesAnime
   })
 
-  const sortedTheories = [...filteredTheories].sort((a, b) => {
-    if (sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt)
+  const sortedTheories = [...filteredTheories].sort((a: any, b: any) => {
+    if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     if (sortBy === 'popular') return b.likes - a.likes
     return 0
   })
