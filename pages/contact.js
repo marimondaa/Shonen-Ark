@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -91,7 +90,6 @@ export default function Contact() {
         <meta name="description" content="Get in touch with the Shonen Ark team. We're here to help with questions, feedback, and anime suggestions." />
       </Head>
 
-      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-900 to-purple-900 py-20 px-6">

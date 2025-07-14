@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -31,7 +30,6 @@ export default function Login() {
         <meta name="description" content="Login to your Shonen Ark account to access exclusive content and join the community." />
       </Head>
 
-      <Navbar />
 
       <main className="flex flex-col items-center justify-center min-h-[80vh] px-6">
         <div className="w-full max-w-md">

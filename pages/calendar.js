@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Calendar() {
   const [activeTab, setActiveTab] = useState('episodes')
@@ -104,7 +103,6 @@ export default function Calendar() {
         <meta name="description" content="Track upcoming anime episodes and manga chapter releases. Never miss a drop!" />
       </Head>
 
-      <Navbar />
 
       {/* Header */}
       <section className="bg-gradient-to-r from-indigo-900 to-purple-900 py-16 px-6">

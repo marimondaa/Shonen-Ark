@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../../components/Navbar'
 
 export default function Theories() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -84,7 +83,6 @@ export default function Theories() {
         <meta name="description" content="Discover and share epic fan theories about your favorite shonen anime and manga." />
       </Head>
 
-      <Navbar />
 
       {/* Header Section */}
       <section className="bg-gradient-to-r from-purple-900 to-indigo-900 py-16 px-6">

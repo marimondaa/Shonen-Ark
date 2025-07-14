@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
 import { motion } from 'framer-motion'
 
 export default function Discover() {
@@ -39,7 +38,6 @@ export default function Discover() {
       </Head>
       
       <div className="bg-gray-950 text-white min-h-screen">
-        <Navbar />
         <main className="max-w-6xl mx-auto p-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-red-400 to-purple-400 bg-clip-text text-transparent">

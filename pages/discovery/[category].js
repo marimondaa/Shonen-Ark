@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState, useRef } from 'react'
-import Navbar from '../../components/Navbar'
 import { motion } from 'framer-motion'
 
 export default function DiscoveryCategory() {
@@ -108,7 +107,6 @@ export default function DiscoveryCategory() {
       </Head>
       
       <div className="bg-gray-950 text-white min-h-screen">
-        <Navbar />
         <main className="max-w-6xl mx-auto p-6">
           {/* Header */}
           <div className="text-center mb-8">

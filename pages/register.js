@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -34,7 +33,6 @@ export default function Register() {
         <meta name="description" content="Join the Shonen Ark community and start sharing your passion for anime and manga." />
       </Head>
 
-      <Navbar />
 
       <main className="flex flex-col items-center justify-center min-h-[90vh] px-6 py-12">
         <div className="w-full max-w-md">

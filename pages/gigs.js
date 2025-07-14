@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
 
 export default function Gigs() {
   return (
@@ -10,7 +9,6 @@ export default function Gigs() {
         <meta name="description" content="Find freelance opportunities and commission talented creators in the anime community." />
       </Head>
 
-      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-900 to-blue-900 py-20 px-6">

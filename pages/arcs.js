@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
 
 export default function Arcs() {
   const arcs = [
@@ -31,7 +30,6 @@ export default function Arcs() {
         <meta name="description" content="Browse iconic arcs from top shonen anime with AI-enhanced theories and community insights." />
       </Head>
 
-      <Navbar />
 
       <main className="max-w-6xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-8 text-red-400">Explore Arcs</h1>

@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import Navbar from '../components/Navbar'
 
 export default function About() {
   const teamMembers = [
@@ -40,7 +39,6 @@ export default function About() {
         <meta name="description" content="Learn about Shonen Ark's mission to create the ultimate fan theory and media hub for anime and manga enthusiasts." />
       </Head>
 
-      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-purple-900 to-indigo-900 py-20 px-6">

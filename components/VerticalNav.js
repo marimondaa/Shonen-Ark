@@ -57,7 +57,7 @@ const VerticalNav = () => {
 
       {/* Navigation Container */}
       <motion.nav
-        className={`fixed top-0 left-0 h-full bg-[#0a0a0a] backdrop-blur-lg border-r border-[#ddddcc]/30 z-40 transition-all duration-300 ease-in-out group ${
+        className={`fixed top-0 left-0 h-full bg-[#0a0a0a] backdrop-blur-lg border-r border-[#ddddcc]/30 z-40 transition-all duration-300 ease-in-out flex flex-col group ${
           isExpanded ? 'w-64' : 'w-16 md:w-20 hover:w-64'
         }`}
         variants={containerVariants}
@@ -133,6 +133,15 @@ const VerticalNav = () => {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Login Button */}
+        <div className="px-4">
+          <Link href="/login" className="block">
+            <button className="mt-auto mb-4 w-full text-white bg-brand-purple hover:bg-brand-purple/80 px-4 py-2 rounded-lg shadow-lg transition">
+              Login
+            </button>
+          </Link>
         </div>
 
         {/* Footer */}

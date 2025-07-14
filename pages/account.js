@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 import PaymentsModal from '../components/PaymentsModal'
 
 export default function Account() {
@@ -155,7 +154,6 @@ export default function Account() {
         <meta name="description" content="Manage your Shonen Ark account and access your personalized dashboard." />
       </Head>
 
-      <Navbar />
 
       {/* Profile Header */}
       <section className="bg-gradient-to-r from-indigo-900 to-purple-900 py-16 px-6">

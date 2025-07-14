@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import Navbar from '../../components/Navbar'
 
 export default function TheoryPost() {
   const router = useRouter()
@@ -90,7 +89,6 @@ What do you think? Have I missed any crucial evidence? Let me know in the commen
         <meta name="description" content={`Fan theory: ${theory.title} by ${theory.author}`} />
       </Head>
 
-      <Navbar />
 
       {/* Breadcrumb */}
       <section className="bg-gray-900 py-4 px-6 border-b border-gray-800">

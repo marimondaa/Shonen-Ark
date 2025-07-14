@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import Navbar from '../../components/Navbar'
 import { motion } from 'framer-motion'
 
 export default function CreatorAccount() {
@@ -59,7 +58,6 @@ export default function CreatorAccount() {
       </Head>
       
       <div className="bg-gray-950 text-white min-h-screen">
-        <Navbar />
         <main className="max-w-6xl mx-auto p-6">
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-purple-900 to-red-900 rounded-xl p-6 mb-8">

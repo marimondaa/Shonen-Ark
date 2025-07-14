@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Merch() {
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -76,7 +75,6 @@ export default function Merch() {
         <meta name="description" content="Official Shonen Ark merchandise - hoodies, accessories, and collectibles for anime fans." />
       </Head>
 
-      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-purple-900 to-pink-900 py-20 px-6">

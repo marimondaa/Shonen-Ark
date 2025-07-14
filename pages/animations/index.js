@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import Navbar from '../../components/Navbar'
 
 export default function Animations() {
   const [activeTab, setActiveTab] = useState('fights')
@@ -232,7 +231,6 @@ export default function Animations() {
         <meta name="description" content="Discover amazing fan-created animations, audio effects, and character designs from the shonen community." />
       </Head>
 
-      <Navbar />
 
       {/* Header */}
       <section className="bg-gradient-to-r from-purple-900 to-pink-900 py-16 px-6">
