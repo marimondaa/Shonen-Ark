@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { getDiscoveryContent, sortContent } from '../../lib/mockData';
 
 export default function CategoryPage() {
   const router = useRouter();
@@ -60,9 +61,10 @@ export default function CategoryPage() {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Mock data based on category
-        const mockItems = generateMockData(category);
-        setItems(mockItems);
+        // Use centralized mock data
+        const categoryItems = getDiscoveryContent(category);
+        const sortedItems = sortContent(categoryItems, sortBy);
+        setItems(sortedItems);
       } catch (error) {
         console.error('Failed to load category items:', error);
       } finally {
@@ -72,63 +74,6 @@ export default function CategoryPage() {
 
     loadCategoryItems();
   }, [category, sortBy]);
-
-  const generateMockData = (cat) => {
-    const baseItems = {
-      'fan-fights': [
-        {
-          id: 1,
-          title: 'Goku vs Saitama: The Ultimate Showdown',
-          creator: 'PowerScaler99',
-          likes: 256,
-          views: 1200,
-          comments: 45,
-          thumbnail: '/api/placeholder/300/200',
-          type: 'theory',
-          date: '2 days ago'
-        },
-        {
-          id: 2,
-          title: 'Naruto Characters Power Tier List',
-          creator: 'NinjaAnalyst',
-          likes: 189,
-          views: 890,
-          comments: 32,
-          thumbnail: '/api/placeholder/300/200',
-          type: 'analysis',
-          date: '1 week ago'
-        }
-      ],
-      'audio-fx': [
-        {
-          id: 1,
-          title: 'Attack on Titan Theme - Orchestral Cover',
-          creator: 'MysticalComposer',
-          likes: 340,
-          views: 2100,
-          comments: 67,
-          thumbnail: '/api/placeholder/300/200',
-          type: 'music',
-          date: '3 days ago'
-        }
-      ],
-      'character-designs': [
-        {
-          id: 1,
-          title: 'Modern Demon Slayer Character Redesigns',
-          creator: 'ArtistSensei',
-          likes: 445,
-          views: 1800,
-          comments: 89,
-          thumbnail: '/api/placeholder/300/200',
-          type: 'artwork',
-          date: '1 day ago'
-        }
-      ]
-    };
-
-    return baseItems[cat] || [];
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -201,7 +146,7 @@ export default function CategoryPage() {
               </div>
               
               <Link 
-                href="/discover"
+                href="/discovery"
                 className="text-purple hover:text-white transition-colors"
               >
                 ← Back to Discovery

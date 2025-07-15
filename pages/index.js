@@ -266,7 +266,7 @@ export default function Home() {
                   </motion.div>
                   <motion.div variants={itemVariants}>
                     <Link
-                      href="/discover"
+                      href="/discovery"
                       className="inline-block border-2 border-purple text-purple hover:bg-purple hover:text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple focus:ring-offset-2 focus:ring-offset-black"
                     >
                       Discover Content

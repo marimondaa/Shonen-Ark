@@ -1,56 +1,44 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
+import Link from 'next/link';
+import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../lib/mockData';
 
-export default function FanAccount() {
-  const [feedData, setFeedData] = useState([]);
-  const [stats, setStats] = useState({ following: 0, bookmarks: 0, comments: 0 });
+const FanDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [activity, setActivity] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadUserData = async () => {
+    const loadDashboardData = async () => {
       try {
+        setIsLoading(true);
+        // Simulate API loading delay
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        setFeedData([
-          {
-            id: 1,
-            creator: "TheoryMaster",
-            type: "theory",
-            title: "The Hidden Meaning Behind Luffy's Gear 5",
-            preview: "Deep analysis of the mythological connections...",
-            timestamp: "2 hours ago",
-            likes: 234,
-            comments: 45
-          },
-          {
-            id: 2,
-            creator: "AnimationPro",
-            type: "animation",
-            title: "Sasuke vs Naruto Fight Recreation",
-            preview: "Frame-by-frame recreation of the final battle",
-            timestamp: "5 hours ago",
-            likes: 567,
-            comments: 89
-          }
-        ]);
-
-        setStats({ following: 15, bookmarks: 23, comments: 47 });
+        // Load data from centralized mock data
+        setSubscriptions(mockSubscriptions);
+        setBookmarks(mockBookmarks);
+        setActivity(mockUserActivity);
       } catch (error) {
-        console.error('Failed to load user data:', error);
+        console.error('Failed to load dashboard data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUserData();
+    loadDashboardData();
   }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: {
+        staggerChildren: 0.1
+      }
     }
   };
 
@@ -63,26 +51,76 @@ export default function FanAccount() {
     <>
       <Head>
         <title>Fan Dashboard - Shonen Ark</title>
-        <meta name="description" content="Your personalized fan dashboard for following creators and managing content." />
+        <meta name="description" content="Your personal fan dashboard for theories, bookmarks, and subscriptions." />
       </Head>
 
       <div className="min-h-screen bg-black text-white">
+        {/* Header */}
         <motion.header 
-          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
+          className="bg-gradient-to-r from-dark-purple to-purple py-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-6xl mb-4">👤</div>
-            <h1 className="text-4xl font-bold mystical-title mb-4 glow-text">Fan Dashboard</h1>
-            <p className="text-xl text-grey brush-font">Welcome back! Stay connected with your favorite creators.</p>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center space-x-6">
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-4xl"
+              >
+                👤
+              </motion.div>
+              <div>
+                <h1 className="text-4xl font-bold mystical-title glow-text">
+                  Welcome back, Fan!
+                </h1>
+                <p className="text-xl text-white/80 brush-font">
+                  Your personal theory hub awaits
+                </p>
+              </div>
+            </div>
           </div>
         </motion.header>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Tab Navigation */}
+          <motion.div 
+            className="flex border-b border-purple/20 mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            {[
+              { id: 'overview', label: 'Overview', icon: '📊' },
+              { id: 'subscriptions', label: 'Subscriptions', icon: '⭐' },
+              { id: 'bookmarks', label: 'Bookmarks', icon: '🔖' },
+              { id: 'activity', label: 'Activity', icon: '📝' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 px-6 py-4 font-medium transition-all relative ${
+                  activeTab === tab.id
+                    ? 'text-purple'
+                    : 'text-grey hover:text-white'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple"
+                  />
+                )}
+              </button>
+            ))}
+          </motion.div>
+
           {isLoading ? (
-            <div className="flex justify-center items-center py-16">
+            <div className="flex justify-center py-16">
               <motion.div 
                 className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
                 animate={{ rotate: 360 }}
@@ -90,107 +128,191 @@ export default function FanAccount() {
               />
             </div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Main Feed */}
-              <motion.div 
-                className="lg:col-span-2"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <h2 className="text-2xl font-bold mystical-title mb-6 text-purple">Creator Feed</h2>
-                <div className="space-y-6">
-                  {feedData.map((post) => (
-                    <motion.article
-                      key={post.id}
-                      variants={itemVariants}
-                      className="bg-dark-purple/30 rounded-lg p-6 border border-purple/20 hover:border-purple/50 transition-all shrine-glow"
-                      whileHover={{ scale: 1.01 }}
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-purple/20 rounded-full flex items-center justify-center">
-                          <span className="text-purple font-bold">{post.creator.charAt(0)}</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-bold text-purple">{post.creator}</h3>
-                            <span className="text-grey text-sm">•</span>
-                            <span className="text-grey text-sm">{post.timestamp}</span>
-                            <span className="text-xs px-2 py-1 rounded bg-purple/20 text-purple">
-                              {post.type}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {/* Quick Stats */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                  >
+                    <h3 className="text-xl font-bold mb-4 text-purple">📊 Your Stats</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-grey">Theories Liked:</span>
+                        <span className="text-white font-medium">247</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-grey">Comments Posted:</span>
+                        <span className="text-white font-medium">156</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-grey">Bookmarks:</span>
+                        <span className="text-white font-medium">{bookmarks.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-grey">Subscriptions:</span>
+                        <span className="text-white font-medium">{subscriptions.length}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Recent Activity */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                  >
+                    <h3 className="text-xl font-bold mb-4 text-purple">📝 Recent Activity</h3>
+                    <div className="space-y-3">
+                      {activity.slice(0, 3).map((item) => (
+                        <div key={item.id} className="flex items-start space-x-3">
+                          <span className="text-sm">
+                            {item.type === 'comment' ? '💬' : item.type === 'like' ? '👍' : '🔖'}
+                          </span>
+                          <div className="flex-1">
+                            <p className="text-sm text-grey line-clamp-2">
+                              {item.type === 'comment' ? `Commented: "${item.content}"` : 
+                               item.type === 'like' ? `Liked: ${item.target}` :
+                               `Bookmarked: ${item.target}`}
+                            </p>
+                            <span className="text-xs text-grey/60">
+                              {new Date(item.timestamp).toLocaleDateString()}
                             </span>
                           </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">{post.title}</h4>
-                          <p className="text-grey mb-4">{post.preview}</p>
-                          <div className="flex items-center space-x-6 text-sm text-grey">
-                            <button className="flex items-center space-x-1 hover:text-purple transition-colors">
-                              <span>👍</span>
-                              <span>{post.likes}</span>
-                            </button>
-                            <button className="flex items-center space-x-1 hover:text-purple transition-colors">
-                              <span>💬</span>
-                              <span>{post.comments}</span>
-                            </button>
-                            <button className="flex items-center space-x-1 hover:text-purple transition-colors">
-                              <span>🔖</span>
-                              <span>Save</span>
-                            </button>
-                          </div>
                         </div>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Quick Actions */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                  >
+                    <h3 className="text-xl font-bold mb-4 text-purple">⚡ Quick Actions</h3>
+                    <div className="space-y-3">
+                      <Link href="/theories" className="block p-3 bg-purple/20 rounded-lg hover:bg-purple/30 transition-colors">
+                        <span className="text-sm font-medium">🔍 Browse Theories</span>
+                      </Link>
+                      <Link href="/discovery" className="block p-3 bg-purple/20 rounded-lg hover:bg-purple/30 transition-colors">
+                        <span className="text-sm font-medium">✨ Discover Creators</span>
+                      </Link>
+                      <Link href="/calendar" className="block p-3 bg-purple/20 rounded-lg hover:bg-purple/30 transition-colors">
+                        <span className="text-sm font-medium">📅 Check Calendar</span>
+                      </Link>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+
+              {/* Subscriptions Tab */}
+              {activeTab === 'subscriptions' && (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {subscriptions.map((sub) => (
+                    <motion.div
+                      key={sub.id}
+                      variants={itemVariants}
+                      className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                    >
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="w-12 h-12 bg-purple/20 rounded-full flex items-center justify-center">
+                          👤
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-white">{sub.creator}</h3>
+                          <p className="text-sm text-grey">{sub.subscribers.toLocaleString()} subscribers</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          sub.tier === 'premium' 
+                            ? 'bg-purple/20 text-purple' 
+                            : 'bg-grey/20 text-grey'
+                        }`}>
+                          {sub.tier}
+                        </span>
                       </div>
-                    </motion.article>
+                      
+                      <p className="text-sm text-grey mb-4">Latest: {sub.latestContent}</p>
+                      
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-grey">Next payment: {sub.nextPayment}</span>
+                        <button className="text-purple hover:text-white transition-colors">
+                          Manage
+                        </button>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
-              </motion.div>
+              )}
 
-              {/* Sidebar */}
-              <motion.div 
-                className="space-y-6"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {/* Quick Stats */}
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-dark-purple/30 rounded-lg p-6 border border-purple/20"
-                >
-                  <h3 className="text-lg font-bold mystical-title mb-4 text-purple">Quick Stats</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-grey">Following</span>
-                      <span className="text-purple font-bold">{stats.following}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-grey">Bookmarks</span>
-                      <span className="text-purple font-bold">{stats.bookmarks}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-grey">Comments</span>
-                      <span className="text-purple font-bold">{stats.comments}</span>
-                    </div>
-                  </div>
-                </motion.div>
+              {/* Bookmarks Tab */}
+              {activeTab === 'bookmarks' && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {bookmarks.map((bookmark) => (
+                    <motion.div
+                      key={bookmark.id}
+                      variants={itemVariants}
+                      className="bg-dark-purple/30 rounded-lg overflow-hidden border border-purple/20 shrine-glow group"
+                    >
+                      <div className="aspect-video bg-purple/20 flex items-center justify-center">
+                        <span className="text-4xl opacity-50">🔖</span>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-bold text-white mb-2 line-clamp-2">{bookmark.title}</h3>
+                        <p className="text-sm text-purple mb-2">by {bookmark.creator}</p>
+                        <div className="flex justify-between items-center text-sm text-grey">
+                          <span>#{bookmark.category}</span>
+                          <span>{new Date(bookmark.bookmarkedAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
 
-                {/* Upgrade CTA */}
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-gradient-to-br from-purple/20 to-dark-purple/20 rounded-lg p-6 border border-purple/30 text-center"
-                >
-                  <div className="text-4xl mb-3">⭐</div>
-                  <h3 className="text-lg font-bold mystical-title mb-2 text-purple">Become a Creator</h3>
-                  <p className="text-grey text-sm mb-4">
-                    Upload your own theories, animations, and audio content.
-                  </p>
-                  <button className="w-full bg-purple hover:bg-purple/80 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                    Upgrade for $4/month
-                  </button>
-                </motion.div>
-              </motion.div>
-            </div>
+              {/* Activity Tab */}
+              {activeTab === 'activity' && (
+                <div className="space-y-4">
+                  {activity.map((item) => (
+                    <motion.div
+                      key={item.id}
+                      variants={itemVariants}
+                      className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                    >
+                      <div className="flex items-start space-x-4">
+                        <span className="text-2xl">
+                          {item.type === 'comment' ? '💬' : item.type === 'like' ? '👍' : '🔖'}
+                        </span>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-medium text-white">
+                              {item.type === 'comment' ? 'Comment' : 
+                               item.type === 'like' ? 'Liked' : 'Bookmarked'}
+                            </h4>
+                            <span className="text-sm text-grey">
+                              {new Date(item.timestamp).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-grey">{item.target}</p>
+                          {item.content && (
+                            <p className="text-sm text-white/80 mt-2 italic">"{item.content}"</p>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
           )}
         </div>
       </div>
     </>
   );
-}
+};
+
+export default FanDashboard;

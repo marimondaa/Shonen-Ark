@@ -50,13 +50,13 @@ const Layout = ({ children }) => {
               <Link href="/theories" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
                 Theories
               </Link>
-              <Link href="/discover" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
-                Discover
+              <Link href="/discovery" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
+                Discovery
               </Link>
               <Link href="/calendar" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
                 Calendar
               </Link>
-              <Link href="/account" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
+              <Link href="/account/fan" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
                 Account
               </Link>
               <Link href="/about" className="nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded px-3 py-2">
@@ -104,13 +104,13 @@ const Layout = ({ children }) => {
                 <Link href="/theories" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
                   Theories
                 </Link>
-                <Link href="/discover" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
-                  Discover
+                <Link href="/discovery" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
+                  Discovery
                 </Link>
                 <Link href="/calendar" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
                   Calendar
                 </Link>
-                <Link href="/account" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
+                <Link href="/account/fan" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
                   Account
                 </Link>
                 <Link href="/about" className="block px-3 py-2 nav-item hover:text-accent-pink transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded">
@@ -141,7 +141,7 @@ const Layout = ({ children }) => {
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
                 <li><Link href="/theories" className="text-text-muted hover:text-accent-pink transition-colors">Theories</Link></li>
-                <li><Link href="/discover" className="text-text-muted hover:text-accent-pink transition-colors">Discover</Link></li>
+                <li><Link href="/discovery" className="text-text-muted hover:text-accent-pink transition-colors">Discovery</Link></li>
                 <li><Link href="/calendar" className="text-text-muted hover:text-accent-pink transition-colors">Calendar</Link></li>
               </ul>
             </div>

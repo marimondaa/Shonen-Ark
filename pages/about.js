@@ -205,7 +205,7 @@ export default function AboutPage() {
                 Explore Theories
               </Link>
               <Link
-                href="/discover"
+                href="/discovery"
                 className="border-2 border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-bg-dark font-bold py-3 px-8 rounded-lg transition-all duration-300"
               >
                 Start Creating

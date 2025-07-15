@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import UploadComponent from '../../components/UploadComponent';
+import { getCreatorStats, getCreatorContent } from '../../lib/mockData';
 
 export default function CreatorAccount() {
   const [stats, setStats] = useState({
@@ -18,33 +19,12 @@ export default function CreatorAccount() {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        setStats({
-          subscribers: 156,
-          totalViews: 2847,
-          totalUploads: 12,
-          monthlyRevenue: 48
-        });
-
-        setRecentUploads([
-          {
-            id: 1,
-            title: "One Piece Theory: The True Nature of Devil Fruits",
-            type: "theory",
-            views: 245,
-            likes: 34,
-            uploadDate: "2 days ago",
-            status: "published"
-          },
-          {
-            id: 2,
-            title: "Naruto vs Sasuke Animation Recreation",
-            type: "animation",
-            views: 567,
-            likes: 89,
-            uploadDate: "1 week ago",
-            status: "published"
-          }
-        ]);
+        // Use centralized mock data
+        const creatorStats = getCreatorStats();
+        const creatorUploads = getCreatorContent();
+        
+        setStats(creatorStats);
+        setRecentUploads(creatorUploads);
       } catch (error) {
         console.error('Failed to load creator data:', error);
       } finally {

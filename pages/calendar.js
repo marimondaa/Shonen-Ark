@@ -1,81 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
+import { getCalendarData, filterCalendarByType, sortContent } from '../lib/mockData';
 
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState('anime');
-  const [animeData, setAnimeData] = useState([]);
-  const [mangaData, setMangaData] = useState([]);
+  const [calendarData, setCalendarData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadCalendarData = async () => {
       try {
-        // Simulate API call with fallback data
+        // Simulate API call with centralized mock data
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        setAnimeData([
-          {
-            id: 1,
-            title: "Attack on Titan: Final Season",
-            nextEpisode: "Episode 12",
-            airDate: "2025-07-20",
-            time: "16:00 JST",
-            status: "Currently Airing",
-            score: 9.0,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx139827.jpg"
-          },
-          {
-            id: 2,
-            title: "Demon Slayer: Infinity Castle Arc",
-            nextEpisode: "Episode 8",
-            airDate: "2025-07-22",
-            time: "23:15 JST",
-            status: "Currently Airing",
-            score: 8.8,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101922.jpg"
-          },
-          {
-            id: 3,
-            title: "One Piece",
-            nextEpisode: "Episode 1089",
-            airDate: "2025-07-21",
-            time: "09:30 JST",
-            status: "Currently Airing",
-            score: 9.2,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21.jpg"
-          }
-        ]);
-
-        setMangaData([
-          {
-            id: 1,
-            title: "One Piece",
-            nextChapter: "Chapter 1095",
-            releaseDate: "2025-07-19",
-            status: "Publishing",
-            score: 9.3,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx30013.jpg"
-          },
-          {
-            id: 2,
-            title: "Chainsaw Man",
-            nextChapter: "Chapter 145",
-            releaseDate: "2025-07-23",
-            status: "Publishing",
-            score: 8.9,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx105778.jpg"
-          },
-          {
-            id: 3,
-            title: "Jujutsu Kaisen",
-            nextChapter: "Chapter 238",
-            releaseDate: "2025-07-25",
-            status: "Publishing",
-            score: 8.7,
-            coverImage: "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx101517.jpg"
-          }
-        ]);
+        const data = getCalendarData();
+        setCalendarData(data);
+        
+        // Filter data based on active tab
+        const filtered = filterCalendarByType(data, activeTab);
+        setFilteredData(filtered);
       } catch (error) {
         console.error('Failed to load calendar data:', error);
       } finally {
@@ -84,109 +29,72 @@ const CalendarPage = () => {
     };
 
     loadCalendarData();
-  }, []);
+  }, [activeTab]);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getTimeUntilRelease = (dateString) => {
-    const releaseDate = new Date(dateString);
-    const now = new Date();
-    const timeDiff = releaseDate.getTime() - now.getTime();
-    const daysUntil = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    
-    if (daysUntil < 0) return 'Released';
-    if (daysUntil === 0) return 'Today';
-    if (daysUntil === 1) return 'Tomorrow';
-    return `${daysUntil} days`;
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
+  const tabs = [
+    { id: 'anime', label: 'Anime Episodes', icon: '📺' },
+    { id: 'manga', label: 'Manga Chapters', icon: '📚' }
+  ];
 
   return (
     <>
       <Head>
         <title>Release Calendar - Shonen Ark</title>
-        <meta name="description" content="Stay updated with the latest anime and manga release dates." />
+        <meta name="description" content="Stay updated with the latest anime episodes and manga chapter releases." />
       </Head>
 
-      <div className="min-h-screen bg-black text-white">
-        <motion.header 
-          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+        {/* Hero Section */}
+        <motion.div 
+          className="bg-gradient-to-b from-purple-900 to-black py-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div className="text-6xl mb-4">📅</div>
-                <h1 className="text-4xl font-bold mystical-title mb-4 glow-text">
-                  Release Calendar
-                </h1>
-                <p className="text-xl text-grey brush-font">
-                  Never miss your favorite anime episodes and manga chapters
-                </p>
-              </motion.div>
-            </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              <div className="text-8xl mb-6">📅</div>
+              <h1 className="text-5xl font-bold mystical-title mb-4 glow-text">
+                Release Calendar
+              </h1>
+              <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
+                Never miss a release! Track upcoming anime episodes and manga chapters
+              </p>
+            </motion.div>
           </div>
-        </motion.header>
+        </motion.div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Tab Navigation */}
           <motion.div 
-            className="flex justify-center mb-8"
+            className="flex justify-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ delay: 0.4 }}
           >
-            <div className="bg-dark-purple/30 rounded-lg p-1 border border-purple/20">
-              <button
-                onClick={() => setActiveTab('anime')}
-                className={`px-8 py-3 rounded-md font-medium transition-colors ${
-                  activeTab === 'anime'
-                    ? 'bg-purple text-white'
-                    : 'text-grey hover:text-purple'
-                }`}
-              >
-                📺 Anime
-              </button>
-              <button
-                onClick={() => setActiveTab('manga')}
-                className={`px-8 py-3 rounded-md font-medium transition-colors ${
-                  activeTab === 'manga'
-                    ? 'bg-purple text-white'
-                    : 'text-grey hover:text-purple'
-                }`}
-              >
-                📖 Manga
-              </button>
+            <div className="bg-dark-purple/20 p-1 rounded-lg border border-purple/30">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-8 py-3 rounded-lg transition-all flex items-center space-x-3 ${
+                    activeTab === tab.id
+                      ? 'bg-purple text-white shadow-lg'
+                      : 'text-purple hover:bg-purple/20'
+                  }`}
+                >
+                  <span className="text-xl">{tab.icon}</span>
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              ))}
             </div>
           </motion.div>
 
+          {/* Loading State */}
           {isLoading ? (
             <div className="flex justify-center items-center py-16">
               <motion.div 
@@ -196,75 +104,64 @@ const CalendarPage = () => {
               />
             </div>
           ) : (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
+            <motion.div 
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
             >
-              {(activeTab === 'anime' ? animeData : mangaData).map((item) => (
-                <motion.article
+              {filteredData.map((item, index) => (
+                <motion.div
                   key={item.id}
-                  variants={itemVariants}
-                  className="bg-dark-purple/30 rounded-lg overflow-hidden border border-purple/20 hover:border-purple/50 transition-all shrine-glow"
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  className="bg-dark-purple/20 rounded-xl border border-purple/30 overflow-hidden hover:border-purple/50 transition-all group"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index, duration: 0.6 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
                 >
                   {/* Cover Image */}
-                  <div className="relative h-48 bg-dark-purple/50">
-                    {item.coverImage && (
-                      <img
-                        src={item.coverImage}
+                  <div className="aspect-video bg-gradient-to-br from-purple/20 to-dark-purple/20 flex items-center justify-center">
+                    {item.coverImage ? (
+                      <img 
+                        src={item.coverImage} 
                         alt={item.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
                       />
+                    ) : (
+                      <div className="text-6xl opacity-50">
+                        {activeTab === 'anime' ? '📺' : '📚'}
+                      </div>
                     )}
-                    <div className="absolute top-2 right-2 bg-purple/80 text-white text-sm px-2 py-1 rounded">
-                      ⭐ {item.score}
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-sm px-2 py-1 rounded">
-                      {getTimeUntilRelease(activeTab === 'anime' ? item.airDate : item.releaseDate)}
-                    </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold text-purple mb-2 line-clamp-2">
+                  <div className="p-6">
+                    {/* Title */}
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple transition-colors">
                       {item.title}
                     </h3>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between items-center">
-                        <span className="text-grey">
+
+                    {/* Next Release Info */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-purple text-sm">
                           {activeTab === 'anime' ? 'Next Episode:' : 'Next Chapter:'}
                         </span>
-                        <span className="text-white font-medium">
+                        <span className="text-white text-sm font-medium">
                           {activeTab === 'anime' ? item.nextEpisode : item.nextChapter}
                         </span>
                       </div>
                       
-                      <div className="flex justify-between items-center">
-                        <span className="text-grey">
-                          {activeTab === 'anime' ? 'Air Date:' : 'Release Date:'}
-                        </span>
-                        <span className="text-purple font-medium">
-                          {formatDate(activeTab === 'anime' ? item.airDate : item.releaseDate)}
+                      <div className="flex items-center justify-between">
+                        <span className="text-purple text-sm">Release Date:</span>
+                        <span className="text-green-400 text-sm font-medium">
+                          {new Date(item.releaseDate).toLocaleDateString()}
                         </span>
                       </div>
-                      
-                      {activeTab === 'anime' && item.time && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-grey">Time:</span>
-                          <span className="text-white">{item.time}</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex justify-between items-center">
-                        <span className="text-grey">Status:</span>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-purple text-sm">Status:</span>
                         <span className={`text-sm px-2 py-1 rounded ${
-                          item.status === 'Currently Airing' || item.status === 'Publishing'
+                          item.status === 'Airing' || item.status === 'Publishing' 
                             ? 'bg-green-500/20 text-green-400'
                             : 'bg-grey/20 text-grey'
                         }`}>
@@ -272,24 +169,85 @@ const CalendarPage = () => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Score */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-yellow-400">⭐</span>
+                        <span className="text-white font-medium">{item.score}</span>
+                      </div>
+                      
+                      {/* Days Until Release */}
+                      <div className="text-xs text-purple">
+                        {(() => {
+                          const today = new Date();
+                          const releaseDate = new Date(item.releaseDate);
+                          const diffTime = releaseDate - today;
+                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                          
+                          if (diffDays < 0) return 'Released';
+                          if (diffDays === 0) return 'Today!';
+                          if (diffDays === 1) return 'Tomorrow';
+                          return `${diffDays} days`;
+                        })()}
+                      </div>
+                    </div>
                   </div>
-                </motion.article>
+                </motion.div>
               ))}
             </motion.div>
           )}
 
           {/* Empty State */}
-          {!isLoading && (activeTab === 'anime' ? animeData : mangaData).length === 0 && (
+          {!isLoading && filteredData.length === 0 && (
             <motion.div 
               className="text-center py-16"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="text-6xl mb-4">📅</div>
-              <p className="text-grey text-lg">No {activeTab} releases scheduled at the moment.</p>
+              <div className="text-8xl mb-6 opacity-50">
+                {activeTab === 'anime' ? '📺' : '📚'}
+              </div>
+              <h3 className="text-2xl font-bold text-grey mb-4">No upcoming releases</h3>
+              <p className="text-grey text-lg">
+                Check back later for new {activeTab === 'anime' ? 'episode' : 'chapter'} updates!
+              </p>
             </motion.div>
           )}
+
+          {/* Info Section */}
+          <motion.div 
+            className="bg-gradient-to-r from-purple/20 to-dark-purple/20 p-8 rounded-lg border border-purple/30 mt-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <h3 className="text-2xl font-bold mb-4 text-purple text-center">Stay Updated</h3>
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="text-3xl mb-2">🔔</div>
+                <h4 className="font-bold text-white mb-2">Notifications</h4>
+                <p className="text-grey text-sm">
+                  Get notified when your favorite series release new content
+                </p>
+              </div>
+              <div>
+                <div className="text-3xl mb-2">📱</div>
+                <h4 className="font-bold text-white mb-2">Mobile Friendly</h4>
+                <p className="text-grey text-sm">
+                  Access the calendar anywhere, anytime on any device
+                </p>
+              </div>
+              <div>
+                <div className="text-3xl mb-2">🎯</div>
+                <h4 className="font-bold text-white mb-2">Accurate Data</h4>
+                <p className="text-grey text-sm">
+                  Real-time updates from official sources and databases
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </>
