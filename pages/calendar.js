@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
+import { AniListAPI } from '../lib/anilist';
 import { getCalendarData, filterCalendarByType, sortContent } from '../lib/mockData';
 
 const CalendarPage = () => {
@@ -12,17 +13,50 @@ const CalendarPage = () => {
   useEffect(() => {
     const loadCalendarData = async () => {
       try {
-        // Simulate API call with centralized mock data
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setIsLoading(true);
         
-        const data = getCalendarData();
+        let data = [];
+        
+        // Try to fetch real data from AniList API
+        try {
+          if (activeTab === 'anime') {
+            const animeData = await AniListAPI.getUpcomingReleases('ANIME', 30);
+            if (animeData && animeData.length > 0) {
+              data = animeData.filter(item => item.releaseDate); // Only items with release dates
+            }
+          } else if (activeTab === 'manga') {
+            const mangaData = await AniListAPI.getUpcomingReleases('MANGA', 30);
+            if (mangaData && mangaData.length > 0) {
+              data = mangaData.filter(item => item.releaseDate);
+            }
+          }
+        } catch (apiError) {
+          console.log('AniList API not available, using mock data');
+        }
+        
+        // Fallback to mock data if API fails
+        if (data.length === 0) {
+          const mockData = getCalendarData();
+          data = filterCalendarByType(mockData, activeTab);
+        }
+        
+        // Sort by release date (soonest first)
+        data.sort((a, b) => {
+          const dateA = new Date(a.releaseDate);
+          const dateB = new Date(b.releaseDate);
+          return dateA - dateB;
+        });
+        
         setCalendarData(data);
+        setFilteredData(data);
         
-        // Filter data based on active tab
-        const filtered = filterCalendarByType(data, activeTab);
-        setFilteredData(filtered);
       } catch (error) {
         console.error('Failed to load calendar data:', error);
+        // Ultimate fallback
+        const mockData = getCalendarData();
+        const filtered = filterCalendarByType(mockData, activeTab);
+        setCalendarData(filtered);
+        setFilteredData(filtered);
       } finally {
         setIsLoading(false);
       }

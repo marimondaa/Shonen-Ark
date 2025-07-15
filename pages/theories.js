@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
 import TheoryCard from '../components/TheoryCard';
 import { mockTheories, filterTheoriesByAnime, sortContent } from '../lib/mockData';
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 export default function TheoriesPage() {
   const [theories, setTheories] = useState([]);
@@ -14,15 +21,75 @@ export default function TheoriesPage() {
     const loadTheories = async () => {
       try {
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Use centralized mock data
-        let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
-        let sortedTheories = sortContent(filteredTheories, sortBy);
+        // Try to fetch from Supabase first
+        let theoriesData = [];
         
+        try {
+          let query = supabase
+            .from('theories')
+            .select(`
+              id,
+              title,
+              content,
+              excerpt,
+              anime_series,
+              tags,
+              upvotes,
+              downvotes,
+              view_count,
+              created_at,
+              author:users(username, avatar_url)
+            `)
+            .eq('moderation_status', 'approved')
+            .order('created_at', { ascending: false });
+
+          // Apply anime filter
+          if (filter !== 'all') {
+            query = query.eq('anime_series', filter);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+
+          if (data && data.length > 0) {
+            // Transform Supabase data to match expected format
+            theoriesData = data.map(theory => ({
+              id: theory.id,
+              title: theory.title,
+              excerpt: theory.excerpt || theory.content?.substring(0, 200) + '...',
+              author: theory.author?.username || 'Anonymous',
+              likes: theory.upvotes || 0,
+              comments: 0, // Would need a separate query for comment count
+              category: theory.anime_series,
+              tags: theory.tags || [],
+              date: new Date(theory.created_at).toLocaleDateString()
+            }));
+          }
+        } catch (supabaseError) {
+          console.log('Supabase not available, using mock data');
+        }
+
+        // Fallback to mock data if Supabase fails or returns no data
+        if (theoriesData.length === 0) {
+          let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
+          theoriesData = filteredTheories;
+        }
+
+        // Apply sorting
+        let sortedTheories = sortContent(theoriesData, sortBy);
         setTheories(sortedTheories);
+        
       } catch (error) {
         console.error('Failed to load theories:', error);
+        // Ultimate fallback to mock data
+        let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
+        let sortedTheories = sortContent(filteredTheories, sortBy);
+        setTheories(sortedTheories);
       } finally {
         setIsLoading(false);
       }
@@ -67,36 +134,38 @@ export default function TheoriesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters */}
         <motion.div 
-          className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6"
+          className="flex flex-col gap-6 mb-8 p-4 bg-dark-purple/30 rounded-lg border border-purple/20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           {/* Anime Filter */}
-          <div className="flex flex-wrap gap-3">
-            <span className="text-purple font-medium">Filter by anime:</span>
-            {animeOptions.map((anime) => (
-              <button
-                key={anime}
-                onClick={() => setFilter(anime)}
-                className={`px-4 py-2 rounded-lg border transition-all ${
-                  filter === anime
-                    ? 'bg-purple text-white border-purple'
-                    : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
-                }`}
-              >
-                {anime}
-              </button>
-            ))}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <span className="text-purple font-medium whitespace-nowrap">Filter by anime:</span>
+            <div className="flex flex-wrap gap-2">
+              {animeOptions.map((anime) => (
+                <button
+                  key={anime}
+                  onClick={() => setFilter(anime)}
+                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-medium ${
+                    filter === anime
+                      ? 'bg-purple text-white border-purple'
+                      : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
+                  }`}
+                >
+                  {anime}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Sort Options */}
-          <div className="flex items-center space-x-4">
-            <span className="text-purple font-medium">Sort by:</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <span className="text-purple font-medium whitespace-nowrap">Sort by:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-dark-purple/50 border border-purple/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-purple"
+              className="bg-dark-purple/50 border border-purple/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-purple w-full sm:w-auto"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -120,7 +189,7 @@ export default function TheoriesPage() {
           <>
             {/* Theories Grid */}
             <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}

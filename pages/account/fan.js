@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../lib/mockData';
 
 const FanDashboard = () => {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
   const [subscriptions, setSubscriptions] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [activity, setActivity] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const [billingLoading, setBillingLoading] = useState(false);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -31,6 +35,53 @@ const FanDashboard = () => {
 
     loadDashboardData();
   }, []);
+
+  const handleUpgrade = async (priceId) => {
+    setUpgradeLoading(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          priceId,
+          successUrl: `${window.location.origin}/account/fan?success=true`,
+          cancelUrl: `${window.location.origin}/account/fan?canceled=true`
+        }),
+      });
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+    } finally {
+      setUpgradeLoading(false);
+    }
+  };
+
+  const handleBillingPortal = async () => {
+    setBillingLoading(true);
+    try {
+      const response = await fetch('/api/stripe/billing-portal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Failed to open billing portal:', error);
+    } finally {
+      setBillingLoading(false);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -212,40 +263,94 @@ const FanDashboard = () => {
 
               {/* Subscriptions Tab */}
               {activeTab === 'subscriptions' && (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {subscriptions.map((sub) => (
-                    <motion.div
-                      key={sub.id}
-                      variants={itemVariants}
-                      className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
-                    >
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="w-12 h-12 bg-purple/20 rounded-full flex items-center justify-center">
-                          👤
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-white">{sub.creator}</h3>
-                          <p className="text-sm text-grey">{sub.subscribers.toLocaleString()} subscribers</p>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          sub.tier === 'premium' 
-                            ? 'bg-purple/20 text-purple' 
-                            : 'bg-grey/20 text-grey'
-                        }`}>
-                          {sub.tier}
-                        </span>
-                      </div>
+                <div className="space-y-8">
+                  {/* Current Subscription Status */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-purple">Current Plan</h3>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-grey/20 text-grey">
+                        Free Tier
+                      </span>
+                    </div>
+                    <p className="text-grey mb-6">
+                      Upgrade to unlock premium features and support your favorite creators!
+                    </p>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <motion.button
+                        onClick={() => handleUpgrade(process.env.NEXT_PUBLIC_STRIPE_PRICE_CREATOR)}
+                        disabled={upgradeLoading}
+                        className="bg-purple hover:bg-dark-purple disabled:bg-grey text-white py-3 px-6 rounded-lg transition-colors font-medium"
+                        whileHover={!upgradeLoading ? { scale: 1.02 } : {}}
+                        whileTap={!upgradeLoading ? { scale: 0.98 } : {}}
+                      >
+                        {upgradeLoading ? 'Processing...' : 'Upgrade to Creator ($9.99/mo)'}
+                      </motion.button>
                       
-                      <p className="text-sm text-grey mb-4">Latest: {sub.latestContent}</p>
-                      
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-grey">Next payment: {sub.nextPayment}</span>
-                        <button className="text-purple hover:text-white transition-colors">
-                          Manage
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+                      <motion.button
+                        onClick={() => handleUpgrade(process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM)}
+                        disabled={upgradeLoading}
+                        className="bg-gradient-to-r from-purple to-pink-500 hover:from-dark-purple hover:to-pink-600 disabled:bg-grey text-white py-3 px-6 rounded-lg transition-colors font-medium"
+                        whileHover={!upgradeLoading ? { scale: 1.02 } : {}}
+                        whileTap={!upgradeLoading ? { scale: 0.98 } : {}}
+                      >
+                        {upgradeLoading ? 'Processing...' : 'Upgrade to Premium ($19.99/mo)'}
+                      </motion.button>
+                    </div>
+                    
+                    <div className="mt-4 text-center">
+                      <button
+                        onClick={handleBillingPortal}
+                        disabled={billingLoading}
+                        className="text-purple hover:text-white transition-colors text-sm underline"
+                      >
+                        {billingLoading ? 'Loading...' : 'Manage Billing'}
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  {/* Creator Subscriptions */}
+                  <div>
+                    <h3 className="text-xl font-bold text-purple mb-6">Creator Subscriptions</h3>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {subscriptions.map((sub) => (
+                        <motion.div
+                          key={sub.id}
+                          variants={itemVariants}
+                          className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
+                        >
+                          <div className="flex items-center space-x-4 mb-4">
+                            <div className="w-12 h-12 bg-purple/20 rounded-full flex items-center justify-center">
+                              👤
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-bold text-white">{sub.creator}</h3>
+                              <p className="text-sm text-grey">{sub.subscribers.toLocaleString()} subscribers</p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              sub.tier === 'premium' 
+                                ? 'bg-purple/20 text-purple' 
+                                : 'bg-grey/20 text-grey'
+                            }`}>
+                              {sub.tier}
+                            </span>
+                          </div>
+                          
+                          <p className="text-sm text-grey mb-4">Latest: {sub.latestContent}</p>
+                          
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-grey">Next payment: {sub.nextPayment}</span>
+                            <button className="text-purple hover:text-white transition-colors">
+                              Manage
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 

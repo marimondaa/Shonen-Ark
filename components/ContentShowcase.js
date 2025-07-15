@@ -125,26 +125,26 @@ const ContentShowcase = () => {
   };
 
   return (
-    <section className="relative py-20 bg-gradient-to-br from-ink-black via-sumi-gray/50 to-ink-black ukiyo-overlay">
+    <section className="relative py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-ink-black via-sumi-gray/50 to-ink-black ukiyo-overlay">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-forest-accent/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-glow/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-32 sm:w-48 lg:w-64 h-32 sm:h-48 lg:h-64 bg-forest-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-40 sm:w-60 lg:w-80 h-40 sm:h-60 lg:h-80 bg-violet-glow/10 rounded-full blur-3xl" />
       </div>
 
       <motion.div
-        className="relative z-10 max-w-6xl mx-auto px-6"
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
       >
         {/* Section Header */}
-        <motion.div variants={itemVariants} className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-mystical text-parchment mb-6 ink-brush-edge">
+        <motion.div variants={itemVariants} className="text-center mb-8 sm:mb-12">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-mystical text-parchment mb-4 sm:mb-6 ink-brush-edge px-4">
             Discover <span className="text-violet-glow">Mystical</span> Content
           </h2>
-          <p className="text-stone-wash font-mono text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-stone-wash font-mono text-base sm:text-lg max-w-2xl mx-auto leading-relaxed px-4">
             Explore fan theories, animation breakdowns, and creator spotlights that dive deep into the shonen universe
           </p>
         </motion.div>
@@ -152,16 +152,16 @@ const ContentShowcase = () => {
         {/* Tab Navigation */}
         <motion.div
           variants={itemVariants}
-          className="flex justify-center mb-12"
+          className="flex justify-center mb-8 sm:mb-12 px-4"
         >
-          <div className="bg-sumi-gray/80 rounded-2xl p-2 border border-line-highlight/30">
-            <div className="flex space-x-2">
+          <div className="bg-sumi-gray/80 rounded-2xl p-1 sm:p-2 border border-line-highlight/30 w-full sm:w-auto">
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
               {tabs.map((tab) => (
                 <motion.button
                   key={tab.id}
                   variants={tabVariants}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-6 py-3 rounded-xl font-mono text-sm transition-all duration-300 ${
+                  className={`relative px-3 sm:px-6 py-2 sm:py-3 rounded-xl font-mono text-xs sm:text-sm transition-all duration-300 flex-1 sm:flex-none min-w-0 ${
                     activeTab === tab.id
                       ? 'bg-forest-accent text-parchment shadow-lg'
                       : 'text-stone-wash hover:text-violet-glow hover:bg-sumi-gray/50'
@@ -169,8 +169,8 @@ const ContentShowcase = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
+                  <span className="mr-1 sm:mr-2">{tab.icon}</span>
+                  <span className="truncate">{tab.label}</span>
                   {activeTab === tab.id && (
                     <motion.div
                       className="absolute inset-0 bg-forest-accent rounded-xl shrine-glow"
@@ -194,7 +194,7 @@ const ContentShowcase = () => {
           variants={itemVariants}
           initial="hidden"
           animate="visible"
-          className="grid md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 px-4"
         >
           {tabs.find(tab => tab.id === activeTab)?.items.map((item, index) => (
             <motion.div
@@ -206,10 +206,10 @@ const ContentShowcase = () => {
             >
               <div className="bg-sumi-gray/80 rounded-2xl overflow-hidden border border-line-highlight/20 group-hover:border-violet-glow/50 transition-all duration-300">
                 {/* Image Placeholder */}
-                <div className="relative h-48 bg-gradient-to-br from-forest-accent/20 to-violet-glow/20 overflow-hidden">
+                <div className="relative h-40 sm:h-48 bg-gradient-to-br from-forest-accent/20 to-violet-glow/20 overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-forest-accent/30 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">
+                    <div className="w-12 sm:w-16 h-12 sm:h-16 bg-forest-accent/30 rounded-full flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl">
                         {activeTab === 'theories' ? '🔮' : activeTab === 'animations' ? '🎬' : '👥'}
                       </span>
                     </div>
@@ -228,26 +228,31 @@ const ContentShowcase = () => {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-parchment font-mystical text-lg mb-2 line-clamp-2 group-hover:text-violet-glow transition-colors">
+                <div className="p-4 sm:p-6">
+                  <h3 className="text-parchment font-mystical text-base sm:text-lg mb-2 line-clamp-2 group-hover:text-violet-glow transition-colors">
                     {item.title}
                   </h3>
                   
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-stone-wash font-mono text-sm">by {item.author}</span>
-                    <span className="text-violet-glow font-mono text-sm">{item.views} views</span>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="text-stone-wash font-mono text-xs sm:text-sm truncate">by {item.author}</span>
+                    <span className="text-violet-glow font-mono text-xs sm:text-sm whitespace-nowrap">{item.views} views</span>
                   </div>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {item.tags.map((tag, tagIndex) => (
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                    {item.tags.slice(0, 2).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className="bg-forest-accent/20 text-forest-accent px-2 py-1 rounded-md font-mono text-xs border border-forest-accent/30"
+                        className="bg-forest-accent/20 text-forest-accent px-2 py-1 rounded-md font-mono text-xs border border-forest-accent/30 truncate"
                       >
                         {tag}
                       </span>
                     ))}
+                    {item.tags.length > 2 && (
+                      <span className="bg-sumi-gray/50 text-stone-wash px-2 py-1 rounded-md font-mono text-xs">
+                        +{item.tags.length - 2}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -258,11 +263,11 @@ const ContentShowcase = () => {
         {/* View All Link */}
         <motion.div
           variants={itemVariants}
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12 px-4"
         >
           <Link href={`/${activeTab}`}>
             <motion.button
-              className="bg-gradient-to-r from-forest-accent to-violet-glow text-ink-black px-8 py-4 rounded-xl font-mono font-bold text-lg cinematic-reveal shrine-glow"
+              className="bg-gradient-to-r from-forest-accent to-violet-glow text-ink-black px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-mono font-bold text-base sm:text-lg cinematic-reveal shrine-glow w-full sm:w-auto"
               whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(108, 92, 231, 0.3)" }}
               whileTap={{ scale: 0.95 }}
             >

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { uploadToCloudinary, validateFile } from '../lib/cloudinary';
 
 const UploadComponent = ({ 
   onUpload, 
@@ -34,38 +35,59 @@ const UploadComponent = ({
     handleFiles(files);
   };
 
-  const handleFiles = (files) => {
+  const handleFiles = async (files) => {
     if (files.length === 0) return;
 
     const file = files[0];
     setFileName(file.name);
-    
-    // Check file size (in MB)
-    if (file.size > maxSize * 1024 * 1024) {
-      setUploadStatus('error');
-      return;
-    }
-
     setUploadStatus('uploading');
     
-    // Create preview for images
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setPreview(e.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // Simulate upload (replace with actual upload logic)
-    setTimeout(() => {
-      setUploadStatus('success');
-      if (onUpload) {
-        onUpload(file);
+    try {
+      // Validate file
+      const validation = validateFile(file, ['image', 'audio', 'video']);
+      if (!validation.isValid) {
+        throw new Error(validation.errors.join(', '));
       }
-    }, 2000);
+
+      // Create preview for images
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setPreview(e.target.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Upload to Cloudinary
+      const uploadResult = await uploadToCloudinary(file, {
+        folder: 'shonen-ark/uploads'
+      });
+
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+
+      setUploadStatus('success');
+      
+      // Call parent callback with upload result
+      if (onUpload) {
+        onUpload({
+          file,
+          url: uploadResult.url,
+          publicId: uploadResult.publicId,
+          format: uploadResult.format,
+          resourceType: uploadResult.resourceType,
+          bytes: uploadResult.bytes
+        });
+      }
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadStatus('error');
+      setPreview(null);
+    }
   };
 
   const resetUpload = () => {

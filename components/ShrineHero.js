@@ -57,10 +57,10 @@ const ShrineHero = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Brush-styled Title */}
         <motion.h1
-          className="text-6xl md:text-8xl lg:text-9xl font-mystical text-parchment mb-8 tracking-wide ink-brush-edge"
+          className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-mystical text-parchment mb-6 sm:mb-8 tracking-wide ink-brush-edge leading-tight"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
@@ -70,7 +70,7 @@ const ShrineHero = () => {
 
         {/* Subtitle with ink texture */}
         <motion.p
-          className="text-xl md:text-2xl text-stone-wash mb-12 font-brush leading-relaxed"
+          className="text-lg sm:text-xl md:text-2xl text-stone-wash mb-8 sm:mb-12 font-brush leading-relaxed px-2 sm:px-0"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
@@ -80,13 +80,14 @@ const ShrineHero = () => {
 
         {/* CTA Button with Cinematic Glow */}
         <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
         >
           <Link href="/register">
             <motion.button
-              className="relative bg-forest-accent hover:bg-violet-glow text-parchment px-12 py-4 rounded-lg font-mystical text-lg tracking-wide border-2 border-line-highlight shrine-glow transition-all duration-300"
+              className="relative bg-forest-accent hover:bg-violet-glow text-parchment px-8 sm:px-12 py-3 sm:py-4 rounded-lg font-mystical text-base sm:text-lg tracking-wide border-2 border-line-highlight shrine-glow transition-all duration-300 w-full sm:w-auto"
               whileHover={{ 
                 scale: 1.05,
                 boxShadow: "0 0 30px rgba(108, 92, 231, 0.5)"

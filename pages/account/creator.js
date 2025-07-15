@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
+import { useSession } from 'next-auth/react';
 import UploadComponent from '../../components/UploadComponent';
 import { getCreatorStats, getCreatorContent } from '../../lib/mockData';
+import { withSubscription } from '../../lib/middleware/withSubscription';
 
-export default function CreatorAccount() {
+function CreatorAccount() {
+  const { data: session } = useSession();
   const [stats, setStats] = useState({
     subscribers: 0,
     totalViews: 0,
@@ -13,6 +16,7 @@ export default function CreatorAccount() {
   });
   const [recentUploads, setRecentUploads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [billingLoading, setBillingLoading] = useState(false);
 
   useEffect(() => {
     const loadCreatorData = async () => {
@@ -38,6 +42,27 @@ export default function CreatorAccount() {
   const handleUpload = (files) => {
     console.log('Uploading files:', files);
     // Handle file upload logic here
+  };
+
+  const handleBillingPortal = async () => {
+    setBillingLoading(true);
+    try {
+      const response = await fetch('/api/stripe/billing-portal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Failed to open billing portal:', error);
+    } finally {
+      setBillingLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -171,6 +196,42 @@ export default function CreatorAccount() {
                   </div>
                 </motion.section>
               </div>
+
+              {/* Billing Section */}
+              <motion.section 
+                variants={itemVariants}
+                className="mt-12"
+              >
+                <h2 className="text-2xl font-bold mystical-title mb-6 text-purple">Subscription & Billing</h2>
+                <div className="bg-dark-purple/30 rounded-lg p-6 border border-purple/20">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">Creator Subscription</h3>
+                      <p className="text-grey">Manage your subscription, payment methods, and billing history</p>
+                    </div>
+                    <motion.button
+                      onClick={handleBillingPortal}
+                      disabled={billingLoading}
+                      className="bg-purple hover:bg-dark-purple disabled:bg-grey text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                      whileHover={!billingLoading ? { scale: 1.05 } : {}}
+                      whileTap={!billingLoading ? { scale: 0.95 } : {}}
+                    >
+                      {billingLoading ? (
+                        <div className="flex items-center">
+                          <motion.div 
+                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          Loading...
+                        </div>
+                      ) : (
+                        'Manage Billing'
+                      )}
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.section>
             </motion.div>
           )}
         </div>
@@ -178,3 +239,5 @@ export default function CreatorAccount() {
     </>
   );
 }
+
+export default withSubscription(CreatorAccount, 'creator');

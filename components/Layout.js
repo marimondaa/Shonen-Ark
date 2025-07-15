@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children }) => {
@@ -35,10 +36,19 @@ const Layout = ({ children }) => {
             <div className="flex items-center">
               <Link 
                 href="/" 
-                className="text-2xl font-bold mystical-title text-accent-pink hover:text-accent-rose transition-colors shrine-glow"
+                className="flex items-center hover:opacity-80 transition-opacity"
                 aria-label="Shonen Ark Home"
               >
-                Shonen Ark
+                <Image 
+                  src="/images/logo/shonen-ark/symbol-192x192.png" 
+                  alt="Shonen Ark Logo" 
+                  width={40} 
+                  height={40}
+                  className="shrine-glow"
+                />
+                <span className="ml-3 text-xl font-bold mystical-title text-accent-pink hidden sm:block">
+                  Shonen Ark
+                </span>
               </Link>
             </div>
             
