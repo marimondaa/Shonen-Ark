@@ -54,19 +54,145 @@ const ShrineHero = () => {
             }}
           />
         ))}
+
+        {/* Qi Energy Particles flowing to logo */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const startX = Math.random() * 100;
+          const startY = Math.random() * 100;
+          const angle = Math.atan2(50 - startY, 50 - startX); // Calculate angle to center
+          
+          return (
+            <motion.div
+              key={`qi-${i}`}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                left: `${startX}%`,
+                top: `${startY}%`,
+                background: `radial-gradient(circle, rgba(147, 51, 234, 0.8) 0%, rgba(147, 51, 234, 0.4) 50%, transparent 100%)`,
+                boxShadow: `0 0 10px rgba(147, 51, 234, 0.6)`,
+              }}
+              animate={{
+                x: `${(50 - startX) * 1.2}vw`,
+                y: `${(50 - startY) * 1.2}vh`,
+                scale: [1, 1.5, 0],
+                opacity: [0, 0.8, 1, 0],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: Math.random() * 4,
+              }}
+            />
+          );
+        })}
+
+        {/* Additional smaller qi particles for enhanced effect */}
+        {Array.from({ length: 15 }).map((_, i) => {
+          const startX = Math.random() * 100;
+          const startY = Math.random() * 100;
+          
+          return (
+            <motion.div
+              key={`qi-small-${i}`}
+              className="absolute w-1 h-1 rounded-full bg-purple/60"
+              style={{
+                left: `${startX}%`,
+                top: `${startY}%`,
+                filter: `blur(0.5px)`,
+                boxShadow: `0 0 6px rgba(147, 51, 234, 0.5)`,
+              }}
+              animate={{
+                x: `${(50 - startX) * 0.8}vw`,
+                y: `${(50 - startY) * 0.8}vh`,
+                scale: [0.5, 1, 0],
+                opacity: [0, 0.6, 0],
+              }}
+              transition={{
+                duration: 2.5 + Math.random() * 1.5,
+                repeat: Infinity,
+                ease: "easeOut",
+                delay: Math.random() * 3,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl">
-        {/* Brush-styled Title */}
-        <motion.h1
-          className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-mystical text-parchment mb-6 sm:mb-8 tracking-wide ink-brush-edge leading-tight"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
+        {/* Animated Brand Logo with Qi Energy Effect */}
+        <motion.div
+          className="mb-6 sm:mb-8 flex justify-center relative"
+          initial={{ opacity: 0, y: -50, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
-          Shonen Ark
-        </motion.h1>
+          {/* Energy Aura around logo */}
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            animate={{
+              boxShadow: [
+                "0 0 20px rgba(147, 51, 234, 0.3)",
+                "0 0 40px rgba(147, 51, 234, 0.6)",
+                "0 0 60px rgba(147, 51, 234, 0.4)",
+                "0 0 20px rgba(147, 51, 234, 0.3)"
+              ],
+              scale: [1, 1.1, 1.05, 1]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          <motion.img
+            src="/brand-logo.png"
+            alt="Shonen Ark"
+            className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain relative z-10"
+            whileHover={{ 
+              scale: 1.05,
+              filter: "drop-shadow(0 0 25px rgba(147, 51, 234, 0.8))"
+            }}
+            animate={{
+              filter: [
+                "drop-shadow(0 0 15px rgba(147, 51, 234, 0.4)) brightness(1)",
+                "drop-shadow(0 0 25px rgba(147, 51, 234, 0.7)) brightness(1.1)",
+                "drop-shadow(0 0 20px rgba(147, 51, 234, 0.5)) brightness(1.05)",
+                "drop-shadow(0 0 15px rgba(147, 51, 234, 0.4)) brightness(1)"
+              ]
+            }}
+            transition={{
+              filter: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+              hover: { duration: 0.3 }
+            }}
+          />
+          
+          {/* Circular energy rings that expand from logo */}
+          {Array.from({ length: 3 }).map((_, i) => (
+            <motion.div
+              key={`ring-${i}`}
+              className="absolute top-1/2 left-1/2 border border-purple/30 rounded-full pointer-events-none"
+              style={{
+                width: '100%',
+                height: '100%',
+                transform: 'translate(-50%, -50%)'
+              }}
+              animate={{
+                scale: [1, 2.5, 3],
+                opacity: [0.6, 0.2, 0],
+                borderWidth: ["2px", "1px", "0px"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeOut",
+                delay: i * 1
+              }}
+            />
+          ))}
+        </motion.div>
 
         {/* Mystical tagline with enhanced styling */}
         <motion.div
@@ -83,18 +209,13 @@ const ShrineHero = () => {
             style={{ backgroundSize: "200% 200%" }}
           >
             <span className="relative inline-block">
-              Where ink meets legend
+              only time will tell
               <motion.span 
                 className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple to-transparent"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1.2, delay: 1.8 }}
               />
-            </span>
-            <br className="hidden sm:inline" />
-            <span className="sm:hidden"> </span>
-            <span className="relative inline-block text-grey glow-text">
-              and theories become truth
             </span>
           </motion.p>
           
