@@ -10,72 +10,99 @@ export default function GigsPage() {
   const [activeTab, setActiveTab] = useState('jobs');
   const [featuredJobs, setFeaturedJobs] = useState([]);
   const [communityProjects, setCommunityProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load featured gigs data
+    // Load featured gigs data from API
     const loadGigsData = async () => {
       try {
-        // Mock data for featured jobs
-        setFeaturedJobs([
-          {
-            id: 1,
-            title: "Voice Actor Needed for Fan Dub",
-            type: "voice-acting",
-            budget: "$50-100",
-            deadline: "2025-02-15",
-            poster: "AnimeDubber99",
-            description: "Looking for English voice actor for main character in One Piece fan dub project.",
-            tags: ["voice-acting", "one-piece", "fan-dub"],
-            applications: 12
-          },
-          {
-            id: 2,
-            title: "Background Music for AMV",
-            type: "music",
-            budget: "$25-50",
-            deadline: "2025-02-01",
-            poster: "AMVCreator",
-            description: "Need original background track for Demon Slayer AMV. Epic/orchestral style preferred.",
-            tags: ["music", "amv", "demon-slayer"],
-            applications: 8
-          },
-          {
-            id: 3,
-            title: "Character Design for Original Manga",
-            type: "design",
-            budget: "$100-200",
-            deadline: "2025-02-20",
-            poster: "MangaCreator23",
-            description: "Need character designer for new shonen manga project. Must understand anime art style.",
-            tags: ["character-design", "manga", "original"],
-            applications: 25
+        setIsLoading(true);
+        
+        if (activeTab === 'jobs') {
+          const response = await fetch('/api/gigs?limit=10');
+          const data = await response.json();
+          
+          if (response.ok) {
+            setFeaturedJobs(data.gigs || []);
+          } else {
+            // Fallback to mock data if API fails
+            setFeaturedJobs([
+              {
+                id: 1,
+                title: "Voice Actor Needed for Fan Dub",
+                type: "voice-acting",
+                budget: "$50-100",
+                deadline: "2025-02-15",
+                poster: { username: "AnimeDubber99" },
+                description: "Looking for English voice actor for main character in One Piece fan dub project.",
+                tags: ["voice-acting", "one-piece", "fan-dub"],
+                applications_count: 12
+              },
+              {
+                id: 2,
+                title: "Background Music for AMV",
+                type: "music",
+                budget: "$25-50",
+                deadline: "2025-02-01",
+                poster: { username: "AMVCreator" },
+                description: "Need original background track for Demon Slayer AMV. Epic/orchestral style preferred.",
+                tags: ["music", "amv", "demon-slayer"],
+                applications_count: 8
+              },
+              {
+                id: 3,
+                title: "Character Design for Original Manga",
+                type: "design",
+                budget: "$100-200",
+                deadline: "2025-02-20",
+                poster: { username: "MangaCreator23" },
+                description: "Need character designer for new shonen manga project. Must understand anime art style.",
+                tags: ["character-design", "manga", "original"],
+                applications_count: 25
+              }
+            ]);
           }
-        ]);
-
-        setCommunityProjects([
-          {
-            id: 1,
-            title: "Attack on Titan Final Season Fan Animation",
-            type: "collaboration",
-            participants: 15,
-            organizer: "TitanAnimator",
-            description: "Community project recreating key scenes from the manga. All skill levels welcome!",
-            tags: ["animation", "attack-on-titan", "community"],
-            status: "open"
-          },
-          {
-            id: 2,
-            title: "One Piece AMV Collaboration",
-            type: "collaboration",
-            participants: 8,
-            organizer: "StrawHatEditor",
-            description: "Group AMV project celebrating 25 years of One Piece. Looking for editors and motion designers.",
-            tags: ["amv", "one-piece", "editing"],
-            status: "recruiting"
+        }
+        
+        if (activeTab === 'community') {
+          const response = await fetch('/api/community-projects?limit=10');
+          const data = await response.json();
+          
+          if (response.ok) {
+            setCommunityProjects(data.projects || []);
+          } else {
+            // Fallback to mock data if API fails
+            setCommunityProjects([
+              {
+                id: 1,
+                title: "Attack on Titan Final Season Fan Animation",
+                project_type: "animation",
+                current_participants: 15,
+                organizer: { username: "TitanAnimator" },
+                description: "Community project recreating key scenes from the manga. All skill levels welcome!",
+                tags: ["animation", "attack-on-titan", "community"],
+                status: "recruiting"
+              },
+              {
+                id: 2,
+                title: "One Piece AMV Collaboration",
+                project_type: "amv",
+                current_participants: 8,
+                organizer: { username: "StrawHatEditor" },
+                description: "Group AMV project celebrating 25 years of One Piece. Looking for editors and motion designers.",
+                tags: ["amv", "one-piece", "editing"],
+                status: "recruiting"
+              }
+            ]);
           }
-        ]);
+        }
       } catch (error) {
         console.error('Failed to load gigs data:', error);
+        // Set mock data as fallback
+        setFeaturedJobs([]);
+        setCommunityProjects([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -165,7 +192,16 @@ export default function GigsPage() {
               </div>
 
               <div className="grid gap-6 mb-8">
-                {featuredJobs.map((job) => (
+                {isLoading ? (
+                  <div className="flex justify-center items-center py-16">
+                    <motion.div 
+                      className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    />
+                  </div>
+                ) : featuredJobs.length > 0 ? (
+                  featuredJobs.map((job) => (
                   <motion.div
                     key={job.id}
                     className="bg-gradient-to-br from-purple-900/30 to-black/50 p-6 rounded-lg border border-purple/20"
@@ -190,11 +226,18 @@ export default function GigsPage() {
                       ))}
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-grey">By {job.poster}</span>
-                      <span className="text-purple">{job.applications} applications</span>
+                      <span className="text-grey">By {job.poster?.username || job.poster}</span>
+                      <span className="text-purple">{job.applications_count || job.applications} applications</span>
                     </div>
                   </motion.div>
-                ))}
+                ))
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="text-6xl mb-4 opacity-50">💼</div>
+                    <h3 className="text-xl font-bold text-grey mb-2">No jobs available</h3>
+                    <p className="text-grey">Check back later for new opportunities!</p>
+                  </div>
+                )}
               </div>
 
               {session?.user ? (
@@ -257,8 +300,8 @@ export default function GigsPage() {
                       ))}
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-grey">Led by {project.organizer}</span>
-                      <span className="text-purple">{project.participants} participants</span>
+                      <span className="text-grey">Led by {project.organizer?.username || project.organizer}</span>
+                      <span className="text-purple">{project.current_participants || project.participants} participants</span>
                     </div>
                   </motion.div>
                 ))}
