@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../lib/mockData';
 
 const FanDashboard = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession() || {};
   const [activeTab, setActiveTab] = useState('overview');
   const [subscriptions, setSubscriptions] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
@@ -421,3 +421,10 @@ const FanDashboard = () => {
 };
 
 export default FanDashboard;
+
+// Disable static generation for this page since it requires authentication
+export async function getServerSideProps() {
+  return {
+    props: {}
+  };
+}

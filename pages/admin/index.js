@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Head from 'next/head';
 
 const AdminDashboard = () => {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession() || {};
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('moderation');
   const [stats, setStats] = useState({});
@@ -226,3 +226,10 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+// Disable static generation for this page since it requires authentication
+export async function getServerSideProps() {
+  return {
+    props: {}
+  };
+}

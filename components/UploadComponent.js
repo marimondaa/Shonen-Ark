@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { uploadToCloudinary, validateFile } from '../lib/cloudinary';
 
 const UploadComponent = ({ 
   onUpload, 
@@ -43,10 +42,10 @@ const UploadComponent = ({
     setUploadStatus('uploading');
     
     try {
-      // Validate file
-      const validation = validateFile(file, ['image', 'audio', 'video']);
-      if (!validation.isValid) {
-        throw new Error(validation.errors.join(', '));
+      // Basic file validation
+      const maxSizeBytes = maxSize * 1024 * 1024; // Convert MB to bytes
+      if (file.size > maxSizeBytes) {
+        throw new Error(`File size must be less than ${maxSize}MB`);
       }
 
       // Create preview for images
@@ -60,12 +59,18 @@ const UploadComponent = ({
         reader.readAsDataURL(file);
       }
 
-      // Upload to Cloudinary
-      const uploadResult = await uploadToCloudinary(file, {
-        folder: 'shonen-ark/uploads'
+      // Upload via API
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload/upload-file', {
+        method: 'POST',
+        body: formData,
       });
 
-      if (!uploadResult.success) {
+      const uploadResult = await response.json();
+
+      if (!response.ok) {
         throw new Error(uploadResult.error || 'Upload failed');
       }
 
@@ -76,9 +81,8 @@ const UploadComponent = ({
         onUpload({
           file,
           url: uploadResult.url,
-          publicId: uploadResult.publicId,
+          publicId: uploadResult.public_id,
           format: uploadResult.format,
-          resourceType: uploadResult.resourceType,
           bytes: uploadResult.bytes
         });
       }

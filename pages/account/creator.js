@@ -7,7 +7,7 @@ import { getCreatorStats, getCreatorContent } from '../../lib/mockData';
 import { withSubscription } from '../../lib/middleware/withSubscription';
 
 function CreatorAccount() {
-  const { data: session } = useSession();
+  const { data: session } = useSession() || {};
   const [stats, setStats] = useState({
     subscribers: 0,
     totalViews: 0,
@@ -241,3 +241,10 @@ function CreatorAccount() {
 }
 
 export default withSubscription(CreatorAccount, 'creator');
+
+// Disable static generation for this page since it requires authentication
+export async function getServerSideProps() {
+  return {
+    props: {}
+  };
+}

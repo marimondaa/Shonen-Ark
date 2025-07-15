@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
 import TheoryCard from '../components/TheoryCard';
 import { mockTheories, filterTheoriesByAnime, sortContent } from '../lib/mockData';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 export default function TheoriesPage() {
   const [theories, setTheories] = useState([]);
@@ -22,71 +15,14 @@ export default function TheoriesPage() {
       try {
         setIsLoading(true);
         
-        // Try to fetch from Supabase first
-        let theoriesData = [];
-        
-        try {
-          let query = supabase
-            .from('theories')
-            .select(`
-              id,
-              title,
-              content,
-              excerpt,
-              anime_series,
-              tags,
-              upvotes,
-              downvotes,
-              view_count,
-              created_at,
-              author:users(username, avatar_url)
-            `)
-            .eq('moderation_status', 'approved')
-            .order('created_at', { ascending: false });
-
-          // Apply anime filter
-          if (filter !== 'all') {
-            query = query.eq('anime_series', filter);
-          }
-
-          const { data, error } = await query;
-
-          if (error) {
-            console.error('Supabase error:', error);
-            throw error;
-          }
-
-          if (data && data.length > 0) {
-            // Transform Supabase data to match expected format
-            theoriesData = data.map(theory => ({
-              id: theory.id,
-              title: theory.title,
-              excerpt: theory.excerpt || theory.content?.substring(0, 200) + '...',
-              author: theory.author?.username || 'Anonymous',
-              likes: theory.upvotes || 0,
-              comments: 0, // Would need a separate query for comment count
-              category: theory.anime_series,
-              tags: theory.tags || [],
-              date: new Date(theory.created_at).toLocaleDateString()
-            }));
-          }
-        } catch (supabaseError) {
-          console.log('Supabase not available, using mock data');
-        }
-
-        // Fallback to mock data if Supabase fails or returns no data
-        if (theoriesData.length === 0) {
-          let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
-          theoriesData = filteredTheories;
-        }
-
-        // Apply sorting
-        let sortedTheories = sortContent(theoriesData, sortBy);
+        // For build time, use mock data (Supabase integration for runtime)
+        let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
+        let sortedTheories = sortContent(filteredTheories, sortBy);
         setTheories(sortedTheories);
         
       } catch (error) {
         console.error('Failed to load theories:', error);
-        // Ultimate fallback to mock data
+        // Fallback to mock data
         let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
         let sortedTheories = sortContent(filteredTheories, sortBy);
         setTheories(sortedTheories);
@@ -106,26 +42,26 @@ export default function TheoriesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+    <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
       <motion.div 
-        className="bg-gradient-to-b from-purple-900 to-black py-16"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        className="bg-gradient-to-r from-dark-purple to-purple py-20"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="text-8xl mb-6">🧠</div>
-            <h1 className="text-5xl font-bold mystical-title mb-4 glow-text">
-              Anime Theories
+            <div className="text-6xl mb-6">🔮</div>
+            <h1 className="text-5xl font-bold mystical-title mb-6 glow-text">
+              Fan Theories
             </h1>
-            <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
-              Dive deep into the mysteries and hidden meanings of your favorite anime
+            <p className="text-xl text-white/90 brush-font max-w-3xl mx-auto">
+              Dive deep into the mysteries of your favorite anime with theories, analysis, and predictions from the community
             </p>
           </motion.div>
         </div>
@@ -201,76 +137,47 @@ export default function TheoriesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index, duration: 0.6 }}
                 >
-                  <TheoryCard
-                    title={theory.title}
-                    image={theory.image}
-                    tags={theory.tags}
-                    blurb={theory.blurb}
-                    spoiler={theory.spoiler}
-                    creator={theory.creator}
-                    likes={theory.likes}
-                    comments={theory.comments}
-                    views={theory.views}
-                    uploadDate={theory.uploadDate}
-                    isPremium={theory.isPremium}
-                  />
+                  <TheoryCard theory={theory} />
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Empty State */}
-            {theories.length === 0 && (
-              <motion.div 
-                className="text-center py-16"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="text-8xl mb-6 opacity-50">🔍</div>
-                <h3 className="text-2xl font-bold text-grey mb-4">No theories found</h3>
-                <p className="text-grey text-lg mb-8">
-                  Try adjusting your filters or check back later for new content!
-                </p>
-                <Link href="/account/creator">
-                  <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors">
-                    Create Your Own Theory
-                  </button>
-                </Link>
-              </motion.div>
-            )}
-
             {/* Load More Button */}
-            {theories.length > 0 && (
-              <motion.div 
-                className="text-center mt-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                <button className="bg-gradient-to-r from-purple to-dark-purple text-white px-8 py-3 rounded-lg hover:shadow-lg hover:shadow-purple/25 transition-all">
-                  Load More Theories
-                </button>
-              </motion.div>
-            )}
+            <motion.div 
+              className="text-center mt-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-medium">
+                Load More Theories
+              </button>
+            </motion.div>
           </>
         )}
 
-        {/* Create Theory CTA */}
+        {/* Call to Action */}
         <motion.div 
-          className="bg-gradient-to-r from-purple/20 to-dark-purple/20 p-8 rounded-lg border border-purple/30 mt-16 text-center"
+          className="mt-20 text-center bg-gradient-to-r from-purple/20 to-dark-purple/20 p-12 rounded-lg border border-purple/30"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1.2 }}
         >
-          <h3 className="text-2xl font-bold mb-4 text-purple">Have Your Own Theory?</h3>
+          <div className="text-4xl mb-4">✨</div>
+          <h2 className="text-3xl font-bold mystical-title mb-4 text-purple">
+            Have a Theory?
+          </h2>
           <p className="text-grey mb-6 max-w-2xl mx-auto">
-            Join our community of theorists and share your insights about your favorite anime. 
-            Use AI assistance to enhance your theories and reach more fans.
+            Join our community of theorists and share your insights about your favorite anime series.
           </p>
           <Link href="/account/creator">
-            <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors">
-              Start Writing Your Theory
-            </button>
+            <motion.button
+              className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Share Your Theory
+            </motion.button>
           </Link>
         </motion.div>
       </div>

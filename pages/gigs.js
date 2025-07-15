@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
 export default function GigsPage() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession() || {};
   const [isEarlyAccess, setIsEarlyAccess] = useState(false);
   const [activeTab, setActiveTab] = useState('jobs');
   const [featuredJobs, setFeaturedJobs] = useState([]);
@@ -377,4 +377,11 @@ export default function GigsPage() {
       </div>
     </>
   );
+}
+
+// Disable static generation for this page since it requires authentication
+export async function getServerSideProps() {
+  return {
+    props: {}
+  };
 }
