@@ -1,0 +1,72 @@
+{
+  "name": "shonen-ark",
+  "version": "1.0.0",
+  "description": "Mystical anime fan platform featuring fusion UI design (Design Yokocho × Phantom 980). Interactive theory hub, animation analysis, creator community with subscription tiers. Built with Next.js, Tailwind CSS, and Framer Motion.",
+  "main": "pages/index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^7.4.0",
+    "@supabase/supabase-js": "^2.50.5",
+    "@types/node": "^24.0.13",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "autoprefixer": "^10.4.0",
+    "cloudinary": "^2.7.0",
+    "framer-motion": "^10.16.0",
+    "next": "^13.4.0",
+    "next-auth": "^4.24.11",
+    "postcss": "^8.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stripe": "^18.3.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^13.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marimondaa/Shonen-Ark.git"
+  },
+  "keywords": [
+    "anime",
+    "manga",
+    "shonen",
+    "fan-theories",
+    "animation-analysis",
+    "creator-platform",
+    "subscription-model",
+    "next.js",
+    "react",
+    "tailwindcss",
+    "framer-motion",
+    "fusion-ui",
+    "design-yokocho",
+    "phantom-980",
+    "mystical-design",
+    "japanese-aesthetics",
+    "motion-design",
+    "community-platform",
+    "content-discovery",
+    "responsive-design",
+    "progressive-web-app",
+    "cinematic-ui",
+    "ukiyo-e",
+    "torii-gate",
+    "ink-brush-design"
+  ],
+  "author": "marimondaa",
+  "license": "MIT"
+}
