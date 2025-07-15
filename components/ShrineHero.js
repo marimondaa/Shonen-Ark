@@ -68,15 +68,54 @@ const ShrineHero = () => {
           Shonen Ark
         </motion.h1>
 
-        {/* Subtitle with ink texture */}
-        <motion.p
-          className="text-lg sm:text-xl md:text-2xl text-stone-wash mb-8 sm:mb-12 font-brush leading-relaxed px-2 sm:px-0"
+        {/* Mystical tagline with enhanced styling */}
+        <motion.div
+          className="relative mb-8 sm:mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
         >
-          Where ink meets legend, and theories become truth
-        </motion.p>
+          <motion.p
+            className="text-xl sm:text-2xl md:text-3xl text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text font-mystical leading-relaxed px-2 sm:px-0 text-center max-w-4xl mx-auto"
+            initial={{ backgroundPosition: "0% 50%" }}
+            animate={{ backgroundPosition: "100% 50%" }}
+            transition={{ duration: 3, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+            style={{ backgroundSize: "200% 200%" }}
+          >
+            <span className="relative inline-block">
+              Where ink meets legend
+              <motion.span 
+                className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple to-transparent"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.2, delay: 1.8 }}
+              />
+            </span>
+            <br className="hidden sm:inline" />
+            <span className="sm:hidden"> </span>
+            <span className="relative inline-block text-grey glow-text">
+              and theories become truth
+            </span>
+          </motion.p>
+          
+          {/* Decorative elements */}
+          <motion.div 
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-purple/30 text-sm"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 2 }}
+          >
+            ✦
+          </motion.div>
+          <motion.div 
+            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-purple/30 text-sm"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 2.2 }}
+          >
+            ✦
+          </motion.div>
+        </motion.div>
 
         {/* CTA Button with Cinematic Glow */}
         <motion.div
