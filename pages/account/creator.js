@@ -85,17 +85,28 @@ function CreatorAccount() {
         <meta name="description" content="Manage your content, track performance, and grow your audience." />
       </Head>
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
         <motion.header 
-          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
+          className="bg-gradient-to-r from-purple-900 to-black py-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-6xl mb-4">🎬</div>
-            <h1 className="text-4xl font-bold mystical-title mb-4 glow-text">Creator Studio</h1>
-            <p className="text-xl text-grey brush-font">Manage your content and track your growth</p>
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="w-20 h-20 mx-auto mb-6 shrine-glow rounded-full flex items-center justify-center overflow-hidden"
+            >
+              <img 
+                src="/brand-logo.png" 
+                alt="Shonen Ark" 
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+            <h1 className="text-4xl font-bold mystical-title mb-4">Creator Studio</h1>
+            <p className="text-xl text-purple-200 font-mystical">Manage your content and track your growth</p>
           </div>
         </motion.header>
 

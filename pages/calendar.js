@@ -5,39 +5,81 @@ import { AniListAPI } from '../lib/anilist';
 import { getCalendarData, filterCalendarByType, sortContent } from '../lib/mockData';
 
 const CalendarPage = () => {
-  const [activeTab, setActiveTab] = useState('anime');
-  const [calendarData, setCalendarData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [activeTab, setActiveTab] = useState('upcoming');
+  const [animeReleases, setAnimeReleases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadCalendarData = async () => {
+    const loadAnimeData = async () => {
       try {
         setIsLoading(true);
         
         let data = [];
         
-        // Try to fetch real data from AniList API
+        // Try to fetch real anime data from AniList API
         try {
-          if (activeTab === 'anime') {
+          if (activeTab === 'upcoming') {
             const animeData = await AniListAPI.getUpcomingReleases('ANIME', 30);
             if (animeData && animeData.length > 0) {
-              data = animeData.filter(item => item.releaseDate); // Only items with release dates
+              data = animeData.filter(item => item.releaseDate && item.status === 'NOT_YET_RELEASED');
             }
-          } else if (activeTab === 'manga') {
-            const mangaData = await AniListAPI.getUpcomingReleases('MANGA', 30);
-            if (mangaData && mangaData.length > 0) {
-              data = mangaData.filter(item => item.releaseDate);
+          } else if (activeTab === 'airing') {
+            const animeData = await AniListAPI.getCurrentlyAiring('ANIME', 30);
+            if (animeData && animeData.length > 0) {
+              data = animeData.filter(item => item.status === 'RELEASING');
+            }
+          } else if (activeTab === 'movies') {
+            const movieData = await AniListAPI.getUpcomingReleases('ANIME', 30);
+            if (movieData && movieData.length > 0) {
+              data = movieData.filter(item => item.format === 'MOVIE');
             }
           }
         } catch (apiError) {
           console.log('AniList API not available, using mock data');
         }
         
-        // Fallback to mock data if API fails
+        // Fallback to mock anime data if API fails
         if (data.length === 0) {
-          const mockData = getCalendarData();
-          data = filterCalendarByType(mockData, activeTab);
+          const mockAnimeData = [
+            {
+              id: 1,
+              title: "Jujutsu Kaisen Season 3",
+              coverImage: "/api/placeholder/300/400",
+              releaseDate: "2025-03-15",
+              status: "NOT_YET_RELEASED",
+              format: "TV",
+              episodes: 24,
+              description: "The highly anticipated third season of Jujutsu Kaisen."
+            },
+            {
+              id: 2,
+              title: "Demon Slayer: Infinity Castle Arc",
+              coverImage: "/api/placeholder/300/400",
+              releaseDate: "2025-04-08",
+              status: "NOT_YET_RELEASED",
+              format: "TV",
+              episodes: 12,
+              description: "The epic Infinity Castle arc adaptation."
+            },
+            {
+              id: 3,
+              title: "One Piece Film: Red Dragon",
+              coverImage: "/api/placeholder/300/400",
+              releaseDate: "2025-05-20",
+              status: "NOT_YET_RELEASED",
+              format: "MOVIE",
+              episodes: 1,
+              description: "Latest One Piece movie adventure."
+            }
+          ];
+          
+          if (activeTab === 'upcoming') {
+            data = mockAnimeData.filter(item => item.status === 'NOT_YET_RELEASED');
+          } else if (activeTab === 'airing') {
+            data = mockAnimeData.filter(item => item.status === 'RELEASING');
+          } else if (activeTab === 'movies') {
+            data = mockAnimeData.filter(item => item.format === 'MOVIE');
+          }
         }
         
         // Sort by release date (soonest first)
@@ -47,7 +89,7 @@ const CalendarPage = () => {
           return dateA - dateB;
         });
         
-        setCalendarData(data);
+        setAnimeReleases(data);
         setFilteredData(data);
         
       } catch (error) {
@@ -66,15 +108,16 @@ const CalendarPage = () => {
   }, [activeTab]);
 
   const tabs = [
-    { id: 'anime', label: 'Anime Episodes', icon: '📺' },
-    { id: 'manga', label: 'Manga Chapters', icon: '📚' }
+    { id: 'upcoming', label: 'Upcoming', icon: '🔮' },
+    { id: 'airing', label: 'Currently Airing', icon: '📺' },
+    { id: 'movies', label: 'Movies', icon: '🎬' }
   ];
 
   return (
     <>
       <Head>
-        <title>Release Calendar - Shonen Ark</title>
-        <meta name="description" content="Stay updated with the latest anime episodes and manga chapter releases." />
+        <title>Anime Calendar - Shonen Ark</title>
+        <meta name="description" content="Track upcoming anime releases, currently airing series, and movie premieres." />
       </Head>
 
       <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
@@ -93,10 +136,10 @@ const CalendarPage = () => {
             >
               <div className="text-8xl mb-6">📅</div>
               <h1 className="text-5xl font-bold mystical-title mb-4 glow-text">
-                Release Calendar
+                Anime Calendar
               </h1>
               <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
-                Never miss a release! Track upcoming anime episodes and manga chapters
+                Track upcoming releases, currently airing series, and movie premieres
               </p>
             </motion.div>
           </div>

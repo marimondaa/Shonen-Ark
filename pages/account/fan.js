@@ -105,10 +105,10 @@ const FanDashboard = () => {
         <meta name="description" content="Your personal fan dashboard for theories, bookmarks, and subscriptions." />
       </Head>
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
         {/* Header */}
         <motion.header 
-          className="bg-gradient-to-r from-dark-purple to-purple py-16"
+          className="bg-gradient-to-r from-purple-900 to-black py-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -119,15 +119,19 @@ const FanDashboard = () => {
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-4xl"
+                className="w-20 h-20 shrine-glow rounded-full flex items-center justify-center overflow-hidden"
               >
-                👤
+                <img 
+                  src="/brand-logo.png" 
+                  alt="Shonen Ark" 
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
               <div>
-                <h1 className="text-4xl font-bold mystical-title glow-text">
+                <h1 className="text-4xl font-bold mystical-title mb-2">
                   Welcome back, Fan!
                 </h1>
-                <p className="text-xl text-white/80 brush-font">
+                <p className="text-xl text-purple-200 font-mystical">
                   Your personal theory hub awaits
                 </p>
               </div>
