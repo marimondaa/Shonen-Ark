@@ -1,111 +1,66 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
-import { AniListAPI } from '../lib/anilist';
-import { getCalendarData, filterCalendarByType, sortContent } from '../lib/mockData';
+import { AniListAPI, mockAnimeData } from '../lib/anilist';
+import AnimeCalendarCard from '../components/AnimeCalendarCard';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
-  const [animeReleases, setAnimeReleases] = useState([]);
+  const [animeData, setAnimeData] = useState({
+    upcoming: [],
+    airing: [],
+    movies: []
+  });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     const loadAnimeData = async () => {
       try {
         setIsLoading(true);
-        
-        let data = [];
-        
-        // Try to fetch real anime data from AniList API
-        try {
-          if (activeTab === 'upcoming') {
-            const animeData = await AniListAPI.getUpcomingReleases('ANIME', 30);
-            if (animeData && animeData.length > 0) {
-              data = animeData.filter(item => item.releaseDate && item.status === 'NOT_YET_RELEASED');
-            }
-          } else if (activeTab === 'airing') {
-            const animeData = await AniListAPI.getCurrentlyAiring('ANIME', 30);
-            if (animeData && animeData.length > 0) {
-              data = animeData.filter(item => item.status === 'RELEASING');
-            }
-          } else if (activeTab === 'movies') {
-            const movieData = await AniListAPI.getUpcomingReleases('ANIME', 30);
-            if (movieData && movieData.length > 0) {
-              data = movieData.filter(item => item.format === 'MOVIE');
-            }
-          }
-        } catch (apiError) {
-          console.log('AniList API not available, using mock data');
+        setError(null);
+        setUsingFallback(false);
+
+        // Try to fetch from AniList API
+        const [upcomingData, airingData, moviesData] = await Promise.all([
+          AniListAPI.getUpcomingAnime(1, 15),
+          AniListAPI.getCurrentlyAiring(1, 15),
+          AniListAPI.getAnimeMovies(1, 15)
+        ]);
+
+        // Check if any API calls failed
+        if (!upcomingData || !airingData || !moviesData) {
+          throw new Error('Failed to fetch from AniList API');
         }
-        
-        // Fallback to mock anime data if API fails
-        if (data.length === 0) {
-          const mockAnimeData = [
-            {
-              id: 1,
-              title: "Jujutsu Kaisen Season 3",
-              coverImage: "/api/placeholder/300/400",
-              releaseDate: "2025-03-15",
-              status: "NOT_YET_RELEASED",
-              format: "TV",
-              episodes: 24,
-              description: "The highly anticipated third season of Jujutsu Kaisen."
-            },
-            {
-              id: 2,
-              title: "Demon Slayer: Infinity Castle Arc",
-              coverImage: "/api/placeholder/300/400",
-              releaseDate: "2025-04-08",
-              status: "NOT_YET_RELEASED",
-              format: "TV",
-              episodes: 12,
-              description: "The epic Infinity Castle arc adaptation."
-            },
-            {
-              id: 3,
-              title: "One Piece Film: Red Dragon",
-              coverImage: "/api/placeholder/300/400",
-              releaseDate: "2025-05-20",
-              status: "NOT_YET_RELEASED",
-              format: "MOVIE",
-              episodes: 1,
-              description: "Latest One Piece movie adventure."
-            }
-          ];
-          
-          if (activeTab === 'upcoming') {
-            data = mockAnimeData.filter(item => item.status === 'NOT_YET_RELEASED');
-          } else if (activeTab === 'airing') {
-            data = mockAnimeData.filter(item => item.status === 'RELEASING');
-          } else if (activeTab === 'movies') {
-            data = mockAnimeData.filter(item => item.format === 'MOVIE');
-          }
-        }
-        
-        // Sort by release date (soonest first)
-        data.sort((a, b) => {
-          const dateA = new Date(a.releaseDate);
-          const dateB = new Date(b.releaseDate);
-          return dateA - dateB;
+
+        setAnimeData({
+          upcoming: upcomingData || [],
+          airing: airingData || [],
+          movies: moviesData || []
         });
-        
-        setAnimeReleases(data);
-        setFilteredData(data);
-        
+
+        console.log('✅ Successfully loaded data from AniList API');
+
       } catch (error) {
-        console.error('Failed to load calendar data:', error);
-        // Ultimate fallback
-        const mockData = getCalendarData();
-        const filtered = filterCalendarByType(mockData, activeTab);
-        setCalendarData(filtered);
-        setFilteredData(filtered);
+        console.warn('⚠️ AniList API failed, using fallback data:', error.message);
+        
+        // Use mock data as fallback
+        setAnimeData(mockAnimeData);
+        setUsingFallback(true);
+        setError('Using offline data - some information may be outdated');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCalendarData();
-  }, [activeTab]);
+    loadAnimeData();
+  }, []);
+
+  const getCurrentData = () => {
+    return animeData[activeTab] || [];
+  };
 
   const tabs = [
     { id: 'upcoming', label: 'Upcoming', icon: '🔮' },
@@ -114,7 +69,7 @@ const CalendarPage = () => {
   ];
 
   return (
-    <>
+    <ErrorBoundary>
       <Head>
         <title>Anime Calendar - Shonen Ark</title>
         <meta name="description" content="Track upcoming anime releases, currently airing series, and movie premieres." />
@@ -141,6 +96,20 @@ const CalendarPage = () => {
               <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
                 Track upcoming releases, currently airing series, and movie premieres
               </p>
+
+              {/* Status indicator */}
+              {usingFallback && (
+                <motion.div 
+                  className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3 max-w-md mx-auto mt-6"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <p className="text-orange-200 text-sm font-mystical">
+                    ⚠️ Using offline data - Live updates temporarily unavailable
+                  </p>
+                </motion.div>
+              )}
             </motion.div>
           </div>
         </motion.div>
@@ -171,163 +140,59 @@ const CalendarPage = () => {
             </div>
           </motion.div>
 
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="flex justify-center items-center py-16">
-              <motion.div 
-                className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-          ) : (
-            <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              {filteredData.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  className="bg-dark-purple/20 rounded-xl border border-purple/30 overflow-hidden hover:border-purple/50 transition-all group"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.6 }}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                >
-                  {/* Cover Image */}
-                  <div className="aspect-video bg-gradient-to-br from-purple/20 to-dark-purple/20 flex items-center justify-center">
-                    {item.coverImage ? (
-                      <img 
-                        src={item.coverImage} 
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="text-6xl opacity-50">
-                        {activeTab === 'anime' ? '📺' : '📚'}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-6">
-                    {/* Title */}
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple transition-colors">
-                      {item.title}
-                    </h3>
-
-                    {/* Next Release Info */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-purple text-sm">
-                          {activeTab === 'anime' ? 'Next Episode:' : 'Next Chapter:'}
-                        </span>
-                        <span className="text-white text-sm font-medium">
-                          {activeTab === 'anime' ? item.nextEpisode : item.nextChapter}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-purple text-sm">Release Date:</span>
-                        <span className="text-green-400 text-sm font-medium">
-                          {new Date(item.releaseDate).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-purple text-sm">Status:</span>
-                        <span className={`text-sm px-2 py-1 rounded ${
-                          item.status === 'Airing' || item.status === 'Publishing' 
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-grey/20 text-grey'
-                        }`}>
-                          {item.status}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Score */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-yellow-400">⭐</span>
-                        <span className="text-white font-medium">{item.score}</span>
-                      </div>
-                      
-                      {/* Days Until Release */}
-                      <div className="text-xs text-purple">
-                        {(() => {
-                          const today = new Date();
-                          const releaseDate = new Date(item.releaseDate);
-                          const diffTime = releaseDate - today;
-                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                          
-                          if (diffDays < 0) return 'Released';
-                          if (diffDays === 0) return 'Today!';
-                          if (diffDays === 1) return 'Tomorrow';
-                          return `${diffDays} days`;
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && filteredData.length === 0 && (
-            <motion.div 
-              className="text-center py-16"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="text-8xl mb-6 opacity-50">
-                {activeTab === 'anime' ? '📺' : '📚'}
-              </div>
-              <h3 className="text-2xl font-bold text-grey mb-4">No upcoming releases</h3>
-              <p className="text-grey text-lg">
-                Check back later for new {activeTab === 'anime' ? 'episode' : 'chapter'} updates!
-              </p>
-            </motion.div>
-          )}
-
-          {/* Info Section */}
-          <motion.div 
-            className="bg-gradient-to-r from-purple/20 to-dark-purple/20 p-8 rounded-lg border border-purple/30 mt-16"
-            initial={{ opacity: 0, y: 30 }}
+          {/* Anime Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {isLoading ? (
+              <div className="flex justify-center items-center py-16">
+                <motion.div 
+                  className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+                <p className="ml-4 text-purple font-mystical">Loading anime data...</p>
+              </div>
+            ) : getCurrentData().length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {getCurrentData().map((anime, index) => (
+                  <AnimeCalendarCard key={anime.id} anime={anime} index={index} />
+                ))}
+              </div>
+            ) : (
+              <motion.div 
+                className="text-center py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="text-6xl mb-4 opacity-50">📺</div>
+                <h3 className="text-xl font-bold text-grey mb-2 mystical-title">No anime found</h3>
+                <p className="text-grey font-mystical">Check back later for updates!</p>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Refresh button */}
+          <motion.div 
+            className="text-center mt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <h3 className="text-2xl font-bold mb-4 text-purple text-center">Stay Updated</h3>
-            <div className="grid md:grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="text-3xl mb-2">🔔</div>
-                <h4 className="font-bold text-white mb-2">Notifications</h4>
-                <p className="text-grey text-sm">
-                  Get notified when your favorite series release new content
-                </p>
-              </div>
-              <div>
-                <div className="text-3xl mb-2">📱</div>
-                <h4 className="font-bold text-white mb-2">Mobile Friendly</h4>
-                <p className="text-grey text-sm">
-                  Access the calendar anywhere, anytime on any device
-                </p>
-              </div>
-              <div>
-                <div className="text-3xl mb-2">🎯</div>
-                <h4 className="font-bold text-white mb-2">Accurate Data</h4>
-                <p className="text-grey text-sm">
-                  Real-time updates from official sources and databases
-                </p>
-              </div>
-            </div>
+            <motion.button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-purple to-dark-purple text-white px-6 py-3 rounded-lg font-mystical hover:shadow-lg hover:shadow-purple/25 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🔄 Refresh Data
+            </motion.button>
           </motion.div>
         </div>
       </div>
-    </>
+    </ErrorBoundary>
   );
 };
 

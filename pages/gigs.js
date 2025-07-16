@@ -129,26 +129,69 @@ export default function GigsPage() {
       </Head>
 
       <div className="min-h-screen bg-black text-white">
-        {/* Hero Section */}
+        {/* Hero Section with Brand Logo */}
         <motion.div 
-          className="bg-gradient-to-b from-purple-900 to-black py-24"
+          className="bg-gradient-to-b from-black via-dark-purple/20 to-black py-24 relative overflow-hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="max-w-4xl mx-auto text-center px-4">
+          {/* Subtle particle effect */}
+          <div className="absolute inset-0 pointer-events-none">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-purple/40 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [-10, 10, -10],
+                  opacity: [0.2, 0.6, 0.2],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 4 + Math.random() * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-4xl mx-auto text-center px-4 relative z-10">
             <motion.div
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              <div className="text-8xl mb-6">💼</div>
-              <h1 className="text-5xl font-bold mb-6 mystical-title glow-text">
-                Gigs & Community Work
+              {/* Brand Logo */}
+              <motion.div className="mb-6 flex justify-center">
+                <motion.img
+                  src="/brand-logo.png"
+                  alt="Shonen Ark"
+                  className="h-16 sm:h-20 md:h-24 w-auto object-contain"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.div>
+              
+              <h1 className="text-4xl sm:text-5xl font-bold mb-6 mystical-title">
+                <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
+                  Gigs & Community Work
+                </span>
               </h1>
-              <p className="text-xl text-purple-200 mb-8 brush-font">
+              
+              <motion.p 
+                className="text-lg sm:text-xl text-grey mb-8 font-mystical max-w-2xl mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
                 Connect with fellow creators and find opportunities in the anime community
-              </p>
+              </motion.p>
             </motion.div>
           </div>
         </motion.div>
@@ -162,18 +205,20 @@ export default function GigsPage() {
             transition={{ delay: 0.4 }}
           >
             {tabs.map((tab) => (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-lg border transition-all duration-300 ${
+                className={`px-6 py-3 rounded-lg border transition-all duration-300 font-mystical ${
                   activeTab === tab.id
-                    ? 'bg-purple text-white border-purple shadow-lg shadow-purple/25'
+                    ? 'bg-gradient-to-r from-purple/20 to-dark-purple/20 text-white border-purple glow-text'
                     : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
                 }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <span className="text-xl mr-2">{tab.icon}</span>
+                <span className="text-lg mr-2">{tab.icon}</span>
                 {tab.label}
-              </button>
+              </motion.button>
             ))}
           </motion.div>
 
@@ -185,8 +230,12 @@ export default function GigsPage() {
               transition={{ duration: 0.6 }}
             >
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4 text-purple">Job Board</h2>
-                <p className="text-grey max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold mb-4 mystical-title">
+                  <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
+                    Job Board
+                  </span>
+                </h2>
+                <p className="text-grey max-w-2xl mx-auto font-mystical">
                   Find paid opportunities to work on anime-related projects with creators around the world.
                 </p>
               </div>
@@ -204,57 +253,69 @@ export default function GigsPage() {
                   featuredJobs.map((job) => (
                   <motion.div
                     key={job.id}
-                    className="bg-gradient-to-br from-purple-900/30 to-black/50 p-6 rounded-lg border border-purple/20"
-                    whileHover={{ scale: 1.02 }}
+                    className="bg-gradient-to-br from-dark-purple/30 to-black/50 p-6 rounded-lg border border-purple/20 hover:border-purple/40 transition-all duration-300 shrine-glow"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     transition={{ duration: 0.2 }}
                   >
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-bold text-white">{job.title}</h3>
-                      <span className="bg-purple text-white px-3 py-1 rounded-full text-sm">
+                      <h3 className="text-xl font-bold text-white mystical-title">{job.title}</h3>
+                      <span className="bg-gradient-to-r from-purple to-dark-purple text-white px-3 py-1 rounded-full text-sm font-mystical">
                         {job.budget}
                       </span>
                     </div>
-                    <p className="text-grey mb-4">{job.description}</p>
+                    <p className="text-grey mb-4 leading-relaxed">{job.description}</p>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {job.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="bg-dark-purple/50 text-purple-200 px-2 py-1 rounded text-sm"
+                          className="bg-dark-purple/50 text-purple-200 px-2 py-1 rounded text-sm border border-purple/30"
                         >
-                          {tag}
+                          #{tag}
                         </span>
                       ))}
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-grey">By {job.poster?.username || job.poster}</span>
+                      <span className="text-grey">By <span className="text-purple">{job.poster?.username || job.poster}</span></span>
                       <span className="text-purple">{job.applications_count || job.applications} applications</span>
                     </div>
                   </motion.div>
                 ))
                 ) : (
-                  <div className="text-center py-16">
+                  <motion.div 
+                    className="text-center py-16"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
                     <div className="text-6xl mb-4 opacity-50">💼</div>
-                    <h3 className="text-xl font-bold text-grey mb-2">No jobs available</h3>
-                    <p className="text-grey">Check back later for new opportunities!</p>
-                  </div>
+                    <h3 className="text-xl font-bold text-grey mb-2 mystical-title">No jobs available</h3>
+                    <p className="text-grey font-mystical">Check back later for new opportunities!</p>
+                  </motion.div>
                 )}
               </div>
 
               {session?.user ? (
                 <div className="text-center">
                   <Link href="/account/creator">
-                    <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors">
+                    <motion.button 
+                      className="bg-gradient-to-r from-purple to-dark-purple hover:from-dark-purple hover:to-purple text-white px-8 py-3 rounded-lg transition-all duration-300 font-mystical shrine-glow"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       Post a Job ($10 fee)
-                    </button>
+                    </motion.button>
                   </Link>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-grey mb-4">Sign in to post jobs and apply to opportunities</p>
+                  <p className="text-grey mb-4 font-mystical">Sign in to post jobs and apply to opportunities</p>
                   <Link href="/login">
-                    <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors">
+                    <motion.button 
+                      className="bg-gradient-to-r from-purple to-dark-purple hover:from-dark-purple hover:to-purple text-white px-8 py-3 rounded-lg transition-all duration-300 font-mystical shrine-glow"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       Sign In to Get Started
-                    </button>
+                    </motion.button>
                   </Link>
                 </div>
               )}
@@ -268,8 +329,12 @@ export default function GigsPage() {
               transition={{ duration: 0.6 }}
             >
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4 text-purple">Community Projects</h2>
-                <p className="text-grey max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold mb-4 mystical-title">
+                  <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
+                    Community Projects
+                  </span>
+                </h2>
+                <p className="text-grey max-w-2xl mx-auto font-mystical">
                   Collaborate on passion projects for the love of anime and community recognition.
                 </p>
               </div>
@@ -278,29 +343,29 @@ export default function GigsPage() {
                 {communityProjects.map((project) => (
                   <motion.div
                     key={project.id}
-                    className="bg-gradient-to-br from-purple-900/30 to-black/50 p-6 rounded-lg border border-purple/20"
-                    whileHover={{ scale: 1.02 }}
+                    className="bg-gradient-to-br from-dark-purple/30 to-black/50 p-6 rounded-lg border border-purple/20 hover:border-purple/40 transition-all duration-300 shrine-glow"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     transition={{ duration: 0.2 }}
                   >
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-bold text-white">{project.title}</h3>
-                      <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+                      <h3 className="text-xl font-bold text-white mystical-title">{project.title}</h3>
+                      <span className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-mystical">
                         {project.status}
                       </span>
                     </div>
-                    <p className="text-grey mb-4">{project.description}</p>
+                    <p className="text-grey mb-4 leading-relaxed">{project.description}</p>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="bg-dark-purple/50 text-purple-200 px-2 py-1 rounded text-sm"
+                          className="bg-dark-purple/50 text-purple-200 px-2 py-1 rounded text-sm border border-purple/30"
                         >
-                          {tag}
+                          #{tag}
                         </span>
                       ))}
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-grey">Led by {project.organizer?.username || project.organizer}</span>
+                      <span className="text-grey">Led by <span className="text-purple">{project.organizer?.username || project.organizer}</span></span>
                       <span className="text-purple">{project.current_participants || project.participants} participants</span>
                     </div>
                   </motion.div>
