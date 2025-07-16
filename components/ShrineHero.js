@@ -121,77 +121,22 @@ const ShrineHero = () => {
 
       {/* Main Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl">
-        {/* Animated Brand Logo with Qi Energy Effect */}
+        {/* Clean Brand Logo as Title */}
         <motion.div
-          className="mb-6 sm:mb-8 flex justify-center relative"
-          initial={{ opacity: 0, y: -50, scale: 0.8 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="mb-6 sm:mb-8 flex justify-center"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
-          {/* Energy Aura around logo */}
-          <motion.div
-            className="absolute inset-0 rounded-full"
-            animate={{
-              boxShadow: [
-                "0 0 20px rgba(147, 51, 234, 0.3)",
-                "0 0 40px rgba(147, 51, 234, 0.6)",
-                "0 0 60px rgba(147, 51, 234, 0.4)",
-                "0 0 20px rgba(147, 51, 234, 0.3)"
-              ],
-              scale: [1, 1.1, 1.05, 1]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          
           <motion.img
             src="/brand-logo.png"
             alt="Shonen Ark"
-            className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain relative z-10"
+            className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain"
             whileHover={{ 
-              scale: 1.05,
-              filter: "drop-shadow(0 0 25px rgba(147, 51, 234, 0.8))"
+              scale: 1.02
             }}
-            animate={{
-              filter: [
-                "drop-shadow(0 0 15px rgba(147, 51, 234, 0.4)) brightness(1)",
-                "drop-shadow(0 0 25px rgba(147, 51, 234, 0.7)) brightness(1.1)",
-                "drop-shadow(0 0 20px rgba(147, 51, 234, 0.5)) brightness(1.05)",
-                "drop-shadow(0 0 15px rgba(147, 51, 234, 0.4)) brightness(1)"
-              ]
-            }}
-            transition={{
-              filter: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-              hover: { duration: 0.3 }
-            }}
+            transition={{ hover: { duration: 0.3 } }}
           />
-          
-          {/* Circular energy rings that expand from logo */}
-          {Array.from({ length: 3 }).map((_, i) => (
-            <motion.div
-              key={`ring-${i}`}
-              className="absolute top-1/2 left-1/2 border border-purple/30 rounded-full pointer-events-none"
-              style={{
-                width: '100%',
-                height: '100%',
-                transform: 'translate(-50%, -50%)'
-              }}
-              animate={{
-                scale: [1, 2.5, 3],
-                opacity: [0.6, 0.2, 0],
-                borderWidth: ["2px", "1px", "0px"]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeOut",
-                delay: i * 1
-              }}
-            />
-          ))}
         </motion.div>
 
         {/* Mystical tagline with enhanced styling */}
