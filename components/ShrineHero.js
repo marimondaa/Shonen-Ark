@@ -147,40 +147,13 @@ const ShrineHero = () => {
           transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
         >
           <motion.p
-            className="text-xl sm:text-2xl md:text-3xl text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text font-mystical leading-relaxed px-2 sm:px-0 text-center max-w-4xl mx-auto"
-            initial={{ backgroundPosition: "0% 50%" }}
-            animate={{ backgroundPosition: "100% 50%" }}
-            transition={{ duration: 3, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-            style={{ backgroundSize: "200% 200%" }}
+            className="text-lg sm:text-xl text-white mb-8 font-mystical max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <span className="relative inline-block">
-              only time will tell
-              <motion.span 
-                className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple to-transparent"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.2, delay: 1.8 }}
-              />
-            </span>
+            "only time will tell"
           </motion.p>
-          
-          {/* Decorative elements */}
-          <motion.div 
-            className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-purple/30 text-sm"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 2 }}
-          >
-            ✦
-          </motion.div>
-          <motion.div 
-            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-purple/30 text-sm"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 2.2 }}
-          >
-            ✦
-          </motion.div>
         </motion.div>
 
         {/* CTA Button with Cinematic Glow */}
@@ -207,21 +180,6 @@ const ShrineHero = () => {
               />
             </motion.button>
           </Link>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div className="w-6 h-10 border-2 border-stone-wash rounded-full flex justify-center">
-            <motion.div
-              className="w-1 h-3 bg-line-highlight rounded-full mt-2"
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </div>
         </motion.div>
       </div>
     </section>
