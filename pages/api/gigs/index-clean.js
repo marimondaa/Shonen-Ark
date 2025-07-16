@@ -24,6 +24,17 @@ const mockGigs = [
     requirements: ["Community management experience", "Conflict resolution", "Anime passion"],
     salary: "$1,500 - $2,000/month",
     created_at: new Date().toISOString()
+  },
+  {
+    id: 3,
+    title: "Anime Video Editor",
+    company: "OtakuStudios",
+    location: "Remote",
+    type: "Full-time",
+    description: "Edit anime review videos and create engaging visual content.",
+    requirements: ["Video editing skills", "After Effects", "Creative vision"],
+    salary: "$3,000 - $4,500/month",
+    created_at: new Date().toISOString()
   }
 ];
 
@@ -73,29 +84,6 @@ async function handleGetGigs(req, res) {
     });
   }
 }
-        *,
-        poster:users!gigs_poster_id_fkey(username, avatar_url),
-        applications_count
-      `)
-      .eq('status', status || 'open')
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    if (type) {
-      query = query.eq('type', type);
-    }
-
-    const { data: gigs, error } = await query;
-
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-
-    return res.status(200).json({ gigs });
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch gigs' });
-  }
-}
 
 async function handleCreateGig(req, res) {
   try {
@@ -111,35 +99,37 @@ async function handleCreateGig(req, res) {
     } = req.body;
 
     // Validate required fields
-    if (!title || !description || !type || !poster_id) {
+    if (!title || !description || !type) {
       return res.status(400).json({ 
-        error: 'Missing required fields: title, description, type, poster_id' 
+        error: 'Missing required fields: title, description, type' 
       });
     }
 
-    // Insert new gig
-    const { data: gig, error } = await supabase
-      .from('gigs')
-      .insert({
-        title,
-        description,
-        type,
-        budget_min,
-        budget_max,
-        deadline,
-        tags,
-        poster_id,
-        status: 'open'
-      })
-      .select()
-      .single();
+    // Create new gig with mock data
+    const newGig = {
+      id: mockGigs.length + 1,
+      title,
+      description,
+      type,
+      company: "Demo Company",
+      location: "Remote",
+      requirements: ["Demo requirement"],
+      salary: budget_min && budget_max ? `$${budget_min} - $${budget_max}` : "Negotiable",
+      created_at: new Date().toISOString()
+    };
 
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
+    // Add to mock data (in a real app, this would persist)
+    mockGigs.push(newGig);
 
-    return res.status(201).json({ gig });
+    return res.status(201).json({
+      success: true,
+      data: newGig
+    });
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to create gig' });
+    console.error('Error creating gig:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to create gig'
+    });
   }
 }
