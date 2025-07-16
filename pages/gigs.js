@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '../lib/auth-context';
 
 export default function GigsPage() {
-  const { data: session, status } = useSession() || {};
+  const { user, isAuthenticated } = useAuth();
   const [isEarlyAccess, setIsEarlyAccess] = useState(false);
   const [activeTab, setActiveTab] = useState('jobs');
   const [featuredJobs, setFeaturedJobs] = useState([]);
@@ -293,7 +293,7 @@ export default function GigsPage() {
                 )}
               </div>
 
-              {session?.user ? (
+              {isAuthenticated() ? (
                 <div className="text-center">
                   <Link href="/account/creator">
                     <motion.button 

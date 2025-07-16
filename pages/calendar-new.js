@@ -10,7 +10,7 @@ const CalendarPage = () => {
   const [animeData, setAnimeData] = useState({
     upcoming: [],
     airing: [],
-    top100: []
+    movies: []
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,21 +24,21 @@ const CalendarPage = () => {
         setUsingFallback(false);
 
         // Try to fetch from AniList API
-        const [upcomingData, airingData, top100Data] = await Promise.all([
+        const [upcomingData, airingData, moviesData] = await Promise.all([
           AniListAPI.getUpcomingAnime(1, 15),
           AniListAPI.getCurrentlyAiring(1, 15),
-          AniListAPI.getTop100Anime(1, 15)
+          AniListAPI.getAnimeMovies(1, 15)
         ]);
 
         // Check if any API calls failed
-        if (!upcomingData || !airingData || !top100Data) {
+        if (!upcomingData || !airingData || !moviesData) {
           throw new Error('Failed to fetch from AniList API');
         }
 
         setAnimeData({
           upcoming: upcomingData || [],
           airing: airingData || [],
-          top100: top100Data || []
+          movies: moviesData || []
         });
 
         console.log('✅ Successfully loaded data from AniList API');
@@ -63,9 +63,9 @@ const CalendarPage = () => {
   };
 
   const tabs = [
-    { id: 'upcoming', label: 'Upcoming', icon: '🔮', desc: 'New releases coming soon' },
-    { id: 'airing', label: 'Currently Airing', icon: '📺', desc: 'Series airing now' },
-    { id: 'top100', label: 'Top 100', icon: '�', desc: 'Highest rated anime' }
+    { id: 'upcoming', label: 'Upcoming', icon: '🔮' },
+    { id: 'airing', label: 'Currently Airing', icon: '📺' },
+    { id: 'movies', label: 'Movies', icon: '🎬' }
   ];
 
   return (
@@ -122,47 +122,21 @@ const CalendarPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="bg-black/95 backdrop-blur-sm p-2 rounded-xl border border-accent-pink/20 shadow-2xl">
-              <div className="flex flex-wrap justify-center gap-2">
-                {tabs.map((tab) => (
-                  <motion.button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`group relative px-6 py-4 rounded-lg transition-all duration-300 flex flex-col items-center space-y-1 min-w-[140px] ${
-                      activeTab === tab.id
-                        ? 'bg-gradient-to-r from-purple to-accent-pink text-white shadow-lg shrine-glow'
-                        : 'text-text-light hover:bg-purple/20 hover:text-accent-pink border border-purple/30'
-                    }`}
-                  >
-                    <motion.span 
-                      className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity"
-                      whileHover={{ scale: 1.2, rotate: 10 }}
-                    >
-                      {tab.icon}
-                    </motion.span>
-                    <div className="text-center">
-                      <div className="font-medium text-sm">
-                        {tab.label}
-                      </div>
-                      <div className="text-xs opacity-70 group-hover:opacity-100 transition-opacity">
-                        {tab.desc}
-                      </div>
-                    </div>
-                    
-                    {/* Active indicator */}
-                    {activeTab === tab.id && (
-                      <motion.div
-                        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-white rounded-full"
-                        layoutId="tab-indicator"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
-              </div>
+            <div className="bg-dark-purple/20 p-1 rounded-lg border border-purple/30">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-8 py-3 rounded-lg transition-all flex items-center space-x-3 ${
+                    activeTab === tab.id
+                      ? 'bg-purple text-white shadow-lg'
+                      : 'text-purple hover:bg-purple/20'
+                  }`}
+                >
+                  <span className="text-xl">{tab.icon}</span>
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              ))}
             </div>
           </motion.div>
 

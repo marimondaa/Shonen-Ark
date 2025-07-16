@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import Layout from '../components/Layout'
+import { AuthProvider } from '../lib/auth-context'
 import Head from 'next/head'
 
 export default function App({ Component, pageProps }) {
@@ -11,9 +12,11 @@ export default function App({ Component, pageProps }) {
         <title>Shonen Ark - Mystical Anime Fan Platform</title>
         <meta name="description" content="Mystical anime fan platform featuring fusion UI design. Interactive theory hub, animation analysis, creator community." />
       </Head>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <AuthProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </AuthProvider>
     </>
   )
 }

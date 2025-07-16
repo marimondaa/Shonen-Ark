@@ -1,18 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAuth } from '../lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     rememberMe: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.push('/account/fan');
+    }
+  }, [isAuthenticated, router]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -29,15 +38,13 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Simulate authentication
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await login(formData.username, formData.password);
       
-      // Mock authentication logic
-      if (formData.email === 'demo@shonenark.com' && formData.password === 'demo123') {
-        console.log('Login successful:', formData);
-        router.push('/account/fan'); // Redirect to fan dashboard
+      if (result.success) {
+        console.log('Login successful:', result.user);
+        router.push('/account/fan'); // Redirect to dashboard
       } else {
-        setError('Invalid email or password. Try demo@shonenark.com / demo123');
+        setError(result.error || 'Login failed. Try admin/admin for demo access.');
       }
     } catch (error) {
       setError('Login failed. Please try again.');
@@ -45,6 +52,14 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-accent-pink">Loading...</div>
+      </div>
+    );
+  }
 
   const socialLogins = [
     { name: 'Google', icon: '🌐', color: 'from-red-500 to-red-600' },
@@ -93,25 +108,25 @@ export default function LoginPage() {
             <div className="bg-purple/10 border border-purple/30 rounded-lg p-4 mb-6">
               <h3 className="text-sm font-medium text-purple mb-2">Demo Credentials</h3>
               <p className="text-xs text-grey">
-                <strong>Email:</strong> demo@shonenark.com<br />
-                <strong>Password:</strong> demo123
+                <strong>Username:</strong> admin<br />
+                <strong>Password:</strong> admin
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
+              {/* Username Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-purple mb-2">
-                  Email Address
+                <label htmlFor="username" className="block text-sm font-medium text-purple mb-2">
+                  Username
                 </label>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
                   className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
-                  placeholder="Enter your email"
+                  placeholder="Enter your username"
                   required
                 />
               </div>

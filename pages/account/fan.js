@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useAuth } from '../../lib/auth-context';
 import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../lib/mockData';
 
 const FanDashboard = () => {
-  const { data: session } = useSession() || {};
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [subscriptions, setSubscriptions] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
@@ -15,7 +17,16 @@ const FanDashboard = () => {
   const [upgradeLoading, setUpgradeLoading] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
 
+  // Redirect if not authenticated
   useEffect(() => {
+    if (!authLoading && !isAuthenticated()) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (!user) return;
+
     const loadDashboardData = async () => {
       try {
         setIsLoading(true);
@@ -34,7 +45,7 @@ const FanDashboard = () => {
     };
 
     loadDashboardData();
-  }, []);
+  }, [user]);
 
   const handleUpgrade = async (priceId) => {
     setUpgradeLoading(true);
@@ -98,6 +109,27 @@ const FanDashboard = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+  // Show loading if still checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <motion.div 
+            className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full mx-auto mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <p className="text-purple-200">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect in useEffect)
+  if (!isAuthenticated()) {
+    return null;
+  }
+
   return (
     <>
       <Head>
@@ -129,7 +161,7 @@ const FanDashboard = () => {
               </motion.div>
               <div>
                 <h1 className="text-4xl font-bold mystical-title mb-2">
-                  Welcome back, Fan!
+                  Welcome back, {user?.username || 'Fan'}!
                 </h1>
                 <p className="text-xl text-purple-200 font-mystical">
                   Your personal theory hub awaits
@@ -191,6 +223,51 @@ const FanDashboard = () => {
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {/* User Profile */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow lg:col-span-3"
+                  >
+                    <div className="flex items-start space-x-6">
+                      <div className="w-16 h-16 shrine-glow rounded-full flex items-center justify-center bg-purple/20">
+                        <span className="text-2xl">{user?.role === 'admin' ? '👑' : '🌟'}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold mb-2 text-purple">
+                          {user?.username} {user?.role === 'admin' && <span className="text-yellow-400">👑</span>}
+                        </h3>
+                        <p className="text-grey mb-4">{user?.profile?.bio || 'No bio available'}</p>
+                        {user?.profile?.badges && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {user.profile.badges.map((badge, index) => (
+                              <span 
+                                key={index}
+                                className="px-3 py-1 rounded-full text-xs font-medium bg-purple/20 text-purple border border-purple/30"
+                              >
+                                {badge}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {user?.profile?.favoriteAnime && user.profile.favoriteAnime.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-medium text-purple mb-2">Favorite Anime:</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {user.profile.favoriteAnime.slice(0, 4).map((anime, index) => (
+                                <span 
+                                  key={index}
+                                  className="px-2 py-1 rounded text-xs bg-black/30 text-grey"
+                                >
+                                  {anime}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+
                   {/* Quick Stats */}
                   <motion.div 
                     variants={itemVariants}
@@ -199,20 +276,28 @@ const FanDashboard = () => {
                     <h3 className="text-xl font-bold mb-4 text-purple">📊 Your Stats</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-grey">Theories Liked:</span>
-                        <span className="text-white font-medium">247</span>
+                        <span className="text-grey">Theories Posted:</span>
+                        <span className="text-white font-medium">{user?.stats?.theoriesPosted || 0}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-grey">Comments Posted:</span>
-                        <span className="text-white font-medium">156</span>
+                        <span className="text-grey">Total Upvotes:</span>
+                        <span className="text-white font-medium">{user?.stats?.upvotes || 0}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-grey">Bookmarks:</span>
-                        <span className="text-white font-medium">{bookmarks.length}</span>
+                        <span className="text-grey">Comments Received:</span>
+                        <span className="text-white font-medium">{user?.stats?.commentsReceived || 0}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-grey">Subscriptions:</span>
-                        <span className="text-white font-medium">{subscriptions.length}</span>
+                        <span className="text-grey">Followers:</span>
+                        <span className="text-white font-medium">{user?.stats?.followers || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-grey">Following:</span>
+                        <span className="text-white font-medium">{user?.stats?.following || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-grey">Member Since:</span>
+                        <span className="text-white font-medium">{user?.stats?.joinedDate || 'Recent'}</span>
                       </div>
                     </div>
                   </motion.div>
