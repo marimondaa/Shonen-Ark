@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { validateIncomingWebhook, forwardToN8nWorkflow } from '../../../lib/webhook';
+import { validateIncomingWebhook, forwardToN8nWorkflow } from '../../../src/lib/webhook';
 
 export interface UserSignupPayload {
   userId: string;

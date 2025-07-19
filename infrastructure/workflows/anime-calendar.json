@@ -1,20 +1,17 @@
 {
-  "name": "Anime Calendar Sync Workflow",
+  "name": "Anime Calendar Sync",
+  "active": true,
   "nodes": [
     {
       "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "cronExpression",
-              "expression": "0 0 8 * * *"
-            }
-          ]
-        }
+        "httpMethod": "GET",
+        "path": "anime-calendar",
+        "responseMode": "responseNode",
+        "options": {}
       },
-      "id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
-      "name": "Daily Trigger",
-      "type": "n8n-nodes-base.cron",
+      "id": "anime-calendar-webhook",
+      "name": "Webhook - Calendar Request",
+      "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
         240,
@@ -23,37 +20,25 @@
     },
     {
       "parameters": {
-        "url": "https://graphql.anilist.co",
-        "requestMethod": "POST",
+        "url": "=https://api.anilist.co/",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anilistApi",
+        "sendQuery": true,
+        "specifyQuery": "graphql",
+        "jsonParameters": true,
+        "queryParametersJson": "{\n  \"query\": \"query GetAiringSchedule($page: Int, $perPage: Int, $airingAtGreater: Int, $airingAtLesser: Int) { Page(page: $page, perPage: $perPage) { pageInfo { currentPage lastPage hasNextPage } airingSchedules(airingAt_greater: $airingAtGreater, airingAt_lesser: $airingAtLesser, sort: TIME) { id airingAt episode media { id title { romaji english } format status episodes genres averageScore coverImage { medium } siteUrl } } } }\",\n  \"variables\": {\n    \"page\": {{ $json.page || 1 }},\n    \"perPage\": {{ $json.perPage || 50 }},\n    \"airingAtGreater\": {{ Math.floor(Date.now() / 1000) }},\n    \"airingAtLesser\": {{ Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) }}\n  }\n}",
         "options": {
-          "headers": {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        },
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "query",
-              "value": "query ($page: Int, $perPage: Int, $status: MediaStatus, $season: MediaSeason, $year: Int) { Page(page: $page, perPage: $perPage) { pageInfo { total currentPage lastPage hasNextPage } media(status: $status, season: $season, seasonYear: $year, type: ANIME, sort: POPULARITY_DESC) { id title { romaji english native } startDate { year month day } endDate { year month day } status format episodes duration coverImage { large medium } bannerImage description(asHtml: false) genres studios { nodes { name } } averageScore popularity } } }"
-            },
-            {
-              "name": "variables",
-              "value": {
-                "page": 1,
-                "perPage": 50,
-                "status": "RELEASING",
-                "season": "={{new Date().getMonth() < 3 ? 'WINTER' : new Date().getMonth() < 6 ? 'SPRING' : new Date().getMonth() < 9 ? 'SUMMER' : 'FALL'}}",
-                "year": "={{new Date().getFullYear()}}"
-              }
+          "response": {
+            "response": {
+              "neverError": true
             }
-          ]
+          }
         }
       },
-      "id": "q7r8s9t0-1u2v-3w4x-5y6z-7a8b9c0d1e2f",
-      "name": "Fetch Current Season Anime",
+      "id": "fetch-anilist-data",
+      "name": "Fetch AniList Schedule",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "typeVersion": 4,
       "position": [
         460,
         300
@@ -61,11 +46,30 @@
     },
     {
       "parameters": {
-        "jsCode": "const animeData = $input.all()[0].json.data.Page.media;\nconst processedAnime = [];\n\nfor (const anime of animeData) {\n  // Calculate next episode date (estimate based on weekly schedule)\n  const startDate = anime.startDate;\n  let nextEpisodeDate = null;\n  \n  if (startDate && startDate.year && startDate.month && startDate.day) {\n    const start = new Date(startDate.year, startDate.month - 1, startDate.day);\n    const now = new Date();\n    const weeksPassed = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));\n    \n    // Estimate next episode (assuming weekly release)\n    nextEpisodeDate = new Date(start);\n    nextEpisodeDate.setDate(start.getDate() + ((weeksPassed + 1) * 7));\n  }\n  \n  processedAnime.push({\n    anilist_id: anime.id,\n    title: anime.title.romaji || anime.title.english,\n    title_english: anime.title.english,\n    title_romaji: anime.title.romaji,\n    title_native: anime.title.native,\n    start_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    end_date: anime.endDate && anime.endDate.year ? `${anime.endDate.year}-${String(anime.endDate.month || 12).padStart(2, '0')}-${String(anime.endDate.day || 31).padStart(2, '0')}` : null,\n    next_episode_date: nextEpisodeDate ? nextEpisodeDate.toISOString().split('T')[0] : null,\n    status: anime.status,\n    format: anime.format,\n    episodes: anime.episodes,\n    duration: anime.duration,\n    cover_image: anime.coverImage.large,\n    banner_image: anime.bannerImage,\n    description: anime.description,\n    genres: anime.genres,\n    studios: anime.studios.nodes.map(s => s.name),\n    average_score: anime.averageScore,\n    popularity: anime.popularity,\n    season: new Date().getMonth() < 3 ? 'WINTER' : new Date().getMonth() < 6 ? 'SPRING' : new Date().getMonth() < 9 ? 'SUMMER' : 'FALL',\n    year: new Date().getFullYear(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn processedAnime.map(anime => ({ json: anime }));"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "data-exists-check",
+              "leftValue": "={{ $json.data && $json.data.Page && $json.data.Page.airingSchedules }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
-      "id": "f3g4h5i6-7j8k-9l0m-1n2o-3p4q5r6s7t8u",
-      "name": "Process Anime Data",
-      "type": "n8n-nodes-base.code",
+      "id": "check-data-validity",
+      "name": "Check Data Validity",
+      "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
         680,
@@ -74,258 +78,391 @@
     },
     {
       "parameters": {
-        "operation": "upsert",
-        "table": "anime_calendar",
-        "upsertColumns": ["anilist_id"],
-        "columns": "anilist_id, title, title_english, title_romaji, title_native, start_date, end_date, next_episode_date, status, format, episodes, duration, cover_image, banner_image, description, genres, studios, average_score, popularity, season, year, updated_at",
-        "additionalFields": {
-          "mode": "raw"
-        }
+        "jsCode": "// Process and format anime calendar data\nconst airingSchedules = $input.first().json.data.Page.airingSchedules;\nconst processedEntries = [];\n\nfor (const schedule of airingSchedules) {\n  const media = schedule.media;\n  \n  // Skip if essential data is missing\n  if (!media || !media.title || !schedule.airingAt) {\n    continue;\n  }\n  \n  // Format the entry for database insertion\n  const entry = {\n    title: media.title.english || media.title.romaji,\n    episode_number: schedule.episode,\n    release_date: new Date(schedule.airingAt * 1000).toISOString(),\n    type: 'anime',\n    genre: media.genres ? media.genres[0]?.toLowerCase() : 'unknown',\n    status: media.status?.toLowerCase() || 'unknown',\n    cover_image: media.coverImage?.medium || null,\n    external_url: media.siteUrl || null,\n    total_episodes: media.episodes || null,\n    average_score: media.averageScore || null,\n    format: media.format?.toLowerCase() || 'tv',\n    source: 'anilist',\n    external_id: `anilist_${media.id}`,\n    created_at: new Date().toISOString()\n  };\n  \n  processedEntries.push(entry);\n}\n\nconsole.log(`Processed ${processedEntries.length} anime calendar entries`);\n\nreturn processedEntries.map(entry => ({ json: entry }));"
       },
-      "id": "v9w0x1y2-3z4a-5b6c-7d8e-9f0g1h2i3j4k",
-      "name": "Update Calendar DB",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.4,
-      "position": [
-        900,
-        300
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "railway-postgres-credentials",
-          "name": "Railway PostgreSQL"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "url": "https://graphql.anilist.co",
-        "requestMethod": "POST",
-        "options": {
-          "headers": {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        },
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "query",
-              "value": "query ($page: Int, $perPage: Int, $status: MediaStatus, $season: MediaSeason, $year: Int) { Page(page: $page, perPage: $perPage) { pageInfo { total currentPage lastPage hasNextPage } media(status: $status, season: $season, seasonYear: $year, type: ANIME, sort: POPULARITY_DESC) { id title { romaji english native } startDate { year month day } status format episodes duration coverImage { large medium } bannerImage description(asHtml: false) genres studios { nodes { name } } averageScore popularity } } }"
-            },
-            {
-              "name": "variables",
-              "value": {
-                "page": 1,
-                "perPage": 30,
-                "status": "NOT_YET_RELEASED",
-                "season": "={{new Date().getMonth() < 3 ? 'SPRING' : new Date().getMonth() < 6 ? 'SUMMER' : new Date().getMonth() < 9 ? 'FALL' : 'WINTER'}}",
-                "year": "={{new Date().getMonth() === 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}}"
-              }
-            }
-          ]
-        }
-      },
-      "id": "l5m6n7o8-9p0q-1r2s-3t4u-5v6w7x8y9z0a",
-      "name": "Fetch Upcoming Anime",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        460,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const upcomingData = $input.all()[0].json.data.Page.media;\nconst processedUpcoming = [];\n\nfor (const anime of upcomingData) {\n  const startDate = anime.startDate;\n  \n  processedUpcoming.push({\n    anilist_id: anime.id,\n    title: anime.title.romaji || anime.title.english,\n    title_english: anime.title.english,\n    title_romaji: anime.title.romaji,\n    title_native: anime.title.native,\n    start_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    end_date: null,\n    next_episode_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    status: anime.status,\n    format: anime.format,\n    episodes: anime.episodes,\n    duration: anime.duration,\n    cover_image: anime.coverImage.large,\n    banner_image: anime.bannerImage,\n    description: anime.description,\n    genres: anime.genres,\n    studios: anime.studios.nodes.map(s => s.name),\n    average_score: anime.averageScore,\n    popularity: anime.popularity,\n    season: new Date().getMonth() < 3 ? 'SPRING' : new Date().getMonth() < 6 ? 'SUMMER' : new Date().getMonth() < 9 ? 'FALL' : 'WINTER',\n    year: new Date().getMonth() === 11 ? new Date().getFullYear() + 1 : new Date().getFullYear(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn processedUpcoming.map(anime => ({ json: anime }));"
-      },
-      "id": "b1c2d3e4-5f6g-7h8i-9j0k-1l2m3n4o5p6q",
-      "name": "Process Upcoming Data",
+      "id": "process-calendar-data",
+      "name": "Process Calendar Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        680,
-        420
+        900,
+        220
       ]
     },
     {
       "parameters": {
-        "operation": "upsert",
-        "table": "anime_calendar",
-        "upsertColumns": ["anilist_id"],
-        "columns": "anilist_id, title, title_english, title_romaji, title_native, start_date, end_date, next_episode_date, status, format, episodes, duration, cover_image, banner_image, description, genres, studios, average_score, popularity, season, year, updated_at",
-        "additionalFields": {
-          "mode": "raw"
-        }
-      },
-      "id": "r7s8t9u0-1v2w-3x4y-5z6a-7b8c9d0e1f2g",
-      "name": "Update Upcoming DB",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.4,
-      "position": [
-        900,
-        420
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "railway-postgres-credentials",
-          "name": "Railway PostgreSQL"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "={{$env.NEXT_PUBLIC_BASE_URL}}/api/cache/revalidate",
-        "options": {
-          "headers": {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer {{$env.REVALIDATE_SECRET}}"
-          }
-        },
-        "bodyParameters": {
-          "parameters": [
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "resource": "row",
+        "operation": "create",
+        "tableId": "calendar_entries",
+        "dataMode": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
             {
-              "name": "paths",
-              "value": ["/calendar", "/api/anime/current", "/api/anime/upcoming"]
+              "fieldId": "title",
+              "fieldValue": "={{ $json.title }}"
+            },
+            {
+              "fieldId": "episode_number",
+              "fieldValue": "={{ $json.episode_number }}"
+            },
+            {
+              "fieldId": "chapter_number",
+              "fieldValue": null
+            },
+            {
+              "fieldId": "release_date",
+              "fieldValue": "={{ $json.release_date }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $json.type }}"
+            },
+            {
+              "fieldId": "genre",
+              "fieldValue": "={{ $json.genre }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            },
+            {
+              "fieldId": "cover_image",
+              "fieldValue": "={{ $json.cover_image }}"
+            },
+            {
+              "fieldId": "external_url",
+              "fieldValue": "={{ $json.external_url }}"
+            },
+            {
+              "fieldId": "total_episodes",
+              "fieldValue": "={{ $json.total_episodes }}"
+            },
+            {
+              "fieldId": "average_score",
+              "fieldValue": "={{ $json.average_score }}"
+            },
+            {
+              "fieldId": "format",
+              "fieldValue": "={{ $json.format }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{ $json.source }}"
+            },
+            {
+              "fieldId": "external_id",
+              "fieldValue": "={{ $json.external_id }}"
             }
           ]
+        },
+        "options": {
+          "queryName": "upsert_calendar_entry"
         }
       },
-      "id": "h3i4j5k6-7l8m-9n0o-1p2q-3r4s5t6u7v8w",
-      "name": "Revalidate Cache",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "id": "save-to-database",
+      "name": "Save to Database",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
       "position": [
         1120,
-        360
+        220
       ]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "jsCode": "// Log successful calendar sync\nconst entries = $input.all();\nconst successCount = entries.filter(item => item.json && !item.json.error).length;\nconst errorCount = entries.length - successCount;\n\nconst logData = {\n  action: 'anime_calendar_sync',\n  status: errorCount > 0 ? 'partial_success' : 'success',\n  entries_processed: entries.length,\n  entries_saved: successCount,\n  errors: errorCount,\n  timestamp: new Date().toISOString(),\n  source: 'anilist_api'\n};\n\nconsole.log('Calendar Sync Summary:', logData);\n\nreturn [{ json: logData }];"
+      },
+      "id": "log-sync-results",
+      "name": "Log Sync Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "resource": "row",
+        "operation": "create",
+        "tableId": "admin_logs",
+        "dataMode": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
             {
-              "name": "status",
-              "value": "success"
+              "fieldId": "action",
+              "fieldValue": "={{ $json.action }}"
             },
             {
-              "name": "message",
-              "value": "Anime calendar synchronized successfully"
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
             },
             {
-              "name": "syncedAt",
-              "value": "={{new Date().toISOString()}}"
+              "fieldId": "details",
+              "fieldValue": "={{ JSON.stringify($json) }}"
             },
             {
-              "name": "currentSeasonCount",
-              "value": "={{$node[\"Update Calendar DB\"].json.length}}"
-            },
-            {
-              "name": "upcomingCount",
-              "value": "={{$node[\"Update Upcoming DB\"].json.length}}"
+              "fieldId": "user_id",
+              "fieldValue": "system"
             }
           ]
         }
       },
-      "id": "x9y0z1a2-3b4c-5d6e-7f8g-9h0i1j2k3l4m",
-      "name": "Sync Complete",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.3,
+      "id": "save-log-entry",
+      "name": "Save Log Entry",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Calendar sync completed successfully\",\n  \"processed\": {{ $('Log Sync Results').first().json.entries_processed }},\n  \"saved\": {{ $('Log Sync Results').first().json.entries_saved }},\n  \"errors\": {{ $('Log Sync Results').first().json.errors }},\n  \"timestamp\": \"{{ $('Log Sync Results').first().json.timestamp }}\"\n}"
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle API error\nconst errorData = $input.first().json;\n\nconst logEntry = {\n  action: 'anime_calendar_sync_error',\n  status: 'error',\n  error_message: errorData.message || 'AniList API request failed',\n  error_details: JSON.stringify(errorData),\n  timestamp: new Date().toISOString(),\n  source: 'anilist_api'\n};\n\nconsole.error('Calendar Sync Error:', logEntry);\n\nreturn [{ json: logEntry }];"
+      },
+      "id": "handle-api-error",
+      "name": "Handle API Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "resource": "row",
+        "operation": "create",
+        "tableId": "admin_logs",
+        "dataMode": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "action",
+              "fieldValue": "={{ $json.action }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            },
+            {
+              "fieldId": "details",
+              "fieldValue": "={{ $json.error_details }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "system"
+            }
+          ]
+        }
+      },
+      "id": "log-error",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"Calendar sync failed\",\n  \"error\": {{ JSON.stringify($('Handle API Error').first().json.error_message) }},\n  \"timestamp\": \"{{ $('Handle API Error').first().json.timestamp }}\"\n}",
+        "responseCode": 500
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
       "position": [
         1340,
-        360
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "choose",
+        "intervalSize": 1,
+        "unit": "hours"
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        40,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.SHONEN_ARK_URL }}/api/hooks/anime-calendar",
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "source",
+              "value": "scheduled_sync"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "perPage",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-calendar-sync",
+      "name": "Trigger Calendar Sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        240,
+        140
       ]
     }
   ],
+  "pinData": {},
   "connections": {
-    "Daily Trigger": {
+    "Webhook - Calendar Request": {
       "main": [
         [
           {
-            "node": "Fetch Current Season Anime",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Fetch Upcoming Anime",
+            "node": "Fetch AniList Schedule",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Fetch Current Season Anime": {
+    "Fetch AniList Schedule": {
       "main": [
         [
           {
-            "node": "Process Anime Data",
+            "node": "Check Data Validity",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Process Anime Data": {
+    "Check Data Validity": {
       "main": [
         [
           {
-            "node": "Update Calendar DB",
+            "node": "Process Calendar Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle API Error",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Update Calendar DB": {
+    "Process Calendar Data": {
       "main": [
         [
           {
-            "node": "Revalidate Cache",
+            "node": "Save to Database",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Fetch Upcoming Anime": {
+    "Save to Database": {
       "main": [
         [
           {
-            "node": "Process Upcoming Data",
+            "node": "Log Sync Results",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Process Upcoming Data": {
+    "Log Sync Results": {
       "main": [
         [
           {
-            "node": "Update Upcoming DB",
+            "node": "Save Log Entry",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Update Upcoming DB": {
+    "Save Log Entry": {
       "main": [
         [
           {
-            "node": "Revalidate Cache",
+            "node": "Success Response",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Revalidate Cache": {
+    "Handle API Error": {
       "main": [
         [
           {
-            "node": "Sync Complete",
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Error": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Trigger Calendar Sync",
             "type": "main",
             "index": 0
           }
@@ -333,19 +470,18 @@
       ]
     }
   },
-  "active": true,
-  "settings": {},
-  "versionId": "8e9f0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b",
-  "meta": {
-    "templateCredsSetupCompleted": true
+  "createdAt": "2024-07-19T10:00:00.000Z",
+  "updatedAt": "2024-07-19T10:00:00.000Z",
+  "settings": {
+    "executionOrder": "v1"
   },
-  "id": "anime-calendar-sync-workflow-003",
+  "staticData": {},
   "tags": [
     {
-      "createdAt": "2024-07-19T11:00:00.000Z",
-      "updatedAt": "2024-07-19T11:00:00.000Z",
+      "createdAt": "2024-07-19T10:00:00.000Z",
+      "updatedAt": "2024-07-19T10:00:00.000Z",
       "id": "calendar-automation",
-      "name": "calendar-automation"
+      "name": "Calendar"
     }
   ]
 }

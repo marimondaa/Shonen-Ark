@@ -1,0 +1,65 @@
+# Railway Service Configuration for n8n
+version: 2
+
+services:
+  # Main Shonen Ark Application
+  web:
+    source: .
+    build:
+      builder: nixpacks
+      buildCommand: npm run build
+      startCommand: npm start
+    variables:
+      NODE_ENV: ${{ RAILWAY_ENVIRONMENT == "production" ? "production" : "staging" }}
+      NEXT_PUBLIC_SITE_URL: ${{ RAILWAY_ENVIRONMENT == "production" ? "https://shonen-ark.up.railway.app" : "https://shonen-ark-staging.up.railway.app" }}
+      # n8n connection variables
+      N8N_URL: ${{ RAILWAY_ENVIRONMENT == "production" ? "https://shonen-ark-n8n.up.railway.app" : "https://shonen-ark-n8n-staging.up.railway.app" }}
+      N8N_SIGNUP_WEBHOOK_URL: ${{ N8N_URL }}/webhook/user-signup
+      N8N_PROJECT_APPROVAL_WEBHOOK_URL: ${{ N8N_URL }}/webhook/project-approval
+
+  # n8n Automation Service
+  n8n:
+    source: .
+    dockerfile: infrastructure/config/Dockerfile.n8n
+    variables:
+      NODE_ENV: production
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: ${{ RAILWAY_ENVIRONMENT == "production" ? "https://shonen-ark-n8n.up.railway.app" : "https://shonen-ark-n8n-staging.up.railway.app" }}
+      N8N_EDITOR_BASE_URL: ${{ RAILWAY_ENVIRONMENT == "production" ? "https://shonen-ark-n8n.up.railway.app" : "https://shonen-ark-n8n-staging.up.railway.app" }}
+      # Enable API access
+      N8N_API_KEY_AUTH_ENABLED: true
+      N8N_PERSONAL_ACCESS_TOKEN_ENABLED: true
+      # Security
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: ${{ N8N_ADMIN_PASSWORD }}
+      # Database (use Railway PostgreSQL)
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: ${{ PGHOST }}
+      DB_POSTGRESDB_PORT: ${{ PGPORT }}
+      DB_POSTGRESDB_DATABASE: ${{ PGDATABASE }}
+      DB_POSTGRESDB_USER: ${{ PGUSER }}
+      DB_POSTGRESDB_PASSWORD: ${{ PGPASSWORD }}
+      # Email (optional - for notifications)
+      N8N_EMAIL_MODE: smtp
+      N8N_SMTP_HOST: ${{ SMTP_HOST }}
+      N8N_SMTP_PORT: ${{ SMTP_PORT }}
+      N8N_SMTP_USER: ${{ SMTP_USER }}
+      N8N_SMTP_PASS: ${{ SMTP_PASS }}
+    healthcheck:
+      path: /healthz
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+  # PostgreSQL Database (shared between main app and n8n)
+  database:
+    image: postgres:15
+    variables:
+      POSTGRES_DB: shonen_ark
+      POSTGRES_USER: ${{ PGUSER }}
+      POSTGRES_PASSWORD: ${{ PGPASSWORD }}
+    volumes:
+      - /var/lib/postgresql/data

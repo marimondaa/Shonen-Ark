@@ -1,4 +1,4 @@
-import { uploadToCloudinary } from '../../../lib/cloudinary-server';
+import { uploadToCloudinary } from '../../../src/lib/cloudinary-server';
 import formidable from 'formidable';
 import fs from 'fs';
 

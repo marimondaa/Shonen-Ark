@@ -1,0 +1,23 @@
+[variables]
+NODE_ENV = 'production'
+
+[phases.setup]
+nixPkgs = ['nodejs-18_x', 'npm-9_x']
+
+[phases.install]
+cmds = [
+  'npm config set legacy-peer-deps true',
+  'npm config set force true',
+  'npm config set strict-peer-deps false',
+  'npm config set audit-level moderate',
+  'npm config set fund false'
+]
+
+[phases.build]
+cmds = [
+  'npm install --legacy-peer-deps --force --no-audit || (rm -rf node_modules package-lock.json && npm install --legacy-peer-deps --force --no-audit)',
+  'npm run build'
+]
+
+[start]
+cmd = 'npm start'

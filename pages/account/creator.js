@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useSession } from 'next-auth/react';
 import UploadComponent from '../../src/components/features/UploadComponent';
 import { getCreatorStats, getCreatorContent } from '../../src/lib/utils/mockData';
-import { withSubscription } from '../../lib/middleware/withSubscription';
+import { withSubscription } from '../../src/lib/middleware/withSubscription';
 
 function CreatorAccount() {
   const { data: session } = useSession() || {};

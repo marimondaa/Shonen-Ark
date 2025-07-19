@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../src/lib/supabase';
 
 /**
  * User Signup Webhook Handler

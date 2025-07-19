@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
-import { supabase } from '../../../lib/supabase';
-import { WebhookUtils } from '../../../lib/webhook';
+import { supabase } from '../../../src/lib/supabase';
+import { WebhookUtils } from '../../../src/lib/webhook';
 
 /**
  * Project Approval Webhook Handler

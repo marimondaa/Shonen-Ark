@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
-import { AniListAPI, mockAnimeData } from '../lib/anilist';
-import AnimeCalendarCard from '../components/AnimeCalendarCard';
-import ErrorBoundary from '../components/ErrorBoundary';
+import { AniListAPI, mockAnimeData } from '../src/lib/services/anilist';
 
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -69,7 +67,7 @@ const CalendarPage = () => {
   ];
 
   return (
-    <ErrorBoundary>
+    <>
       <Head>
         <title>Anime Calendar - Shonen Ark</title>
         <meta name="description" content="Track upcoming anime releases, currently airing series, and top 10 anime." />
@@ -255,7 +253,7 @@ const CalendarPage = () => {
           </motion.div>
         </div>
       </div>
-    </ErrorBoundary>
+    </>
   );
 };
 

@@ -1,20 +1,19 @@
 {
   "name": "User Signup Workflow",
+  "active": true,
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "user-signup",
+        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "b3b1a7c9-4f6e-4b9a-8d2e-3c5f7a9b1e4d",
-      "name": "Webhook",
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [
-        240,
-        300
-      ],
+      "position": [240, 300],
       "webhookId": "user-signup-webhook"
     },
     {
@@ -22,218 +21,159 @@
         "conditions": {
           "string": [
             {
-              "value1": "={{$node[\"Webhook\"].json[\"email\"]}}",
-              "operation": "isNotEmpty"
-            },
-            {
-              "value1": "={{$node[\"Webhook\"].json[\"userId\"]}}",
-              "operation": "isNotEmpty"
+              "value1": "={{$json.event}}",
+              "operation": "equal",
+              "value2": "user.signup"
             }
           ]
         }
       },
-      "id": "a5d2c8f1-3e4b-4c6a-9f1d-2b5e8a7c4f9g",
-      "name": "Validate Data",
+      "id": "validate-event",
+      "name": "Validate Event",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [
-        460,
-        300
-      ]
+      "position": [460, 300]
     },
     {
       "parameters": {
         "operation": "insert",
+        "schema": "public",
         "table": "users",
-        "columns": "user_id, email, username, account_type, signup_date, source",
+        "columns": "id, email, name, provider, account_type, signup_completed_at",
         "additionalFields": {
-          "mode": "raw",
-          "rawQuery": "INSERT INTO users (user_id, email, username, account_type, signup_date, source) VALUES ('{{$node[\"Webhook\"].json[\"userId\"]}}', '{{$node[\"Webhook\"].json[\"email\"]}}', '{{$node[\"Webhook\"].json[\"username\"]}}', '{{$node[\"Webhook\"].json[\"accountType\"]}}', NOW(), '{{$node[\"Webhook\"].json[\"source\"]}}') ON CONFLICT (user_id) DO UPDATE SET signup_date = NOW(), source = EXCLUDED.source"
+          "returnFields": "*"
         }
       },
-      "id": "c7f4a1b8-2d5e-4a9c-8e1f-3b6d9a2c5e8h",
-      "name": "Store User in DB",
+      "id": "insert-user",
+      "name": "Insert User to Database",
       "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.4,
-      "position": [
-        680,
-        220
-      ],
+      "typeVersion": 1,
+      "position": [680, 180],
       "credentials": {
         "postgres": {
-          "id": "railway-postgres-credentials",
-          "name": "Railway PostgreSQL"
+          "id": "supabase-staging",
+          "name": "Supabase Staging DB"
         }
       }
     },
     {
       "parameters": {
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpBasicAuth",
-        "requestMethod": "POST",
-        "url": "={{$env.SMTP_HOST}}",
-        "options": {
-          "headers": {
-            "Content-Type": "application/json"
-          }
-        },
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "to",
-              "value": "={{$node[\"Webhook\"].json[\"email\"]}}"
-            },
-            {
-              "name": "subject",
-              "value": "Welcome to Shonen Ark! 🏯"
-            },
-            {
-              "name": "html",
-              "value": "<h2>Welcome to Shonen Ark, {{$node[\"Webhook\"].json[\"username\"]}}!</h2><p>Your {{$node[\"Webhook\"].json[\"accountType\"]}} account has been successfully created.</p><p>Explore anime theories, discover new content, and join our mystical community.</p><a href=\"{{$env.NEXT_PUBLIC_BASE_URL}}/account/{{$node[\"Webhook\"].json[\"accountType\"]}}\">Visit your dashboard</a><p>Happy theorizing!<br>The Shonen Ark Team</p>"
-            }
-          ]
+        "operation": "insert",
+        "schema": "public",
+        "table": "newsletter_subscribers",
+        "columns": "email, name, source, subscribed_at",
+        "additionalFields": {
+          "returnFields": "*"
         }
       },
-      "id": "d9e6b3c2-1a4f-4d7b-9e2c-5f8a1b4e7c0i",
-      "name": "Send Welcome Email",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        680,
-        320
-      ]
-    },
-    {
-      "parameters": {
-        "requestMethod": "POST",
-        "url": "https://api.emailoctopus.com/v1.6/lists/{{$env.NEWSLETTER_LIST_ID}}/contacts",
-        "options": {
-          "headers": {
-            "Content-Type": "application/json"
-          }
-        },
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "api_key",
-              "value": "={{$env.NEWSLETTER_API_KEY}}"
-            },
-            {
-              "name": "email_address",
-              "value": "={{$node[\"Webhook\"].json[\"email\"]}}"
-            },
-            {
-              "name": "fields",
-              "value": {
-                "FirstName": "{{$node[\"Webhook\"].json[\"username\"]}}",
-                "AccountType": "{{$node[\"Webhook\"].json[\"accountType\"]}}",
-                "SignupDate": "{{new Date().toISOString()}}"
-              }
-            },
-            {
-              "name": "tags",
-              "value": ["new-user", "{{$node[\"Webhook\"].json[\"accountType\"]}}"]
-            }
-          ]
-        }
-      },
-      "id": "f1c8e5a4-3b6d-4f9a-8c1e-2d5f8a1c4b7j",
+      "id": "add-newsletter",
       "name": "Add to Newsletter",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@shonen-ark.com",
+        "toEmail": "={{$json.data.email}}",
+        "subject": "🌸 Welcome to Shonen Ark - Your Mystical Anime Journey Begins!",
+        "emailFormat": "html",
+        "html": "<div style=\"font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #ffffff; padding: 40px 20px; border-radius: 12px;\">\n  <!-- Header -->\n  <div style=\"text-align: center; margin-bottom: 40px;\">\n    <img src=\"https://your-domain.com/brand-logo.png\" alt=\"Shonen Ark\" style=\"height: 60px; margin-bottom: 20px;\">\n    <h1 style=\"color: #d4af37; font-size: 28px; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);\">Welcome to Shonen Ark!</h1>\n    <div style=\"width: 60px; height: 3px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); margin: 20px auto;\"></div>\n  </div>\n\n  <!-- Welcome Message -->\n  <div style=\"background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.2);\">\n    <h2 style=\"color: #ffffff; font-size: 20px; margin-bottom: 16px;\">Hello {{$json.data.name || 'Fellow Anime Fan'}},</h2>\n    <p style=\"color: #e0e0e0; line-height: 1.6; margin-bottom: 20px;\">Your mystical journey into the world of anime theories and fan creations starts now! 🎋</p>\n    \n    <div style=\"background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%); border-left: 4px solid #d4af37; padding: 20px; border-radius: 8px; margin: 20px 0;\">\n      <h3 style=\"color: #d4af37; font-size: 16px; margin: 0 0 12px 0;\">✨ What awaits you:</h3>\n      <ul style=\"color: #e0e0e0; margin: 0; padding-left: 20px; line-height: 1.8;\">\n        <li>🎎 AI-powered theory generation and analysis</li>\n        <li>🏮 Premium content and exclusive creator features</li>\n        <li>📅 Real-time anime calendar and release tracking</li>\n        <li>🎨 Community-driven fan art and animation showcase</li>\n        <li>⛩️ Traditional Japanese aesthetic with modern functionality</li>\n      </ul>\n    </div>\n  </div>\n\n  <!-- Quick Actions -->\n  <div style=\"background: rgba(255,255,255,0.05); border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: center;\">\n    <h3 style=\"color: #ffffff; margin-bottom: 20px; font-size: 18px;\">🚀 Get Started</h3>\n    <div style=\"margin-bottom: 20px;\">\n      <a href=\"https://shonen-ark.com/theories\" style=\"display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin: 0 8px 8px 8px; transition: all 0.3s ease;\">Explore Theories</a>\n      <a href=\"https://shonen-ark.com/discovery\" style=\"display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); color: #1a1a2e; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin: 0 8px 8px 8px;\">Discover Content</a>\n    </div>\n    <a href=\"https://shonen-ark.com/account/onboarding\" style=\"color: #d4af37; text-decoration: underline; font-size: 14px;\">Complete your profile setup →</a>\n  </div>\n\n  <!-- Account Details -->\n  <div style=\"background: rgba(255,255,255,0.03); border-radius: 8px; padding: 20px; margin-bottom: 30px; font-size: 14px;\">\n    <h4 style=\"color: #d4af37; margin: 0 0 12px 0;\">👤 Account Details</h4>\n    <p style=\"color: #b0b0b0; margin: 4px 0;\"><strong>Email:</strong> {{$json.data.email}}</p>\n    <p style=\"color: #b0b0b0; margin: 4px 0;\"><strong>Account Type:</strong> {{$json.data.metadata.accountType || 'Fan'}}</p>\n    <p style=\"color: #b0b0b0; margin: 4px 0;\"><strong>Joined:</strong> {{$json.data.timestamp}}</p>\n  </div>\n\n  <!-- Support -->\n  <div style=\"border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; text-align: center;\">\n    <p style=\"color: #888888; font-size: 14px; margin-bottom: 16px;\">Need help getting started? We're here for you!</p>\n    <div style=\"margin-bottom: 20px;\">\n      <a href=\"https://shonen-ark.com/contact\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">📧 Contact Support</a>\n      <a href=\"https://discord.gg/shonen-ark\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">💬 Join Discord</a>\n      <a href=\"https://shonen-ark.com/about\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">ℹ️ Learn More</a>\n    </div>\n    \n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);\">\n      <p style=\"color: #666666; font-size: 12px; margin: 0;\">© 2025 Shonen Ark. Built with ❤️ for the anime community.</p>\n      <p style=\"color: #666666; font-size: 12px; margin: 8px 0 0 0;\">\n        <a href=\"https://shonen-ark.com/unsubscribe?email={{$json.data.email}}\" style=\"color: #888888; text-decoration: underline;\">Unsubscribe</a> | \n        <a href=\"https://shonen-ark.com/terms\" style=\"color: #888888; text-decoration: underline;\">Terms</a> | \n        <a href=\"https://shonen-ark.com/privacy\" style=\"color: #888888; text-decoration: underline;\">Privacy</a>\n      </p>\n    </div>\n  </div>\n</div>"
+      },
+      "id": "send-welcome-email",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [680, 420],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": "public",
+        "table": "user_activity",
+        "columns": "user_id, activity_type, metadata",
+        "additionalFields": {
+          "returnFields": "*"
+        }
+      },
+      "id": "log-signup",
+      "name": "Log Signup Activity",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "{\n  \"text\": \"🎉 New user signup!\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*New Shonen Ark User* 🌸\\n\\n*Name:* {{$json.data.name}}\\n*Email:* {{$json.data.email}}\\n*Provider:* {{$json.data.provider}}\\n*Account Type:* {{$json.data.metadata.accountType || 'Fan'}}\\n*Source:* {{$json.data.metadata.source || 'Direct'}}\\n*Timestamp:* {{$json.data.timestamp}}\"\n      }\n    },\n    {\n      \"type\": \"actions\",\n      \"elements\": [\n        {\n          \"type\": \"button\",\n          \"text\": {\n            \"type\": \"plain_text\",\n            \"text\": \"View User\"\n          },\n          \"url\": \"https://shonen-ark.com/admin/users/{{$json.data.userId}}\"\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "id": "notify-admin",
+      "name": "Notify Admin (Slack)",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        680,
-        420
-      ]
+      "typeVersion": 2,
+      "position": [900, 180]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "status",
-              "value": "success"
-            },
-            {
-              "name": "message",
-              "value": "User {{$node[\"Webhook\"].json[\"username\"]}} successfully onboarded"
-            },
-            {
-              "name": "userId",
-              "value": "={{$node[\"Webhook\"].json[\"userId\"]}}"
-            },
-            {
-              "name": "processedAt",
-              "value": "={{new Date().toISOString()}}"
-            }
-          ]
-        }
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Welcome email sent and user data processed\",\n  \"data\": {\n    \"userId\": \"{{$json.data.userId}}\",\n    \"email\": \"{{$json.data.email}}\",\n    \"welcomeEmailSent\": true,\n    \"newsletterSubscribed\": true,\n    \"adminNotified\": true,\n    \"timestamp\": \"{{$now}}\"\n  }\n}"
       },
-      "id": "h3j9k5l7-4m6n-4p8q-9r1s-2t4u6v8w0x2y",
-      "name": "Success Response",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.3,
-      "position": [
-        900,
-        300
-      ]
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "status",
-              "value": "error"
-            },
-            {
-              "name": "message",
-              "value": "Invalid user data provided"
-            },
-            {
-              "name": "error",
-              "value": "Missing required fields: email or userId"
-            }
-          ]
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"error\": \"Invalid event type\",\n  \"message\": \"Expected 'user.signup' event\",\n  \"received\": \"{{$json.event}}\"\n}",
+        "options": {
+          "responseCode": 400
         }
       },
-      "id": "z9y8x7w6-5v4u-4t3s-9r2q-1p0o9n8m7l6k",
+      "id": "error-response",
       "name": "Error Response",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.3,
-      "position": [
-        680,
-        520
-      ]
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 480]
     }
   ],
   "connections": {
-    "Webhook": {
+    "Webhook Trigger": {
       "main": [
         [
           {
-            "node": "Validate Data",
+            "node": "Validate Event",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate Data": {
+    "Validate Event": {
       "main": [
         [
           {
-            "node": "Store User in DB",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Send Welcome Email",
+            "node": "Insert User to Database",
             "type": "main",
             "index": 0
           },
           {
             "node": "Add to Newsletter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Welcome Email",
             "type": "main",
             "index": 0
           }
@@ -247,22 +187,11 @@
         ]
       ]
     },
-    "Store User in DB": {
+    "Insert User to Database": {
       "main": [
         [
           {
-            "node": "Success Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Welcome Email": {
-      "main": [
-        [
-          {
-            "node": "Success Response",
+            "node": "Notify Admin (Slack)",
             "type": "main",
             "index": 0
           }
@@ -273,7 +202,40 @@
       "main": [
         [
           {
-            "node": "Success Response",
+            "node": "Log Signup Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Log Signup Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Signup Activity": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Admin (Slack)": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
             "type": "main",
             "index": 0
           }
@@ -281,19 +243,17 @@
       ]
     }
   },
-  "active": true,
-  "settings": {},
-  "versionId": "8f9a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
-  "meta": {
-    "templateCredsSetupCompleted": true
+  "settings": {
+    "timezone": "America/New_York"
   },
-  "id": "user-signup-workflow-001",
   "tags": [
     {
-      "createdAt": "2024-07-19T10:00:00.000Z",
-      "updatedAt": "2024-07-19T10:00:00.000Z",
-      "id": "signup-automation",
-      "name": "signup-automation"
+      "id": "user-management",
+      "name": "User Management"
+    },
+    {
+      "id": "notifications",
+      "name": "Notifications"
     }
   ]
 }

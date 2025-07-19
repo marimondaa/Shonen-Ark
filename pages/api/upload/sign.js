@@ -1,5 +1,6 @@
 // API route for generating Cloudinary signed upload URLs
-import { generateSignedUploadUrl } from '../../../lib/cloudinary';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { generateSignedUploadUrl } from '../../../src/lib/cloudinary';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
