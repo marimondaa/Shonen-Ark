@@ -20,12 +20,15 @@ const Layout = ({ children }) => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isMenuOpen]);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => {
+    console.log('Menu toggle clicked!', !isMenuOpen);
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <div className="min-h-screen bg-background text-text-light font-japanese">
       {/* Navigation */}
-      <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl">
+      <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl" style={{ zIndex: 999 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -55,14 +58,22 @@ const Layout = ({ children }) => {
             </div>
 
             {/* Hamburger Menu */}
-            <div className="relative hamburger-menu">
+            <div className="relative hamburger-menu" style={{ zIndex: 9999 }}>
               <motion.button
                 onClick={toggleMenu}
+                onTouchStart={toggleMenu} // Add touch support for mobile
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-3 rounded-lg bg-purple/20 text-text-light hover:text-accent-pink focus:outline-none focus:ring-2 focus:ring-accent-pink border border-purple/30 shrine-glow transition-all duration-300"
+                className="relative p-4 rounded-lg bg-accent-pink/80 hover:bg-accent-pink text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-accent-pink border-2 border-accent-pink shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
                 aria-label="Toggle navigation menu"
                 aria-expanded={isMenuOpen}
+                style={{ 
+                  zIndex: 9999, 
+                  minWidth: '56px', 
+                  minHeight: '56px',
+                  position: 'relative',
+                  isolation: 'isolate'
+                }}
               >
                 <motion.div className="w-6 h-6 flex flex-col justify-around">
                   <motion.span
@@ -92,6 +103,7 @@ const Layout = ({ children }) => {
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                     className="absolute right-0 top-full mt-2 w-80 bg-black/95 backdrop-blur-sm rounded-xl shadow-2xl border border-accent-pink/20 overflow-hidden"
+                    style={{ zIndex: 10000 }}
                   >
                     <div className="p-4">
                       {/* Navigation Links Section */}
