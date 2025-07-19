@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { motion } from 'framer-motion';
-import ShrineHero from '../components/ShrineHero';
+import ShrineHero from '../src/components/features/ShrineHero';
 
 export default function Home() {
   return (

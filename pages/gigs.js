@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useAuth } from '../lib/auth-context';
+import { useAuth } from '../src/lib/hooks/useAuth';
 
 export default function GigsPage() {
   const { user, isAuthenticated } = useAuth();

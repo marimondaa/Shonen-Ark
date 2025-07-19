@@ -1,6 +1,6 @@
 import '../styles/globals.css'
-import Layout from '../components/Layout'
-import { AuthProvider } from '../lib/auth-context'
+import Layout from '../src/components/layout/Layout'
+import { AuthProvider } from '../src/lib/hooks/useAuth'
 import Head from 'next/head'
 
 export default function App({ Component, pageProps }) {

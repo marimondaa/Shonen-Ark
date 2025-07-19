@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
-import UploadComponent from '../components/UploadComponent';
+import UploadComponent from '../src/components/features/UploadComponent';
 
 export default function Shrine() {
   const [uploadedFiles, setUploadedFiles] = useState([]);

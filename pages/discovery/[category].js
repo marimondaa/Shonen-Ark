@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { getDiscoveryContent, sortContent } from '../../lib/mockData';
+import { getDiscoveryContent, sortContent } from '../../src/lib/utils/mockData';
 
 export default function CategoryPage() {
   const router = useRouter();

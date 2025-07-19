@@ -13,8 +13,8 @@
     "test:e2e": "playwright test",
     "test:e2e:staging": "BASE_URL=https://shonen-ark-staging.up.railway.app playwright test",
     "test:e2e:production": "BASE_URL=https://shonen-ark.up.railway.app playwright test",
-    "deploy:n8n": "node scripts/deploy-n8n.js",
-    "deploy:workflows": "node scripts/deploy-n8n.js",
+    "deploy:n8n": "node infrastructure/scripts/deploy-n8n.js",
+    "deploy:workflows": "node infrastructure/scripts/deploy-n8n.js",
     "db:test": "tsx scripts/test-db-connection.ts",
     "db:health": "tsx scripts/db-health.ts"
   },

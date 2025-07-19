@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../lib/auth-context';
-import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../lib/mockData';
+import { useAuth } from '../../src/lib/hooks/useAuth';
+import { mockUserActivity, mockSubscriptions, mockBookmarks } from '../../src/lib/utils/mockData';
 
 const FanDashboard = () => {
   const router = useRouter();

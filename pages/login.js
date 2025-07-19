@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAuth } from '../lib/auth-context';
+import { useAuth } from '../src/lib/hooks/useAuth';
 
 export default function LoginPage() {
   const router = useRouter();

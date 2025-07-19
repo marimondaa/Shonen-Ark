@@ -151,7 +151,7 @@ class N8nDeployment {
     console.log('✅ Connected to n8n instance\n');
 
     // Deploy workflows
-    const workflowsDir = path.join(process.cwd(), 'workflows');
+    const workflowsDir = path.join(process.cwd(), 'infrastructure', 'workflows');
     
     if (!fs.existsSync(workflowsDir)) {
       throw new Error(`❌ Workflows directory not found: ${workflowsDir}`);

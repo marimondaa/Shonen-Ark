@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import UploadComponent from '../components/UploadComponent';
+import UploadComponent from '../src/components/features/UploadComponent';
 
 export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import TheoryCard from '../components/TheoryCard';
-import { mockTheories, filterTheoriesByAnime, sortContent } from '../lib/mockData';
+import TheoryCard from '../src/components/features/TheoryCard';
+import { mockTheories, filterTheoriesByAnime, sortContent } from '../src/lib/utils/mockData';
 
 export default function TheoriesPage() {
   const [theories, setTheories] = useState([]);

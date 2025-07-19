@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import { useSession } from 'next-auth/react';
-import UploadComponent from '../../components/UploadComponent';
-import { getCreatorStats, getCreatorContent } from '../../lib/mockData';
+import UploadComponent from '../../src/components/features/UploadComponent';
+import { getCreatorStats, getCreatorContent } from '../../src/lib/utils/mockData';
 import { withSubscription } from '../../lib/middleware/withSubscription';
 
 function CreatorAccount() {
