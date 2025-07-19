@@ -5,7 +5,11 @@ builder = "NIXPACKS"
 NPM_CONFIG_LEGACY_PEER_DEPS = "true"
 NPM_CONFIG_AUDIT_LEVEL = "moderate"
 NPM_CONFIG_FUND = "false"
+NPM_CONFIG_FORCE = "true"
+NPM_CONFIG_STRICT_PEER_DEPS = "false"
+NPM_CONFIG_AUTO_INSTALL_PEERS = "true"
 SKIP_ENV_VALIDATION = "1"
+NODE_OPTIONS = "--max-old-space-size=4096"
 
 [deploy]
 healthcheckPath = "/api/health"

@@ -17,7 +17,9 @@
     "deploy:workflows": "node infrastructure/scripts/deploy-n8n.js",
     "db:test": "tsx scripts/test-db-connection.ts",
     "db:health": "tsx scripts/db-health.ts",
-    "postinstall": "npm audit fix --audit-level moderate",
+    "railway:install": "npm install --legacy-peer-deps --force --no-audit",
+    "railway:build": "bash build.sh",
+    "postinstall": "npm audit fix --audit-level moderate --force",
     "clean": "rm -rf .next node_modules/.cache"
   },
   "dependencies": {
@@ -63,7 +65,14 @@
   "overrides": {
     "openai": "^4.104.0",
     "@huggingface/inference": "^4.5.3",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "n8n": {
+      "canvas": false,
+      "@n8n/langchain": false,
+      "@n8n/client-oauth2": false
+    },
+    "@langchain/core": "^0.1.0",
+    "langchain": "^0.1.0"
   },
   "engines": {
     "node": ">=18.0.0",
