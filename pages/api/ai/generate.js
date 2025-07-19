@@ -1,11 +1,10 @@
-import OpenAI from 'openai';
+// OpenAI removed in favor of n8n AI workflows
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/[...nextauth]';
 import { createClient } from '@supabase/supabase-js';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Note: AI functionality is now handled through n8n workflows
+// This endpoint serves as a placeholder for future n8n integration
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -124,40 +123,46 @@ async function handleAIRequest(req, res) {
       userPrompt = `Context: ${context}\n\nRequest: ${prompt}`;
     }
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      max_tokens: 1500,
-      temperature: 0.7,
-      top_p: 1,
-      frequency_penalty: 0.2,
-      presence_penalty: 0.1
-    });
+    // AI functionality moved to n8n workflows
+    // This is a placeholder response until n8n integration is complete
+    const aiResponse = `🤖 AI Response (n8n Integration Coming Soon)
 
-    const aiResponse = completion.choices[0]?.message?.content;
+Hi! The AI functionality has been moved to our n8n workflow system for better automation and integration.
+
+**Your Request:** ${action}
+**Prompt:** ${prompt}
+
+**What we're working on:**
+- Automated theory generation through n8n workflows
+- AI-powered content enhancement
+- Community-driven theory validation
+- Advanced anime/manga analysis
+
+**For now:** You can still create and edit theories manually, and our community features are fully functional!
+
+**Coming soon:** Full n8n AI integration with enhanced capabilities.`;
 
     if (!aiResponse) {
       return res.status(500).json({ error: 'Failed to generate AI response' });
     }
 
-    // Log AI usage
+    // Placeholder for AI usage logging (n8n will handle this)
     await supabase
       .from('ai_usage')
       .insert({
         user_id: session.user.id,
         action,
-        prompt: prompt.substring(0, 500), // Store first 500 chars of prompt
-        tokens_used: completion.data.usage.total_tokens,
+        prompt: prompt.substring(0, 500),
+        tokens_used: 0, // n8n will track this
         theory_id: theoryId || null,
         created_at: new Date().toISOString()
-      });
+      })
+      .select()
+      .catch(() => null); // Fail silently if table doesn't exist yet
 
     return res.status(200).json({
       response: aiResponse,
-      tokensUsed: completion.data.usage.total_tokens,
+      tokensUsed: 0,
       remainingRequests: dailyLimit - dailyUsage - 1
     });
 
