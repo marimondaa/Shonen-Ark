@@ -1,0 +1,334 @@
+{
+  "name": "Project Approval Workflow",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-approval",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "project-approval-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.event}}",
+              "operation": "equal",
+              "value2": "project.submitted"
+            }
+          ]
+        }
+      },
+      "id": "validate-event",
+      "name": "Validate Event",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.data.metadata.safety_check.safe}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "safety-check",
+      "name": "Safety Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "prompt": "As a content moderator for an anime fan platform, analyze this project submission for appropriateness:\n\n**Project Details:**\n- Title: {{$json.data.title}}\n- Description: {{$json.data.description}}\n- Category: {{$json.data.category}}\n- File URL: {{$json.data.fileUrl}}\n\n**Safety Check Results:**\n- Safe: {{$json.data.metadata.safety_check.safe}}\n- Confidence: {{$json.data.metadata.safety_check.confidence}}\n- Issues: {{$json.data.metadata.safety_check.issues}}\n\n**Instructions:**\n1. Review for inappropriate content, copyright violations, or spam\n2. Check if content aligns with anime/manga theme\n3. Verify quality and effort level\n4. Provide recommendation: APPROVE, REJECT, or REVIEW_NEEDED\n5. Give brief reasoning\n\nReturn JSON format:\n{\n  \"recommendation\": \"APPROVE|REJECT|REVIEW_NEEDED\",\n  \"reasoning\": \"Brief explanation\",\n  \"confidence\": 0.95,\n  \"tags\": [\"quality\", \"theme-match\", \"appropriate\"]\n}",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "ai-content-review",
+      "name": "AI Content Review",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [900, 180],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-api",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": "projects",
+        "updateKey": "id",
+        "columns": "status, metadata",
+        "additionalFields": {
+          "returnFields": "*"
+        }
+      },
+      "id": "auto-approve",
+      "name": "Auto Approve Project",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-staging",
+          "name": "Supabase Staging DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": "projects",
+        "updateKey": "id",
+        "columns": "status, metadata",
+        "additionalFields": {
+          "returnFields": "*"
+        }
+      },
+      "id": "flag-for-review",
+      "name": "Flag for Manual Review",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [900, 420],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-staging",
+          "name": "Supabase Staging DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@shonen-ark.com",
+        "toEmail": "admin@shonen-ark.com",
+        "subject": "🚨 Project Needs Manual Review - {{$json.data.title}}",
+        "emailFormat": "html",
+        "html": "<div style=\"font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa; padding: 30px; border-radius: 12px;\">\n  <div style=\"background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center;\">\n    <h1 style=\"margin: 0; font-size: 24px;\">🚨 Manual Review Required</h1>\n    <p style=\"margin: 10px 0 0 0; opacity: 0.9;\">Project flagged by safety check</p>\n  </div>\n  \n  <div style=\"background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545;\">\n    <h2 style=\"color: #343a40; margin: 0 0 20px 0;\">Project Details</h2>\n    <div style=\"margin-bottom: 15px;\">\n      <strong>Title:</strong> {{$json.data.title}}<br>\n      <strong>Category:</strong> {{$json.data.category}}<br>\n      <strong>Creator ID:</strong> {{$json.data.creatorId}}<br>\n      <strong>Project ID:</strong> {{$json.data.projectId}}\n    </div>\n    \n    <div style=\"background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;\">\n      <strong>Description:</strong><br>\n      <p style=\"margin: 8px 0; color: #6c757d;\">{{$json.data.description}}</p>\n    </div>\n    \n    <div style=\"margin: 15px 0;\">\n      <strong>File URL:</strong> <a href=\"{{$json.data.fileUrl}}\" style=\"color: #007bff;\">{{$json.data.fileUrl}}</a>\n    </div>\n  </div>\n  \n  <div style=\"background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;\">\n    <h3 style=\"color: #856404; margin: 0 0 15px 0;\">⚠️ Safety Check Results</h3>\n    <div style=\"color: #856404;\">\n      <strong>Safe:</strong> {{$json.data.metadata.safety_check.safe}}<br>\n      <strong>Confidence:</strong> {{$json.data.metadata.safety_check.confidence}}<br>\n      <strong>Issues Found:</strong>\n      <ul style=\"margin: 8px 0; padding-left: 20px;\">\n        {{#each $json.data.metadata.safety_check.issues}}\n        <li>{{this}}</li>\n        {{/each}}\n      </ul>\n    </div>\n  </div>\n  \n  <div style=\"text-align: center; margin-top: 30px;\">\n    <a href=\"https://shonen-ark.com/admin/projects/{{$json.data.projectId}}\" \n       style=\"background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600;\">Review Project</a>\n  </div>\n  \n  <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 14px; text-align: center;\">\n    <p>This is an automated notification from Shonen Ark content moderation system.</p>\n  </div>\n</div>"
+      },
+      "id": "notify-admin-review",
+      "name": "Notify Admin for Review",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1120, 420],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@shonen-ark.com",
+        "toEmail": "={{$node.postgres.json.creator_email}}",
+        "subject": "✅ Your {{$json.data.category}} project has been approved!",
+        "emailFormat": "html",
+        "html": "<div style=\"font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #ffffff; padding: 40px 20px; border-radius: 12px;\">\n  <div style=\"text-align: center; margin-bottom: 40px;\">\n    <img src=\"https://your-domain.com/brand-logo.png\" alt=\"Shonen Ark\" style=\"height: 60px; margin-bottom: 20px;\">\n    <div style=\"background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;\">\n      <h1 style=\"margin: 0; font-size: 28px;\">🎉 Project Approved!</h1>\n      <p style=\"margin: 10px 0 0 0; opacity: 0.9;\">Your submission is now live</p>\n    </div>\n  </div>\n  \n  <div style=\"background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.2);\">\n    <h2 style=\"color: #d4af37; margin: 0 0 20px 0;\">\"{{$json.data.title}}\"</h2>\n    <div style=\"color: #e0e0e0; line-height: 1.6;\">\n      <p><strong>Category:</strong> {{$json.data.category}}</p>\n      <p><strong>Status:</strong> <span style=\"color: #28a745;\">✅ Approved & Live</span></p>\n      <p><strong>Submission Date:</strong> {{$json.data.timestamp}}</p>\n    </div>\n    \n    <div style=\"margin-top: 30px; text-align: center;\">\n      <a href=\"https://shonen-ark.com/discovery/{{$json.data.category}}/{{$json.data.projectId}}\" \n         style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;\">View Your Project</a>\n    </div>\n  </div>\n  \n  <div style=\"background: rgba(255,255,255,0.05); border-radius: 12px; padding: 25px; margin-bottom: 30px;\">\n    <h3 style=\"color: #d4af37; margin: 0 0 15px 0;\">🚀 What's Next?</h3>\n    <ul style=\"color: #e0e0e0; line-height: 1.8; margin: 0; padding-left: 20px;\">\n      <li>Your project is now discoverable in the {{$json.data.category}} section</li>\n      <li>Community members can like, comment, and share your work</li>\n      <li>Track performance in your creator dashboard</li>\n      <li>Consider upgrading to Creator tier for advanced analytics</li>\n    </ul>\n  </div>\n  \n  <div style=\"text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;\">\n    <div style=\"margin-bottom: 20px;\">\n      <a href=\"https://shonen-ark.com/account/creator\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">📊 Creator Dashboard</a>\n      <a href=\"https://shonen-ark.com/upload\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">⬆️ Upload More</a>\n      <a href=\"https://discord.gg/shonen-ark\" style=\"color: #d4af37; text-decoration: none; margin: 0 12px;\">💬 Join Community</a>\n    </div>\n    \n    <p style=\"color: #666666; font-size: 12px; margin: 20px 0 0 0;\">© 2025 Shonen Ark. Keep creating amazing content! 🌸</p>\n  </div>\n</div>"
+      },
+      "id": "notify-creator-approved",
+      "name": "Notify Creator - Approved",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": "public",
+        "table": "admin_logs",
+        "columns": "admin_id, action, target_type, target_id, details",
+        "additionalFields": {
+          "returnFields": "*"
+        }
+      },
+      "id": "log-admin-action",
+      "name": "Log Admin Action",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [1340, 360],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-staging",
+          "name": "Supabase Staging DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Project processed successfully\",\n  \"data\": {\n    \"projectId\": \"{{$json.data.projectId}}\",\n    \"status\": \"{{$json.status}}\",\n    \"processed_at\": \"{{$now}}\",\n    \"action_taken\": \"{{$json.action}}\"\n  }\n}"
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 360]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"error\": \"Invalid event type\",\n  \"message\": \"Expected 'project.submitted' event\",\n  \"received\": \"{{$json.event}}\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [460, 480]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Event": {
+      "main": [
+        [
+          {
+            "node": "Safety Check",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safety Check": {
+      "main": [
+        [
+          {
+            "node": "Auto Approve Project",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Content Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Flag for Manual Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto Approve Project": {
+      "main": [
+        [
+          {
+            "node": "Notify Creator - Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flag for Manual Review": {
+      "main": [
+        [
+          {
+            "node": "Notify Admin for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Admin for Review": {
+      "main": [
+        [
+          {
+            "node": "Log Admin Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Creator - Approved": {
+      "main": [
+        [
+          {
+            "node": "Log Admin Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Admin Action": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "America/New_York"
+  },
+  "tags": [
+    {
+      "id": "content-moderation",
+      "name": "Content Moderation"
+    },
+    {
+      "id": "project-management",
+      "name": "Project Management"
+    },
+    {
+      "id": "ai-review",
+      "name": "AI Review"
+    }
+  ]
+}

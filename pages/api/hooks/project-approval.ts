@@ -1,18 +1,86 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { validateIncomingWebhook, forwardToN8nWorkflow } from '../../../lib/webhook';
+import crypto from 'crypto';
+import { supabase } from '../../../lib/supabase';
+import { WebhookUtils } from '../../../lib/webhook';
+
+/**
+ * Project Approval Webhook Handler
+ * Handles project submissions and forwards to n8n for safety checks and admin notifications
+ */
 
 export interface ProjectApprovalPayload {
   projectId: string;
-  userId: string;
-  userEmail: string;
-  projectTitle: string;
-  projectType: 'theory' | 'animation' | 'artwork' | 'video';
-  contentUrl: string;
+  creatorId: string;
+  userId: string; // Added this field
+  title: string;
+  projectTitle: string; // Added this field
+  description: string;
+  category: 'fan-fights' | 'audio-fx' | 'character-designs' | 'theories';
+  projectType: string; // Added this field
+  fileUrl?: string;
+  thumbnailUrl?: string;
+  metadata?: {
+    duration?: number;
+    fileSize?: number;
+    mimeType?: string;
+    tags?: string[];
+    animeReference?: string;
+  };
+  timestamp: string;
   submittedAt: string;
   moderationFlags?: string[];
   action: 'submit' | 'approve' | 'reject';
   moderatorId?: string;
   moderatorNotes?: string;
+}
+
+/**
+ * Validate incoming webhook signature
+ */
+function validateIncomingWebhook(payload: string, headers: any): { valid: boolean; error?: string } {
+  try {
+    const webhookUtils = new WebhookUtils({
+      secret: process.env.WEBHOOK_SECRET || ''
+    });
+
+    const signature = headers['x-signature'] || headers['x-hub-signature-256'];
+    if (!signature) {
+      return { valid: false, error: 'Missing signature header' };
+    }
+
+    const timestamp = headers['x-timestamp'];
+    const isValid = webhookUtils.verifySignature(payload, signature, timestamp);
+    
+    return { valid: isValid, error: isValid ? undefined : 'Invalid signature' };
+  } catch (error) {
+    return { valid: false, error: `Validation error: ${error.message}` };
+  }
+}
+
+/**
+ * Forward payload to n8n workflow
+ */
+async function forwardToN8nWorkflow(url: string, payload: any): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.N8N_API_KEY}`,
+        'X-Source': 'shonen-ark-api'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { success: false, error: `n8n workflow failed: ${response.status} ${errorText}` };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: `Network error: ${error.message}` };
+  }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
