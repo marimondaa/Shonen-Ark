@@ -16,7 +16,9 @@
     "deploy:n8n": "node infrastructure/scripts/deploy-n8n.js",
     "deploy:workflows": "node infrastructure/scripts/deploy-n8n.js",
     "db:test": "tsx scripts/test-db-connection.ts",
-    "db:health": "tsx scripts/db-health.ts"
+    "db:health": "tsx scripts/db-health.ts",
+    "postinstall": "npm audit fix --audit-level moderate",
+    "clean": "rm -rf .next node_modules/.cache"
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.4.0",
@@ -31,10 +33,10 @@
     "framer-motion": "^10.16.0",
     "micro": "^10.0.1",
     "multer": "^1.4.5-lts.1",
-    "n8n": "^1.79.1",
+    "n8n": "^1.102.4",
     "next": "^13.4.0",
     "next-auth": "^4.24.11",
-    "openai": "^3.3.0",
+    "openai": "^4.104.0",
     "pg": "^8.13.1",
     "postcss": "^8.4.0",
     "react": "^18.2.0",
@@ -57,6 +59,11 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "supertest": "^7.0.0"
+  },
+  "overrides": {
+    "openai": "^4.104.0",
+    "@huggingface/inference": "^4.5.3",
+    "mongodb": "^6.17.0"
   },
   "engines": {
     "node": ">=18.0.0",

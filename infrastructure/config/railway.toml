@@ -1,6 +1,12 @@
 [build]
 builder = "NIXPACKS"
 
+[build.env]
+NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+NPM_CONFIG_AUDIT_LEVEL = "moderate"
+NPM_CONFIG_FUND = "false"
+SKIP_ENV_VALIDATION = "1"
+
 [deploy]
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300

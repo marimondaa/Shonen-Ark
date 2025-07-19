@@ -1,13 +1,11 @@
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/[...nextauth]';
 import { createClient } from '@supabase/supabase-js';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const openai = new OpenAIApi(configuration);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -126,7 +124,7 @@ async function handleAIRequest(req, res) {
       userPrompt = `Context: ${context}\n\nRequest: ${prompt}`;
     }
 
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: systemPrompt },
@@ -139,7 +137,7 @@ async function handleAIRequest(req, res) {
       presence_penalty: 0.1
     });
 
-    const aiResponse = completion.data.choices[0]?.message?.content;
+    const aiResponse = completion.choices[0]?.message?.content;
 
     if (!aiResponse) {
       return res.status(500).json({ error: 'Failed to generate AI response' });
