@@ -1,0 +1,406 @@
+{
+  "name": "Project Approval Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-approval",
+        "options": {}
+      },
+      "id": "a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Project Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "project-approval-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Project Webhook\"].json[\"projectId\"]}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$node[\"Project Webhook\"].json[\"creatorId\"]}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$node[\"Project Webhook\"].json[\"status\"]}}",
+              "operation": "equal",
+              "value2": "approved"
+            }
+          ]
+        }
+      },
+      "id": "f6e7d8c9-4b5a-4798-9c1d-2e3f4a5b6c7e",
+      "name": "Validate Approval",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "community_projects",
+        "updateKey": "project_id",
+        "additionalFields": {
+          "mode": "raw",
+          "rawQuery": "UPDATE community_projects SET status = 'approved', approved_at = NOW(), approved_by = 'system', visibility = 'public' WHERE project_id = '{{$node[\"Project Webhook\"].json[\"projectId\"]}}'"
+        }
+      },
+      "id": "b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3f",
+      "name": "Update Project Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        680,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "railway-postgres-credentials",
+          "name": "Railway PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "users",
+        "where": {
+          "values": [
+            {
+              "column": "user_id",
+              "condition": "equal",
+              "value": "={{$node[\"Project Webhook\"].json[\"creatorId\"]}}"
+            }
+          ]
+        },
+        "sort": {
+          "values": []
+        },
+        "limit": 1
+      },
+      "id": "g2h3i4j5-6k7l-4m8n-9o0p-1q2r3s4t5u6v",
+      "name": "Get Creator Details",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "railway-postgres-credentials",
+          "name": "Railway PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "requestMethod": "POST",
+        "url": "={{$env.SMTP_HOST}}",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{$node[\"Get Creator Details\"].json[\"email\"]}}"
+            },
+            {
+              "name": "subject",
+              "value": "🎉 Your Shonen Ark Project Has Been Approved!"
+            },
+            {
+              "name": "html",
+              "value": "<h2>Congratulations, {{$node[\"Get Creator Details\"].json[\"username\"]}}!</h2><p>Your project \"{{$node[\"Project Webhook\"].json[\"projectTitle\"]}}\" has been approved and is now live on Shonen Ark!</p><p><strong>Project Details:</strong></p><ul><li>Project ID: {{$node[\"Project Webhook\"].json[\"projectId\"]}}</li><li>Status: Approved ✅</li><li>Approved on: {{new Date().toLocaleDateString()}}</li></ul><p>Your project is now visible to the community and ready to attract collaborators.</p><a href=\"{{$env.NEXT_PUBLIC_BASE_URL}}/gigs/{{$node[\"Project Webhook\"].json[\"projectId\"]}}\">View your live project</a><p>Thank you for contributing to our community!<br>The Shonen Ark Team</p>"
+            }
+          ]
+        }
+      },
+      "id": "h7i8j9k0-1l2m-4n3o-4p5q-6r7s8t9u0v1w",
+      "name": "Send Approval Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://hooks.slack.com/services/{{$env.SLACK_WEBHOOK_PATH}}",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "🚀 New Project Approved on Shonen Ark!"
+            },
+            {
+              "name": "blocks",
+              "value": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*{{$node[\"Project Webhook\"].json[\"projectTitle\"]}}* has been approved!\n\n*Creator:* {{$node[\"Get Creator Details\"].json[\"username\"]}}\n*Project Type:* {{$node[\"Project Webhook\"].json[\"projectType\"]}}\n*Skills Needed:* {{$node[\"Project Webhook\"].json[\"skillsNeeded\"]}}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Project"
+                      },
+                      "url": "{{$env.NEXT_PUBLIC_BASE_URL}}/gigs/{{$node[\"Project Webhook\"].json[\"projectId\"]}}"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "id": "x2y3z4a5-6b7c-4d8e-9f0g-1h2i3j4k5l6m",
+      "name": "Notify Team Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.twitter.com/2/tweets",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth2Api",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "🏯 New project just launched on Shonen Ark!\n\n\"{{$node[\"Project Webhook\"].json[\"projectTitle\"]}}\" by @{{$node[\"Get Creator Details\"].json[\"username\"]}}\n\nLooking for: {{$node[\"Project Webhook\"].json[\"skillsNeeded\"]}}\n\n#ShonenArk #AnimeCreators #Community\n\n{{$env.NEXT_PUBLIC_BASE_URL}}/gigs/{{$node[\"Project Webhook\"].json[\"projectId\"]}}"
+            }
+          ]
+        }
+      },
+      "id": "n7o8p9q0-1r2s-4t3u-4v5w-6x7y8z9a0b1c",
+      "name": "Tweet Announcement",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "message",
+              "value": "Project {{$node[\"Project Webhook\"].json[\"projectTitle\"]}} approved successfully"
+            },
+            {
+              "name": "projectId",
+              "value": "={{$node[\"Project Webhook\"].json[\"projectId\"]}}"
+            },
+            {
+              "name": "approvedAt",
+              "value": "={{new Date().toISOString()}}"
+            },
+            {
+              "name": "notificationsSent",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "id": "m6n7o8p9-0q1r-4s2t-3u4v-5w6x7y8z9a0b",
+      "name": "Approval Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        900,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "error"
+            },
+            {
+              "name": "message",
+              "value": "Invalid project approval data"
+            },
+            {
+              "name": "error",
+              "value": "Missing required fields or invalid status"
+            }
+          ]
+        }
+      },
+      "id": "c5d6e7f8-9g0h-4i1j-2k3l-4m5n6o7p8q9r",
+      "name": "Validation Error",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        680,
+        700
+      ]
+    }
+  ],
+  "connections": {
+    "Project Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Approval": {
+      "main": [
+        [
+          {
+            "node": "Update Project Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Creator Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Project Status": {
+      "main": [
+        [
+          {
+            "node": "Approval Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Creator Details": {
+      "main": [
+        [
+          {
+            "node": "Send Approval Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Team Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tweet Announcement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Approval Email": {
+      "main": [
+        [
+          {
+            "node": "Approval Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Team Slack": {
+      "main": [
+        [
+          {
+            "node": "Approval Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tweet Announcement": {
+      "main": [
+        [
+          {
+            "node": "Approval Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "4a5b6c7d-8e9f-0a1b-2c3d-4e5f6a7b8c9d",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "project-approval-workflow-002",
+  "tags": [
+    {
+      "createdAt": "2024-07-19T10:30:00.000Z",
+      "updatedAt": "2024-07-19T10:30:00.000Z",
+      "id": "project-automation",
+      "name": "project-automation"
+    }
+  ]
+}

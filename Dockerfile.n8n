@@ -1,0 +1,23 @@
+# n8n Dockerfile for Railway deployment
+FROM n8nio/n8n:latest
+
+USER root
+
+# Install additional packages if needed
+RUN apk add --update --no-cache \
+    curl \
+    git
+
+# Copy workflows
+COPY workflows/ /data/workflows/
+
+# Set proper permissions
+RUN chown -R node:node /data
+
+USER node
+
+# Expose n8n port
+EXPOSE 5678
+
+# Start n8n
+CMD ["n8n", "start"]

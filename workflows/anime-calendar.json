@@ -1,0 +1,351 @@
+{
+  "name": "Anime Calendar Sync Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graphql.anilist.co",
+        "requestMethod": "POST",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "query ($page: Int, $perPage: Int, $status: MediaStatus, $season: MediaSeason, $year: Int) { Page(page: $page, perPage: $perPage) { pageInfo { total currentPage lastPage hasNextPage } media(status: $status, season: $season, seasonYear: $year, type: ANIME, sort: POPULARITY_DESC) { id title { romaji english native } startDate { year month day } endDate { year month day } status format episodes duration coverImage { large medium } bannerImage description(asHtml: false) genres studios { nodes { name } } averageScore popularity } } }"
+            },
+            {
+              "name": "variables",
+              "value": {
+                "page": 1,
+                "perPage": 50,
+                "status": "RELEASING",
+                "season": "={{new Date().getMonth() < 3 ? 'WINTER' : new Date().getMonth() < 6 ? 'SPRING' : new Date().getMonth() < 9 ? 'SUMMER' : 'FALL'}}",
+                "year": "={{new Date().getFullYear()}}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "q7r8s9t0-1u2v-3w4x-5y6z-7a8b9c0d1e2f",
+      "name": "Fetch Current Season Anime",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const animeData = $input.all()[0].json.data.Page.media;\nconst processedAnime = [];\n\nfor (const anime of animeData) {\n  // Calculate next episode date (estimate based on weekly schedule)\n  const startDate = anime.startDate;\n  let nextEpisodeDate = null;\n  \n  if (startDate && startDate.year && startDate.month && startDate.day) {\n    const start = new Date(startDate.year, startDate.month - 1, startDate.day);\n    const now = new Date();\n    const weeksPassed = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));\n    \n    // Estimate next episode (assuming weekly release)\n    nextEpisodeDate = new Date(start);\n    nextEpisodeDate.setDate(start.getDate() + ((weeksPassed + 1) * 7));\n  }\n  \n  processedAnime.push({\n    anilist_id: anime.id,\n    title: anime.title.romaji || anime.title.english,\n    title_english: anime.title.english,\n    title_romaji: anime.title.romaji,\n    title_native: anime.title.native,\n    start_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    end_date: anime.endDate && anime.endDate.year ? `${anime.endDate.year}-${String(anime.endDate.month || 12).padStart(2, '0')}-${String(anime.endDate.day || 31).padStart(2, '0')}` : null,\n    next_episode_date: nextEpisodeDate ? nextEpisodeDate.toISOString().split('T')[0] : null,\n    status: anime.status,\n    format: anime.format,\n    episodes: anime.episodes,\n    duration: anime.duration,\n    cover_image: anime.coverImage.large,\n    banner_image: anime.bannerImage,\n    description: anime.description,\n    genres: anime.genres,\n    studios: anime.studios.nodes.map(s => s.name),\n    average_score: anime.averageScore,\n    popularity: anime.popularity,\n    season: new Date().getMonth() < 3 ? 'WINTER' : new Date().getMonth() < 6 ? 'SPRING' : new Date().getMonth() < 9 ? 'SUMMER' : 'FALL',\n    year: new Date().getFullYear(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn processedAnime.map(anime => ({ json: anime }));"
+      },
+      "id": "f3g4h5i6-7j8k-9l0m-1n2o-3p4q5r6s7t8u",
+      "name": "Process Anime Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "anime_calendar",
+        "upsertColumns": ["anilist_id"],
+        "columns": "anilist_id, title, title_english, title_romaji, title_native, start_date, end_date, next_episode_date, status, format, episodes, duration, cover_image, banner_image, description, genres, studios, average_score, popularity, season, year, updated_at",
+        "additionalFields": {
+          "mode": "raw"
+        }
+      },
+      "id": "v9w0x1y2-3z4a-5b6c-7d8e-9f0g1h2i3j4k",
+      "name": "Update Calendar DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "railway-postgres-credentials",
+          "name": "Railway PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graphql.anilist.co",
+        "requestMethod": "POST",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "query ($page: Int, $perPage: Int, $status: MediaStatus, $season: MediaSeason, $year: Int) { Page(page: $page, perPage: $perPage) { pageInfo { total currentPage lastPage hasNextPage } media(status: $status, season: $season, seasonYear: $year, type: ANIME, sort: POPULARITY_DESC) { id title { romaji english native } startDate { year month day } status format episodes duration coverImage { large medium } bannerImage description(asHtml: false) genres studios { nodes { name } } averageScore popularity } } }"
+            },
+            {
+              "name": "variables",
+              "value": {
+                "page": 1,
+                "perPage": 30,
+                "status": "NOT_YET_RELEASED",
+                "season": "={{new Date().getMonth() < 3 ? 'SPRING' : new Date().getMonth() < 6 ? 'SUMMER' : new Date().getMonth() < 9 ? 'FALL' : 'WINTER'}}",
+                "year": "={{new Date().getMonth() === 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "l5m6n7o8-9p0q-1r2s-3t4u-5v6w7x8y9z0a",
+      "name": "Fetch Upcoming Anime",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const upcomingData = $input.all()[0].json.data.Page.media;\nconst processedUpcoming = [];\n\nfor (const anime of upcomingData) {\n  const startDate = anime.startDate;\n  \n  processedUpcoming.push({\n    anilist_id: anime.id,\n    title: anime.title.romaji || anime.title.english,\n    title_english: anime.title.english,\n    title_romaji: anime.title.romaji,\n    title_native: anime.title.native,\n    start_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    end_date: null,\n    next_episode_date: startDate ? `${startDate.year}-${String(startDate.month).padStart(2, '0')}-${String(startDate.day).padStart(2, '0')}` : null,\n    status: anime.status,\n    format: anime.format,\n    episodes: anime.episodes,\n    duration: anime.duration,\n    cover_image: anime.coverImage.large,\n    banner_image: anime.bannerImage,\n    description: anime.description,\n    genres: anime.genres,\n    studios: anime.studios.nodes.map(s => s.name),\n    average_score: anime.averageScore,\n    popularity: anime.popularity,\n    season: new Date().getMonth() < 3 ? 'SPRING' : new Date().getMonth() < 6 ? 'SUMMER' : new Date().getMonth() < 9 ? 'FALL' : 'WINTER',\n    year: new Date().getMonth() === 11 ? new Date().getFullYear() + 1 : new Date().getFullYear(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn processedUpcoming.map(anime => ({ json: anime }));"
+      },
+      "id": "b1c2d3e4-5f6g-7h8i-9j0k-1l2m3n4o5p6q",
+      "name": "Process Upcoming Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "anime_calendar",
+        "upsertColumns": ["anilist_id"],
+        "columns": "anilist_id, title, title_english, title_romaji, title_native, start_date, end_date, next_episode_date, status, format, episodes, duration, cover_image, banner_image, description, genres, studios, average_score, popularity, season, year, updated_at",
+        "additionalFields": {
+          "mode": "raw"
+        }
+      },
+      "id": "r7s8t9u0-1v2w-3x4y-5z6a-7b8c9d0e1f2g",
+      "name": "Update Upcoming DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        420
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "railway-postgres-credentials",
+          "name": "Railway PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "={{$env.NEXT_PUBLIC_BASE_URL}}/api/cache/revalidate",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{$env.REVALIDATE_SECRET}}"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "paths",
+              "value": ["/calendar", "/api/anime/current", "/api/anime/upcoming"]
+            }
+          ]
+        }
+      },
+      "id": "h3i4j5k6-7l8m-9n0o-1p2q-3r4s5t6u7v8w",
+      "name": "Revalidate Cache",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1120,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "message",
+              "value": "Anime calendar synchronized successfully"
+            },
+            {
+              "name": "syncedAt",
+              "value": "={{new Date().toISOString()}}"
+            },
+            {
+              "name": "currentSeasonCount",
+              "value": "={{$node[\"Update Calendar DB\"].json.length}}"
+            },
+            {
+              "name": "upcomingCount",
+              "value": "={{$node[\"Update Upcoming DB\"].json.length}}"
+            }
+          ]
+        }
+      },
+      "id": "x9y0z1a2-3b4c-5d6e-7f8g-9h0i1j2k3l4m",
+      "name": "Sync Complete",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1340,
+        360
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Current Season Anime",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Upcoming Anime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Current Season Anime": {
+      "main": [
+        [
+          {
+            "node": "Process Anime Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Anime Data": {
+      "main": [
+        [
+          {
+            "node": "Update Calendar DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Calendar DB": {
+      "main": [
+        [
+          {
+            "node": "Revalidate Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Upcoming Anime": {
+      "main": [
+        [
+          {
+            "node": "Process Upcoming Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Upcoming Data": {
+      "main": [
+        [
+          {
+            "node": "Update Upcoming DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Upcoming DB": {
+      "main": [
+        [
+          {
+            "node": "Revalidate Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revalidate Cache": {
+      "main": [
+        [
+          {
+            "node": "Sync Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "8e9f0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "anime-calendar-sync-workflow-003",
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:00:00.000Z",
+      "updatedAt": "2024-07-19T11:00:00.000Z",
+      "id": "calendar-automation",
+      "name": "calendar-automation"
+    }
+  ]
+}

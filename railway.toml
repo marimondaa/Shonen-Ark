@@ -1,0 +1,46 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyMaxRetries = 10
+restartPolicyType = "ON_FAILURE"
+
+[[services]]
+name = "next-app"
+source = "."
+
+[services.variables]
+NODE_ENV = "production"
+PORT = "3000"
+
+[[services]]
+name = "n8n"
+source = "."
+dockerfile = "Dockerfile.n8n"
+
+[services.variables]
+N8N_HOST = "0.0.0.0"
+N8N_PORT = "5678" 
+N8N_PROTOCOL = "https"
+WEBHOOK_URL = "${{RAILWAY_STATIC_URL}}"
+N8N_ENCRYPTION_KEY = "${{N8N_ENCRYPTION_KEY}}"
+DB_TYPE = "postgresdb"
+DB_POSTGRESDB_HOST = "${{PGHOST}}"
+DB_POSTGRESDB_PORT = "${{PGPORT}}"
+DB_POSTGRESDB_DATABASE = "${{PGDATABASE}}"
+DB_POSTGRESDB_USER = "${{PGUSER}}"
+DB_POSTGRESDB_PASSWORD = "${{PGPASSWORD}}"
+N8N_BASIC_AUTH_ACTIVE = "true"
+N8N_BASIC_AUTH_USER = "${{N8N_BASIC_AUTH_USER}}"
+N8N_BASIC_AUTH_PASSWORD = "${{N8N_BASIC_AUTH_PASSWORD}}"
+
+[[services]]
+name = "postgres"
+source = "postgres:15"
+
+[services.variables]
+POSTGRES_DB = "shonen_ark"
+POSTGRES_USER = "${{POSTGRES_USER}}"
+POSTGRES_PASSWORD = "${{POSTGRES_PASSWORD}}"

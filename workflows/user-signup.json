@@ -1,0 +1,299 @@
+{
+  "name": "User Signup Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "user-signup",
+        "options": {}
+      },
+      "id": "b3b1a7c9-4f6e-4b9a-8d2e-3c5f7a9b1e4d",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "user-signup-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"email\"]}}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"userId\"]}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "a5d2c8f1-3e4b-4c6a-9f1d-2b5e8a7c4f9g",
+      "name": "Validate Data",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "users",
+        "columns": "user_id, email, username, account_type, signup_date, source",
+        "additionalFields": {
+          "mode": "raw",
+          "rawQuery": "INSERT INTO users (user_id, email, username, account_type, signup_date, source) VALUES ('{{$node[\"Webhook\"].json[\"userId\"]}}', '{{$node[\"Webhook\"].json[\"email\"]}}', '{{$node[\"Webhook\"].json[\"username\"]}}', '{{$node[\"Webhook\"].json[\"accountType\"]}}', NOW(), '{{$node[\"Webhook\"].json[\"source\"]}}') ON CONFLICT (user_id) DO UPDATE SET signup_date = NOW(), source = EXCLUDED.source"
+        }
+      },
+      "id": "c7f4a1b8-2d5e-4a9c-8e1f-3b6d9a2c5e8h",
+      "name": "Store User in DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        680,
+        220
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "railway-postgres-credentials",
+          "name": "Railway PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "requestMethod": "POST",
+        "url": "={{$env.SMTP_HOST}}",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{$node[\"Webhook\"].json[\"email\"]}}"
+            },
+            {
+              "name": "subject",
+              "value": "Welcome to Shonen Ark! 🏯"
+            },
+            {
+              "name": "html",
+              "value": "<h2>Welcome to Shonen Ark, {{$node[\"Webhook\"].json[\"username\"]}}!</h2><p>Your {{$node[\"Webhook\"].json[\"accountType\"]}} account has been successfully created.</p><p>Explore anime theories, discover new content, and join our mystical community.</p><a href=\"{{$env.NEXT_PUBLIC_BASE_URL}}/account/{{$node[\"Webhook\"].json[\"accountType\"]}}\">Visit your dashboard</a><p>Happy theorizing!<br>The Shonen Ark Team</p>"
+            }
+          ]
+        }
+      },
+      "id": "d9e6b3c2-1a4f-4d7b-9e2c-5f8a1b4e7c0i",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.emailoctopus.com/v1.6/lists/{{$env.NEWSLETTER_LIST_ID}}/contacts",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "={{$env.NEWSLETTER_API_KEY}}"
+            },
+            {
+              "name": "email_address",
+              "value": "={{$node[\"Webhook\"].json[\"email\"]}}"
+            },
+            {
+              "name": "fields",
+              "value": {
+                "FirstName": "{{$node[\"Webhook\"].json[\"username\"]}}",
+                "AccountType": "{{$node[\"Webhook\"].json[\"accountType\"]}}",
+                "SignupDate": "{{new Date().toISOString()}}"
+              }
+            },
+            {
+              "name": "tags",
+              "value": ["new-user", "{{$node[\"Webhook\"].json[\"accountType\"]}}"]
+            }
+          ]
+        }
+      },
+      "id": "f1c8e5a4-3b6d-4f9a-8c1e-2d5f8a1c4b7j",
+      "name": "Add to Newsletter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "message",
+              "value": "User {{$node[\"Webhook\"].json[\"username\"]}} successfully onboarded"
+            },
+            {
+              "name": "userId",
+              "value": "={{$node[\"Webhook\"].json[\"userId\"]}}"
+            },
+            {
+              "name": "processedAt",
+              "value": "={{new Date().toISOString()}}"
+            }
+          ]
+        }
+      },
+      "id": "h3j9k5l7-4m6n-4p8q-9r1s-2t4u6v8w0x2y",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "error"
+            },
+            {
+              "name": "message",
+              "value": "Invalid user data provided"
+            },
+            {
+              "name": "error",
+              "value": "Missing required fields: email or userId"
+            }
+          ]
+        }
+      },
+      "id": "z9y8x7w6-5v4u-4t3s-9r2q-1p0o9n8m7l6k",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        680,
+        520
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Data": {
+      "main": [
+        [
+          {
+            "node": "Store User in DB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add to Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store User in DB": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "8f9a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "user-signup-workflow-001",
+  "tags": [
+    {
+      "createdAt": "2024-07-19T10:00:00.000Z",
+      "updatedAt": "2024-07-19T10:00:00.000Z",
+      "id": "signup-automation",
+      "name": "signup-automation"
+    }
+  ]
+}

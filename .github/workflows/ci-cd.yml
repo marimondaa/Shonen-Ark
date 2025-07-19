@@ -1,0 +1,250 @@
+# GitHub Actions CI/CD Pipeline for Shonen Ark
+# Handles testing, building, and deployment to Railway/Vercel
+
+name: 🏯 Shonen Ark CI/CD
+
+on:
+  push:
+    branches: [ main, staging, develop ]
+  pull_request:
+    branches: [ main, staging ]
+
+env:
+  NODE_VERSION: '18'
+  POSTGRES_VERSION: '15'
+
+jobs:
+  test:
+    name: 🧪 Tests & Linting
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: 📋 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🏗️ Build project
+      run: npm run build
+      env:
+        SKIP_ENV_VALIDATION: true
+
+    - name: 🧹 Run linting
+      run: npm run lint
+
+    - name: 🧪 Run tests
+      run: npm test
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        NEXTAUTH_SECRET: test-secret
+        NEXTAUTH_URL: http://localhost:3000
+
+    - name: 📊 Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  build-and-deploy-staging:
+    name: 🚀 Deploy to Staging
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    
+    environment:
+      name: staging
+      url: https://shonen-ark-staging.up.railway.app
+
+    steps:
+    - name: 📋 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🏗️ Build application
+      run: npm run build
+      env:
+        NEXT_PUBLIC_BASE_URL: https://shonen-ark-staging.up.railway.app
+        SKIP_ENV_VALIDATION: true
+
+    - name: 🚄 Deploy to Railway (Staging)
+      uses: railway/deploy@v1
+      with:
+        railway-token: ${{ secrets.RAILWAY_TOKEN }}
+        service: shonen-ark-staging
+      env:
+        RAILWAY_ENVIRONMENT: staging
+
+    - name: 🔧 Setup n8n workflows (Staging)
+      run: npm run deploy:n8n
+      env:
+        N8N_API_URL: ${{ secrets.N8N_STAGING_API_URL }}
+        N8N_API_KEY: ${{ secrets.N8N_STAGING_API_KEY }}
+        N8N_WEB_URL: ${{ secrets.N8N_STAGING_WEB_URL }}
+        N8N_WEBHOOK_URL: ${{ secrets.N8N_STAGING_WEBHOOK_URL }}
+        PGHOST: ${{ secrets.STAGING_PGHOST }}
+        PGDATABASE: ${{ secrets.STAGING_PGDATABASE }}
+        PGUSER: ${{ secrets.STAGING_PGUSER }}
+        PGPASSWORD: ${{ secrets.STAGING_PGPASSWORD }}
+        PGPORT: ${{ secrets.STAGING_PGPORT }}
+
+    - name: 🧪 Run deployment tests
+      run: npm run test:e2e:staging
+      env:
+        BASE_URL: https://shonen-ark-staging.up.railway.app
+
+  build-and-deploy-production:
+    name: 🌟 Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: production
+      url: https://shonen-ark.up.railway.app
+
+    steps:
+    - name: 📋 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🏗️ Build application
+      run: npm run build
+      env:
+        NEXT_PUBLIC_BASE_URL: https://shonen-ark.up.railway.app
+        SKIP_ENV_VALIDATION: true
+
+    - name: 🚄 Deploy to Railway (Production)
+      uses: railway/deploy@v1
+      with:
+        railway-token: ${{ secrets.RAILWAY_TOKEN }}
+        service: shonen-ark-production
+      env:
+        RAILWAY_ENVIRONMENT: production
+
+    - name: 🔧 Deploy n8n workflows (Production)
+      run: npm run deploy:n8n
+      env:
+        N8N_API_URL: ${{ secrets.N8N_PRODUCTION_API_URL }}
+        N8N_API_KEY: ${{ secrets.N8N_PRODUCTION_API_KEY }}
+        N8N_WEB_URL: ${{ secrets.N8N_PRODUCTION_WEB_URL }}
+        N8N_WEBHOOK_URL: ${{ secrets.N8N_PRODUCTION_WEBHOOK_URL }}
+        PGHOST: ${{ secrets.PRODUCTION_PGHOST }}
+        PGDATABASE: ${{ secrets.PRODUCTION_PGDATABASE }}
+        PGUSER: ${{ secrets.PRODUCTION_PGUSER }}
+        PGPASSWORD: ${{ secrets.PRODUCTION_PGPASSWORD }}
+        PGPORT: ${{ secrets.PRODUCTION_PGPORT }}
+
+    - name: 🔍 Health check
+      run: |
+        echo "🏥 Waiting for deployment to be healthy..."
+        sleep 30
+        curl -f https://shonen-ark.up.railway.app/api/health || exit 1
+        echo "✅ Production deployment is healthy!"
+
+    - name: 🧪 Run smoke tests
+      run: npm run test:e2e:production
+      env:
+        BASE_URL: https://shonen-ark.up.railway.app
+
+    - name: 📢 Notify deployment success
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: '🎉 Shonen Ark deployed successfully to production!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: success()
+
+    - name: 📢 Notify deployment failure
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: '❌ Shonen Ark production deployment failed!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: failure()
+
+  lighthouse-audit:
+    name: 🔍 Lighthouse Performance Audit
+    needs: build-and-deploy-production
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: 📋 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔍 Run Lighthouse audit
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        urls: |
+          https://shonen-ark.up.railway.app
+          https://shonen-ark.up.railway.app/theories
+          https://shonen-ark.up.railway.app/calendar
+          https://shonen-ark.up.railway.app/gigs
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+
+  security-scan:
+    name: 🛡️ Security Scan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+    - name: 📋 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🛡️ Run npm audit
+      run: npm audit --audit-level high
+
+    - name: 🔒 Run Snyk security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
