@@ -7,33 +7,27 @@ import { useAuth } from '../../lib/hooks/auth-context';
 const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const { isAuthenticated, user, logout } = useAuth();
 
-  // Initialize theme from localStorage
+  // Initialize theme from localStorage and system preference
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
-    const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = stored || (prefersDark ? 'dark' : 'light');
-    setTheme(initial);
-    if (initial === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    try {
+      const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+      const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initial = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
+      setTheme(initial);
+      if (initial === 'dark') document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    } catch {}
   }, []);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
-    if (next === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', next);
-    }
+    if (next === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+    try { localStorage.setItem('theme', next); } catch {}
   };
 
   // Close menu when clicking outside
@@ -185,7 +179,7 @@ const Layout = ({ children }) => {
                 whileTap={{ scale: 0.95 }}
                 className="p-2 rounded-lg border border-purple/30 text-purple hover:bg-purple/10 transition-all duration-200"
                 aria-label="Toggle theme"
-                title="Toggle theme"
+                title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
               >
                 {theme === 'dark' ? '🌙' : '☀️'}
               </motion.button>

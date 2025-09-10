@@ -126,7 +126,7 @@ export default function ContactPage() {
               transition={{ delay: 0.2, duration: 0.6 }}
             >
               <div className="text-8xl mb-6">📞</div>
-              <h1 className="text-5xl font-bold mystical-title mb-4">
+              <h1 className="text-5xl font-bold mb-4">
                 Get In Touch
               </h1>
               <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-purple-200 transition-colors brush-font">
