@@ -50,7 +50,7 @@ export default function OnboardingPage() {
         >
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="text-8xl mb-6">⭐</div>
-            <h1 className="text-5xl font-bold mystical-title mb-6 glow-text">Become a Creator</h1>
+            <h1 className="text-5xl font-bold mystical-title mb-6">Become a Creator</h1>
             <p className="text-xl text-grey brush-font max-w-2xl mx-auto">
               Join our community of anime content creators and share your theories, animations, and audio content.
             </p>

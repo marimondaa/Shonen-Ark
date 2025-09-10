@@ -89,7 +89,7 @@ export default function LoginPage() {
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <div className="text-6xl mb-4">🏯</div>
-            <h1 className="text-3xl font-bold mystical-title mb-2 glow-text">
+            <h1 className="text-3xl font-bold mystical-title mb-2">
               Welcome Back
             </h1>
             <p className="text-grey brush-font">

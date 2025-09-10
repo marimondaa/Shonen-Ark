@@ -11,7 +11,7 @@ export default function AboutPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold mystical-title mb-4 text-accent-pink glow-text">
+          <h1 className="text-4xl font-bold mystical-title mb-4 text-accent-pink">
             About Shonen Ark
           </h1>
           <p className="text-xl text-text-muted brush-font max-w-2xl mx-auto">
@@ -190,7 +190,7 @@ export default function AboutPage() {
           transition={{ duration: 0.6, delay: 1.0 }}
         >
           <div className="bg-gradient-shrine rounded-lg p-8">
-            <h2 className="text-3xl font-bold mystical-title mb-6 text-accent-pink glow-text">
+            <h2 className="text-3xl font-bold mystical-title mb-6 text-accent-pink">
               Join Our Mystical Community
             </h2>
             <p className="text-lg text-text-muted brush-font mb-8 max-w-2xl mx-auto">

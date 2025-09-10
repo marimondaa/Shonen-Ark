@@ -118,7 +118,7 @@ export default function CategoryPage() {
               animate={headerInView ? "visible" : "hidden"}
             >
               <div className="text-6xl mb-4">{currentCategory.icon}</div>
-              <h1 className="text-4xl font-bold mystical-title mb-4 glow-text">
+              <h1 className="text-4xl font-bold mystical-title mb-4">
                 {currentCategory.title}
               </h1>
               <p className="text-xl text-grey brush-font max-w-2xl mx-auto">

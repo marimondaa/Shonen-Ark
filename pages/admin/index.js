@@ -100,7 +100,7 @@ const AdminDashboard = () => {
         {/* Header */}
         <div className="bg-gradient-to-b from-purple-900 to-black py-12">
           <div className="max-w-7xl mx-auto px-4">
-            <h1 className="text-4xl font-bold mystical-title glow-text">
+            <h1 className="text-4xl font-bold mystical-title">
               Admin Dashboard
             </h1>
             <p className="text-purple-200 mt-2">

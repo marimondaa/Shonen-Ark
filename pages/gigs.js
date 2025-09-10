@@ -210,7 +210,7 @@ export default function GigsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 rounded-lg border transition-all duration-300 font-mystical ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-purple/20 to-dark-purple/20 text-white border-purple glow-text'
+                    ? 'bg-gradient-to-r from-purple/20 to-dark-purple/20 text-white border-purple'
                     : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
                 }`}
                 whileHover={{ scale: 1.02 }}
