@@ -7,7 +7,33 @@ import { useAuth } from '../../lib/hooks/auth-context';
 const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false);
+  const [theme, setTheme] = useState('dark');
   const { isAuthenticated, user, logout } = useAuth();
+
+  // Initialize theme from localStorage
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+    const initial = stored || 'dark';
+    setTheme(initial);
+    if (initial === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    if (next === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', next);
+    }
+  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -149,196 +175,211 @@ const Layout = ({ children }) => {
               </motion.div>
             </div>
 
-            {/* Hamburger Menu */}
-            <div className="relative hamburger-menu" style={{ zIndex: 9999 }}>
+            {/* Right side controls */}
+            <div className="flex items-center gap-3">
+              {/* Dark/Light toggle */}
               <motion.button
-                onClick={toggleMenu}
-                onTouchStart={toggleMenu} // Add touch support for mobile
+                onClick={toggleTheme}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-4 rounded-lg bg-purple/80 hover:bg-purple text-paper-beige hover:text-paper-beige focus:outline-none focus:ring-4 focus:ring-purple border-2 border-purple shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
-                aria-label="Toggle navigation menu"
-                aria-expanded={isMenuOpen}
-                style={{ 
-                  zIndex: 9999, 
-                  minWidth: '56px', 
-                  minHeight: '56px',
-                  position: 'relative',
-                  isolation: 'isolate'
-                }}
+                className="p-2 rounded-lg border border-purple/30 text-purple hover:bg-purple/10 transition-all duration-200"
+                aria-label="Toggle theme"
+                title="Toggle theme"
               >
-                <motion.div className="w-6 h-6 flex flex-col justify-around">
-                  <motion.span
-                    className="w-full h-0.5 bg-current rounded-full"
-                    animate={isMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <motion.span
-                    className="w-full h-0.5 bg-current rounded-full"
-                    animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <motion.span
-                    className="w-full h-0.5 bg-current rounded-full"
-                    animate={isMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.div>
+                {theme === 'dark' ? '🌙' : '☀️'}
               </motion.button>
 
-              {/* Dropdown Menu */}
-              <AnimatePresence>
-                {isMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-2 w-80 bg-ink-black/95 backdrop-blur-sm rounded-xl shadow-2xl border-2 border-purple/30 overflow-hidden"
-                    style={{ zIndex: 10000 }}
-                  >
-                    <div className="p-4">
-                      {/* Navigation Links Section */}
-                      <div className="space-y-1 mb-4">
-                        <h3 className="text-sm font-semibold font-manga-header text-purple mb-3 px-2 uppercase tracking-widest">Navigation</h3>
-                        {[
-                          { href: "/", label: "Home", icon: "🏯", desc: "Welcome to Shonen Ark" },
-                          { href: "/theories", label: "Theories", icon: "📜", desc: "Explore fan theories" },
-                          { href: "/discovery", label: "Discovery", icon: "🔍", desc: "Find new content" },
-                          { href: "/calendar", label: "Calendar", icon: "📅", desc: "Anime schedule" },
-                          { href: "/gigs", label: "Gigs", icon: "⚡", desc: "Job opportunities" },
-                          { href: "/about", label: "About", icon: "❓", desc: "Learn more about us" }
-                        ].map((item) => (
-                          <motion.div
-                            key={item.href}
-                            whileHover={{ x: 5 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <Link 
-                              href={item.href}
-                              onClick={() => setIsMenuOpen(false)}
-                              className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple border border-transparent hover:border-purple/30"
-                            >
-                              <motion.span 
-                                className="text-lg opacity-70 group-hover:opacity-100 transition-opacity"
-                                whileHover={{ scale: 1.2, rotate: 10 }}
-                              >
-                                {item.icon}
-                              </motion.span>
-                              <div className="flex-1">
-                                <div className="font-medium font-manga-header text-paper-beige group-hover:text-purple transition-colors">
-                                  {item.label}
-                                </div>
-                                <div className="text-xs font-manga-body text-text-muted group-hover:text-purple/70 transition-colors">
-                                  {item.desc}
-                                </div>
-                              </div>
-                            </Link>
-                          </motion.div>
-                        ))}
-                      </div>
+              {/* Hamburger Menu */}
+              <div className="relative hamburger-menu" style={{ zIndex: 9999 }}>
+                <motion.button
+                  onClick={toggleMenu}
+                  onTouchStart={toggleMenu} // Add touch support for mobile
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative p-4 rounded-lg bg-purple/80 hover:bg-purple text-paper-beige hover:text-paper-beige focus:outline-none focus:ring-4 focus:ring-purple border-2 border-purple shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
+                  aria-label="Toggle navigation menu"
+                  aria-expanded={isMenuOpen}
+                  style={{ 
+                    zIndex: 9999, 
+                    minWidth: '56px', 
+                    minHeight: '56px',
+                    position: 'relative',
+                    isolation: 'isolate'
+                  }}
+                >
+                  <motion.div className="w-6 h-6 flex flex-col justify-around">
+                    <motion.span
+                      className="w-full h-0.5 bg-current rounded-full"
+                      animate={isMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <motion.span
+                      className="w-full h-0.5 bg-current rounded-full"
+                      animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <motion.span
+                      className="w-full h-0.5 bg-current rounded-full"
+                      animate={isMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.div>
+                </motion.button>
 
-                      {/* Authentication Section */}
-                      <div className="border-t border-purple/30 pt-4">
-                        {isAuthenticated() ? (
-                          <>
-                            <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Account</h3>
-                            
-                            {/* Dashboard Link */}
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 top-full mt-2 w-80 bg-ink-black/95 backdrop-blur-sm rounded-xl shadow-2xl border-2 border-purple/30 overflow-hidden"
+                      style={{ zIndex: 10000 }}
+                    >
+                      <div className="p-4">
+                        {/* Navigation Links Section */}
+                        <div className="space-y-1 mb-4">
+                          <h3 className="text-sm font-semibold font-manga-header text-purple mb-3 px-2 uppercase tracking-widest">Navigation</h3>
+                          {[
+                            { href: "/", label: "Home", icon: "🏯", desc: "Welcome to Shonen Ark" },
+                            { href: "/theories", label: "Theories", icon: "📜", desc: "Explore fan theories" },
+                            { href: "/discovery", label: "Discovery", icon: "🔍", desc: "Find new content" },
+                            { href: "/calendar", label: "Calendar", icon: "📅", desc: "Anime schedule" },
+                            { href: "/gigs", label: "Gigs", icon: "⚡", desc: "Job opportunities" },
+                            { href: "/about", label: "About", icon: "❓", desc: "Learn more about us" }
+                          ].map((item) => (
                             <motion.div
+                              key={item.href}
                               whileHover={{ x: 5 }}
                               whileTap={{ scale: 0.98 }}
                             >
                               <Link 
-                                href="/account/fan"
+                                href={item.href}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-gradient-to-r hover:from-purple/20 hover:to-accent-pink/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow mb-3"
+                                className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple border border-transparent hover:border-purple/30"
                               >
-                                <span className="text-lg">👑</span>
+                                <motion.span 
+                                  className="text-lg opacity-70 group-hover:opacity-100 transition-opacity"
+                                  whileHover={{ scale: 1.2, rotate: 10 }}
+                                >
+                                  {item.icon}
+                                </motion.span>
                                 <div className="flex-1">
-                                  <div className="font-medium text-white group-hover:text-accent-pink transition-colors">
-                                    Dashboard
+                                  <div className="font-medium font-manga-header text-paper-beige group-hover:text-purple transition-colors">
+                                    {item.label}
                                   </div>
-                                  <div className="text-xs text-text-muted group-hover:text-accent-pink/70 transition-colors">
-                                    Your admin panel
+                                  <div className="text-xs font-manga-body text-text-muted group-hover:text-purple/70 transition-colors">
+                                    {item.desc}
                                   </div>
                                 </div>
                               </Link>
                             </motion.div>
-                            
-                            {/* User Info & Logout */}
-                            <div className="auth-badge px-3 py-3 rounded-lg">
-                              <div className="flex items-center justify-between mb-2">
-                                <div>
-                                  <div className="text-sm font-medium text-accent-pink">
-                                    {user?.username}
-                                  </div>
-                                  <div className="text-xs text-text-muted">
-                                    {user?.role === 'admin' ? 'Administrator' : 'User'}
-                                  </div>
-                                </div>
-                                <span className="text-lg">{user?.role === 'admin' ? '👑' : '🌟'}</span>
-                              </div>
-                              <motion.button 
-                                onClick={() => {
-                                  logout();
-                                  setIsMenuOpen(false);
-                                }}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="w-full text-sm px-3 py-2 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all duration-300 border border-red-500/30 hover:border-red-400/50"
-                              >
-                                Logout
-                              </motion.button>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Authentication</h3>
-                            <div className="space-y-2">
+                          ))}
+                        </div>
+
+                        {/* Authentication Section */}
+                        <div className="border-t border-purple/30 pt-4">
+                          {isAuthenticated() ? (
+                            <>
+                              <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Account</h3>
+                              
+                              {/* Dashboard Link */}
                               <motion.div
                                 whileHover={{ x: 5 }}
                                 whileTap={{ scale: 0.98 }}
                               >
                                 <Link 
-                                  href="/login"
+                                  href="/account/fan"
                                   onClick={() => setIsMenuOpen(false)}
-                                  className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                                  className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-gradient-to-r hover:from-purple/20 hover:to-accent-pink/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow mb-3"
                                 >
-                                  <span className="text-lg">🔐</span>
+                                  <span className="text-lg">👑</span>
                                   <div className="flex-1">
                                     <div className="font-medium text-white group-hover:text-accent-pink transition-colors">
-                                      Login
+                                      Dashboard
                                     </div>
                                     <div className="text-xs text-text-muted group-hover:text-accent-pink/70 transition-colors">
-                                      Access your account
+                                      Your admin panel
                                     </div>
                                   </div>
                                 </Link>
                               </motion.div>
                               
-                              <motion.div
-                                whileHover={{ x: 5 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <Link 
-                                  href="/register"
-                                  onClick={() => setIsMenuOpen(false)}
-                                  className="group flex items-center justify-center px-3 py-3 rounded-lg bg-gradient-to-r from-purple to-accent-pink hover:from-purple/80 hover:to-accent-pink/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow"
+                              {/* User Info & Logout */}
+                              <div className="auth-badge px-3 py-3 rounded-lg">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div>
+                                    <div className="text-sm font-medium text-accent-pink">
+                                      {user?.username}
+                                    </div>
+                                    <div className="text-xs text-text-muted">
+                                      {user?.role === 'admin' ? 'Administrator' : 'User'}
+                                    </div>
+                                  </div>
+                                  <span className="text-lg">{user?.role === 'admin' ? '👑' : '🌟'}</span>
+                                </div>
+                                <motion.button 
+                                  onClick={() => {
+                                    logout();
+                                    setIsMenuOpen(false);
+                                  }}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="w-full text-sm px-3 py-2 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all duration-300 border border-red-500/30 hover:border-red-400/50"
                                 >
-                                  <span className="font-medium text-white">
-                                    Create Account
-                                  </span>
-                                </Link>
-                              </motion.div>
-                            </div>
-                          </>
-                        )}
+                                  Logout
+                                </motion.button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Authentication</h3>
+                              <div className="space-y-2">
+                                <motion.div
+                                  whileHover={{ x: 5 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  <Link 
+                                    href="/login"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                                  >
+                                    <span className="text-lg">🔐</span>
+                                    <div className="flex-1">
+                                      <div className="font-medium text-white group-hover:text-accent-pink transition-colors">
+                                        Login
+                                      </div>
+                                      <div className="text-xs text-text-muted group-hover:text-accent-pink/70 transition-colors">
+                                        Access your account
+                                      </div>
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                                
+                                <motion.div
+                                  whileHover={{ x: 5 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  <Link 
+                                    href="/register"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="group flex items-center justify-center px-3 py-3 rounded-lg bg-gradient-to-r from-purple to-accent-pink hover:from-purple/80 hover:to-accent-pink/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow"
+                                  >
+                                    <span className="font-medium text-white">
+                                      Create Account
+                                    </span>
+                                  </Link>
+                                </motion.div>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>

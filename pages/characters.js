@@ -158,7 +158,7 @@ export default function Characters() {
               animate={headerInView ? "visible" : "hidden"}
             >
               <div className="text-6xl mb-4">👥</div>
-              <h1 className="text-4xl font-bold font-manga-header mb-4 glow-text manga-accent uppercase tracking-widest">
+              <h1 className="text-4xl font-bold font-manga-header mb-4 manga-accent uppercase tracking-widest">
                 Character Database
               </h1>
               <p className="text-xl text-paper-beige font-manga-body max-w-2xl mx-auto">

@@ -59,7 +59,7 @@ export default function TheoriesPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="text-6xl mb-6">🔮</div>
-            <h1 className="text-5xl font-bold font-manga-header mb-6 glow-text manga-accent uppercase tracking-widest">
+            <h1 className="text-5xl font-bold font-manga-header mb-6 manga-accent uppercase tracking-widest">
               Fan Theories
             </h1>
             <p className="text-xl text-paper-beige/90 font-manga-body max-w-3xl mx-auto">
