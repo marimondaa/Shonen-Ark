@@ -49,18 +49,18 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 bg-ink-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.header 
-          className="text-center mb-12"
+          className="text-center mb-12 manga-card p-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold mystical-title mb-4 text-accent-pink glow-text">
+          <h1 className="text-4xl font-bold font-manga-header mb-4 text-purple glow-text uppercase tracking-widest">
             Discovery Feed
           </h1>
-          <p className="text-xl text-text-muted brush-font max-w-2xl mx-auto">
+          <p className="text-xl text-paper-beige font-manga-body max-w-2xl mx-auto">
             Explore fan creations across different categories. Share your own content 
             and discover amazing works from the community.
           </p>

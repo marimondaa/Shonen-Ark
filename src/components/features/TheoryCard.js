@@ -17,24 +17,24 @@ const TheoryCard = ({ theory }) => {
 
   return (
     <motion.article 
-      className="bg-anime-blue/30 backdrop-blur-sm rounded-lg p-6 border border-accent-pink/20 shrine-glow transition-all duration-300"
+      className="manga-card backdrop-blur-sm rounded-lg p-6 border border-purple/30 transition-all duration-300"
       whileHover={{ scale: 1.05, y: -5 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
       <header className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold text-accent-pink line-clamp-2 mystical-title">
+        <h3 className="text-xl font-bold text-purple line-clamp-2 font-manga-header uppercase tracking-wide">
           {theory.title}
         </h3>
         {theory.category && (
-          <span className="text-xs text-text-muted bg-bg-dark/50 px-2 py-1 rounded border border-accent-pink/30">
+          <span className="text-xs text-paper-beige bg-purple/20 px-2 py-1 rounded border border-purple/30 font-manga-body">
             {theory.category}
           </span>
         )}
       </header>
       
-      <p className="text-text-muted mb-4 line-clamp-3 brush-font">
+      <p className="text-paper-beige/80 mb-4 line-clamp-3 font-manga-body">
         {theory.excerpt || theory.description}
       </p>
       

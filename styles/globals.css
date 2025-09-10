@@ -82,8 +82,8 @@ a {
 }
 
 .manga-accent {
-  color: #A02424;
-  text-shadow: 0 0 5px rgba(160, 36, 36, 0.3);
+  color: #6c5ce7;
+  text-shadow: 0 0 5px rgba(108, 92, 231, 0.3);
 }
 
 /* Manga Panel Styles */
@@ -91,12 +91,13 @@ a {
   background: linear-gradient(135deg, 
     rgba(217, 214, 195, 0.05) 0%,
     rgba(26, 26, 26, 0.95) 100%);
-  border: 2px solid #A02424;
+  border: 2px solid #6c5ce7;
   border-radius: 8px;
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 2px rgba(217, 214, 195, 0.1);
   position: relative;
+  backdrop-filter: blur(4px);
 }
 
 .manga-panel::before {
@@ -106,7 +107,7 @@ a {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #A02424, #D9D6C3, #A02424);
+  background: linear-gradient(45deg, #6c5ce7, #D9D6C3, #6c5ce7);
   border-radius: 10px;
   z-index: -1;
   opacity: 0.6;
@@ -114,15 +115,64 @@ a {
 
 .manga-card {
   background: rgba(26, 26, 26, 0.9);
-  border: 1px solid rgba(160, 36, 36, 0.3);
+  border: 1px solid rgba(108, 92, 231, 0.3);
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
 .manga-card:hover {
-  border-color: #A02424;
-  box-shadow: 0 4px 20px rgba(160, 36, 36, 0.2);
+  border-color: #6c5ce7;
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.2);
   transform: translateY(-2px);
+}
+
+/* Manga Speech Bubble */
+.manga-bubble {
+  background: rgba(217, 214, 195, 0.95);
+  color: #1A1A1A;
+  border: 2px solid #000000;
+  border-radius: 20px;
+  position: relative;
+  padding: 1rem 1.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+}
+
+.manga-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: #000000;
+}
+
+.manga-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 32px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-top-color: rgba(217, 214, 195, 0.95);
+  z-index: 1;
+}
+
+/* Manga Action Lines */
+.manga-action-lines {
+  background-image: 
+    linear-gradient(45deg, transparent 40%, rgba(108, 92, 231, 0.1) 50%, transparent 60%),
+    linear-gradient(-45deg, transparent 40%, rgba(108, 92, 231, 0.1) 50%, transparent 60%);
+  background-size: 20px 20px;
+  animation: action-lines 2s linear infinite;
+}
+
+@keyframes action-lines {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 20px 20px, -20px 20px; }
 }
 
 /* Interactive Elements */

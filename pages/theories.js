@@ -42,10 +42,10 @@ export default function TheoriesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-ink-black text-paper-beige">
       {/* Hero Section */}
       <motion.div 
-        className="bg-gradient-to-r from-dark-purple to-purple py-20"
+        className="manga-panel mx-4 mt-4 bg-gradient-to-r from-dark-purple to-purple py-20"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -57,10 +57,10 @@ export default function TheoriesPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="text-6xl mb-6">🔮</div>
-            <h1 className="text-5xl font-bold mystical-title mb-6 glow-text">
+            <h1 className="text-5xl font-bold font-manga-header mb-6 glow-text manga-accent uppercase tracking-widest">
               Fan Theories
             </h1>
-            <p className="text-xl text-white/90 brush-font max-w-3xl mx-auto">
+            <p className="text-xl text-paper-beige/90 font-manga-body max-w-3xl mx-auto">
               Dive deep into the mysteries of your favorite anime with theories, analysis, and predictions from the community
             </p>
           </motion.div>
@@ -70,22 +70,22 @@ export default function TheoriesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters */}
         <motion.div 
-          className="flex flex-col gap-6 mb-8 p-4 bg-dark-purple/30 rounded-lg border border-purple/20"
+          className="manga-card flex flex-col gap-6 mb-8 p-6 bg-dark-purple/30 rounded-lg border border-purple/30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           {/* Anime Filter */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-purple font-medium whitespace-nowrap">Filter by anime:</span>
+            <span className="text-purple font-manga-header font-medium whitespace-nowrap uppercase tracking-wide">Filter by anime:</span>
             <div className="flex flex-wrap gap-2">
               {animeOptions.map((anime) => (
                 <button
                   key={anime}
                   onClick={() => setFilter(anime)}
-                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-medium ${
+                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${
                     filter === anime
-                      ? 'bg-purple text-white border-purple'
+                      ? 'bg-purple text-paper-beige border-purple'
                       : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
                   }`}
                 >

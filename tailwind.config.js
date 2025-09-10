@@ -19,7 +19,7 @@ module.exports = {
         // Manga Club Aesthetic Colors
         'ink-black': '#1A1A1A',
         'paper-beige': '#D9D6C3',
-        'blood-red': '#A02424',
+        'blood-red': '#6c5ce7', // Changed back to purple
         'manga-white': '#ffffff',
         'panel-border': '#000000',
         
@@ -29,8 +29,8 @@ module.exports = {
         'bg-canvas': '#D9D6C3', // Paper beige for manga panels
         'text-light': '#ffffff',
         'text-muted': '#808080',
-        'text-accent': '#A02424', // Updated to blood-red
-        'accent-pink': '#A02424', // Maintain compatibility, map to blood-red
+        'text-accent': '#6c5ce7', // Back to purple
+        'accent-pink': '#6c5ce7', // Back to purple
         'background': '#1A1A1A', // Map to ink-black
       },
       fontFamily: {

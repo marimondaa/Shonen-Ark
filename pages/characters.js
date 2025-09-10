@@ -141,11 +141,11 @@ export default function Characters() {
         <meta name="description" content="Explore detailed profiles of your favorite anime and manga characters." />
       </Head>
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-ink-black text-paper-beige">
         {/* Header */}
         <motion.header 
           ref={headerRef}
-          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
+          className="manga-panel mx-4 mt-4 bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
           initial={{ opacity: 0, y: -50 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
@@ -158,10 +158,10 @@ export default function Characters() {
               animate={headerInView ? "visible" : "hidden"}
             >
               <div className="text-6xl mb-4">👥</div>
-              <h1 className="text-4xl font-bold mystical-title mb-4 glow-text">
+              <h1 className="text-4xl font-bold font-manga-header mb-4 glow-text manga-accent uppercase tracking-widest">
                 Character Database
               </h1>
-              <p className="text-xl text-grey brush-font max-w-2xl mx-auto">
+              <p className="text-xl text-paper-beige font-manga-body max-w-2xl mx-auto">
                 Discover detailed profiles, abilities, and stories of iconic anime and manga characters
               </p>
             </motion.div>

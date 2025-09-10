@@ -68,8 +68,8 @@ const ShrineHero = () => {
               style={{
                 left: `${startX}%`,
                 top: `${startY}%`,
-                background: `radial-gradient(circle, rgba(147, 51, 234, 0.8) 0%, rgba(147, 51, 234, 0.4) 50%, transparent 100%)`,
-                boxShadow: `0 0 10px rgba(147, 51, 234, 0.6)`,
+                background: `radial-gradient(circle, rgba(108, 92, 231, 0.8) 0%, rgba(108, 92, 231, 0.4) 50%, transparent 100%)`,
+                boxShadow: `0 0 10px rgba(108, 92, 231, 0.6)`,
               }}
               animate={{
                 x: `${(50 - startX) * 1.2}vw`,
@@ -100,7 +100,7 @@ const ShrineHero = () => {
                 left: `${startX}%`,
                 top: `${startY}%`,
                 filter: `blur(0.5px)`,
-                boxShadow: `0 0 6px rgba(147, 51, 234, 0.5)`,
+                boxShadow: `0 0 6px rgba(108, 92, 231, 0.5)`,
               }}
               animate={{
                 x: `${(50 - startX) * 0.8}vw`,
@@ -128,15 +128,17 @@ const ShrineHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
-          <motion.img
-            src="/brand-logo.png"
-            alt="Shonen Ark"
-            className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain"
-            whileHover={{ 
-              scale: 1.02
-            }}
-            transition={{ hover: { duration: 0.3 } }}
-          />
+          <motion.div className="manga-panel p-6 bg-gradient-to-br from-ink-black to-ink-black/80">
+            <motion.img
+              src="/brand-logo.png"
+              alt="Shonen Ark"
+              className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain filter drop-shadow-lg"
+              whileHover={{ 
+                scale: 1.02
+              }}
+              transition={{ hover: { duration: 0.3 } }}
+            />
+          </motion.div>
         </motion.div>
 
         {/* Mystical tagline with enhanced styling */}
@@ -146,14 +148,16 @@ const ShrineHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
         >
-          <motion.p
-            className="text-lg sm:text-xl text-white mb-8 font-mystical max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            "only time will tell"
-          </motion.p>
+          <motion.div className="manga-card p-6 backdrop-blur-sm">
+            <motion.p
+              className="manga-title text-lg sm:text-xl text-paper-beige mb-8 font-manga-header max-w-2xl mx-auto tracking-widest"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              "only time will tell"
+            </motion.p>
+          </motion.div>
         </motion.div>
 
         {/* CTA Button with Cinematic Glow */}
@@ -165,7 +169,7 @@ const ShrineHero = () => {
         >
           <Link href="/register">
             <motion.button
-              className="relative bg-forest-accent hover:bg-violet-glow text-parchment px-8 sm:px-12 py-3 sm:py-4 rounded-lg font-mystical text-base sm:text-lg tracking-wide border-2 border-line-highlight shrine-glow transition-all duration-300 w-full sm:w-auto"
+              className="relative bg-purple hover:bg-purple/80 text-paper-beige px-8 sm:px-12 py-3 sm:py-4 rounded-lg font-manga-header text-base sm:text-lg tracking-widest border-2 border-purple transition-all duration-300 w-full sm:w-auto uppercase"
               whileHover={{ 
                 scale: 1.05,
                 boxShadow: "0 0 30px rgba(108, 92, 231, 0.5)"
@@ -174,8 +178,8 @@ const ShrineHero = () => {
             >
               <span className="relative z-10">Join the Ark</span>
               <motion.div
-                className="absolute inset-0 bg-violet-glow rounded-lg opacity-0"
-                whileHover={{ opacity: 0.2 }}
+                className="absolute inset-0 bg-purple/30 rounded-lg opacity-0"
+                whileHover={{ opacity: 0.3 }}
                 transition={{ duration: 0.3 }}
               />
             </motion.button>
