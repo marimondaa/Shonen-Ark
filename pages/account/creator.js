@@ -85,9 +85,9 @@ function CreatorAccount() {
         <meta name="description" content="Manage your content, track performance, and grow your audience." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         <motion.header 
-          className="bg-gradient-to-r from-purple-900 to-black py-16"
+          className="bg-white text-black dark:bg-gradient-to-r dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}

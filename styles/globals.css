@@ -15,6 +15,21 @@
   --text-light: var(--white);
   --text-muted: var(--grey);
   --text-accent: var(--purple);
+
+  /* Theme variables */
+  --bg: #ffffff;
+  --text: #000000;
+}
+
+html.dark {
+  --bg: #1A1A1A; /* ink-black */
+  --text: #ffffff;
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 @tailwind base;

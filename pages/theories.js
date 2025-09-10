@@ -44,10 +44,10 @@ export default function TheoriesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-ink-black text-paper-beige">
+    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
       {/* Hero Section */}
       <motion.div 
-        className="manga-panel mx-4 mt-4 bg-gradient-to-r from-dark-purple to-purple py-20"
+        className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-20 transition-colors"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}

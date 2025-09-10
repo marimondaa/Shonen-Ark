@@ -13,7 +13,8 @@ const Layout = ({ children }) => {
   // Initialize theme from localStorage
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
-    const initial = stored || 'dark';
+    const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = stored || (prefersDark ? 'dark' : 'light');
     setTheme(initial);
     if (initial === 'dark') {
       document.documentElement.classList.add('dark');
@@ -65,7 +66,7 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-light font-japanese">
+    <div className="min-h-screen font-japanese transition-colors duration-200 bg-white text-black dark:bg-background dark:text-text-light">
       {/* Navigation */}
       <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl" style={{ zIndex: 999 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

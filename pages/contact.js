@@ -81,7 +81,7 @@ export default function ContactPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
         <motion.div 
           className="text-center max-w-md mx-auto px-4"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -111,10 +111,10 @@ export default function ContactPage() {
         <meta name="description" content="Get in touch with the Shonen Ark team. We're here to help with any questions or support you need." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Hero Section */}
         <motion.div 
-          className="bg-gradient-to-b from-purple-900 to-black py-16"
+          className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -129,7 +129,7 @@ export default function ContactPage() {
               <h1 className="text-5xl font-bold mystical-title mb-4">
                 Get In Touch
               </h1>
-              <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
+              <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-purple-200 transition-colors brush-font">
                 Have a question, suggestion, or need support? We're here to help!
               </p>
             </motion.div>
@@ -144,7 +144,7 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <div className="bg-dark-purple/20 p-8 rounded-xl border border-purple/30">
+              <div className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-purple/30 transition-colors">
                 <h2 className="text-3xl font-bold mb-6 text-purple">Send us a Message</h2>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">

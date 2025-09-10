@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const ShrineHero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ink-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white text-black dark:bg-background dark:text-text-light transition-colors">
       {/* Animated Torii Gate Background */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
@@ -19,9 +19,9 @@ const ShrineHero = () => {
           />
         </motion.div>
         
-        {/* Animated Fog Layers */}
+        {/* Animated Fog Layers (apply only in dark mode for contrast) */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-ink-black via-transparent to-sumi-gray opacity-60"
+          className="absolute inset-0 dark:bg-gradient-to-t dark:from-ink-black dark:via-transparent dark:to-grey opacity-60"
           animate={{ 
             background: [
               "linear-gradient(to top, #0a0a0a 0%, transparent 50%, #2b2b2b 100%)",

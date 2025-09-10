@@ -13,9 +13,11 @@ export default function App({ Component, pageProps }) {
         <meta name="description" content="Mystical anime fan platform featuring fusion UI design. Interactive theory hub, animation analysis, creator community." />
       </Head>
       <AuthProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <div className="bg-white text-black dark:bg-background dark:text-text-light transition-colors duration-200">
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </div>
       </AuthProvider>
     </>
   )

@@ -101,11 +101,11 @@ export default function CategoryPage() {
         <meta name="description" content={currentCategory.description} />
       </Head>
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
         {/* Header */}
         <motion.header 
           ref={headerRef}
-          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 py-16"
+          className="bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
           initial={{ opacity: 0, y: -50 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
@@ -121,7 +121,7 @@ export default function CategoryPage() {
               <h1 className="text-4xl font-bold mystical-title mb-4">
                 {currentCategory.title}
               </h1>
-              <p className="text-xl text-grey brush-font max-w-2xl mx-auto">
+              <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-grey transition-colors brush-font">
                 {currentCategory.description}
               </p>
             </motion.div>

@@ -74,7 +74,7 @@ export default function LoginPage() {
         <meta name="description" content="Sign in to your Shonen Ark account and access exclusive content." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white flex items-center justify-center py-12 px-4">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center py-12 px-4 transition-colors">
         <motion.div 
           className="max-w-md w-full"
           initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
           {/* Login Form */}
           <motion.div 
-            className="bg-dark-purple/20 p-8 rounded-xl border border-purple/30 backdrop-blur-sm"
+            className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-purple/30 backdrop-blur-sm transition-colors"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -125,7 +125,7 @@ export default function LoginPage() {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  className="w-full bg-white text-black dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
                   placeholder="Enter your username"
                   required
                 />
@@ -142,7 +142,7 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  className="w-full bg-white text-black dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
                   placeholder="Enter your password"
                   required
                 />
@@ -156,7 +156,7 @@ export default function LoginPage() {
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-purple bg-black/50 border-purple/30 rounded focus:ring-purple focus:ring-2"
+                    className="w-4 h-4 text-purple bg-white dark:bg-black/50 border-purple/30 rounded focus:ring-purple focus:ring-2"
                   />
                   <span className="ml-2 text-sm text-grey">Remember me</span>
                 </label>

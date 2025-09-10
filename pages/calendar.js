@@ -73,10 +73,10 @@ const CalendarPage = () => {
         <meta name="description" content="Track upcoming anime releases, currently airing series, and top 10 anime." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Hero Section */}
         <motion.div 
-          className="bg-gradient-to-b from-purple-900 to-black py-16"
+          className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -91,19 +91,19 @@ const CalendarPage = () => {
               <h1 className="text-5xl font-bold mystical-title mb-4">
                 Anime Calendar
               </h1>
-              <p className="text-xl text-purple-200 brush-font max-w-2xl mx-auto">
+              <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-purple-200 transition-colors brush-font">
                 Track upcoming releases, currently airing series, and top 10 anime
               </p>
 
               {/* Status indicator */}
               {usingFallback && (
                 <motion.div 
-                  className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3 max-w-md mx-auto mt-6"
+                  className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 max-w-md mx-auto mt-6 dark:bg-orange-500/20"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <p className="text-orange-200 text-sm font-mystical">
+                  <p className="text-orange-700 dark:text-orange-200 text-sm font-mystical">
                     ⚠️ Using offline data - Live updates temporarily unavailable
                   </p>
                 </motion.div>

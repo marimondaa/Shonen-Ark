@@ -10,10 +10,10 @@ export default function TermsPage() {
         <meta name="description" content="Terms of Service and usage guidelines for Shonen Ark platform." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-black to-purple-900 text-white">
+      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Hero Section */}
         <motion.div 
-          className="bg-gradient-to-b from-purple-900 to-black py-16"
+          className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}

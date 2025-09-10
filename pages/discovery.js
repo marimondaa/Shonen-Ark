@@ -49,10 +49,10 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen py-8 bg-ink-black">
+    <div className="min-h-screen py-8 bg-white text-black dark:bg-background dark:text-text-light transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.header 
-          className="text-center mb-12 manga-card p-8"
+          className="text-center mb-12 manga-card p-8 bg-white text-black dark:bg-ink-black dark:text-paper-beige transition-colors"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -60,7 +60,7 @@ export default function DiscoverPage() {
           <h1 className="text-4xl font-bold font-manga-header mb-4 text-purple uppercase tracking-widest">
             Discovery Feed
           </h1>
-          <p className="text-xl text-paper-beige font-manga-body max-w-2xl mx-auto">
+          <p className="text-xl font-manga-body max-w-2xl mx-auto text-black/70 dark:text-paper-beige/80 transition-colors">
             Explore fan creations across different categories. Share your own content 
             and discover amazing works from the community.
           </p>
@@ -80,21 +80,21 @@ export default function DiscoverPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`bg-gradient-to-br ${category.color} rounded-lg p-8 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+                className={`bg-gradient-to-br ${category.color} rounded-lg p-8 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-white`}
                 onClick={() => setSelectedCategory(category)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-center text-white">
+                <div className="text-center">
                   <div className="text-6xl mb-4">{category.icon}</div>
                   <h3 className="text-2xl font-bold mystical-title mb-4">
                     {category.title}
                   </h3>
-                  <p className="brush-font opacity-90">
+                  <p className="opacity-90">
                     {category.description}
                   </p>
                   <div className="mt-6">
-                    <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
+                    <span className="bg-black/10 dark:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
                       Click to Enter →
                     </span>
                   </div>
@@ -112,7 +112,7 @@ export default function DiscoverPage() {
             {/* Back Button */}
             <motion.button
               onClick={() => setSelectedCategory(null)}
-              className="mb-8 flex items-center text-accent-pink hover:text-accent-rose transition-colors"
+              className="mb-8 flex items-center text-purple hover:text-accent-pink transition-colors"
               whileHover={{ x: -5 }}
             >
               <span className="mr-2">←</span>
