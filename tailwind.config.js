@@ -50,6 +50,10 @@ module.exports = {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'float': 'float 6s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'manga-zoom': 'mangaZoom 0.3s ease-out',
+        'panel-slide': 'panelSlide 0.5s ease-in-out',
+        'speed-lines': 'speedLines 0.8s linear infinite',
+        'bubble-pop': 'bubblePop 0.4s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -77,6 +81,24 @@ module.exports = {
           to: {
             'text-shadow': '0 0 10px #6c5ce7, 0 0 20px #6c5ce7, 0 0 30px #6c5ce7',
           },
+        },
+        mangaZoom: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        panelSlide: {
+          from: { transform: 'translateX(-100%)', opacity: '0' },
+          to: { transform: 'translateX(0)', opacity: '1' },
+        },
+        speedLines: {
+          '0%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '100px 100px' },
+        },
+        bubblePop: {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
         },
       },
       backgroundImage: {

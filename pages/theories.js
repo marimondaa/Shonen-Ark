@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import TheoryCard from '../src/components/features/TheoryCard';
+import MangaGrid from '../src/components/manga/MangaGrid';
+import MangaPanel from '../src/components/manga/MangaPanel';
 import { mockTheories, filterTheoriesByAnime, sortContent } from '../src/lib/utils/mockData';
 
 export default function TheoriesPage() {
@@ -156,30 +158,30 @@ export default function TheoriesPage() {
           </>
         )}
 
-        {/* Call to Action */}
-        <motion.div 
-          className="mt-20 text-center bg-gradient-to-r from-purple/20 to-dark-purple/20 p-12 rounded-lg border border-purple/30"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
+        {/* Call to Action - Enhanced with Manga Panel */}
+        <MangaPanel 
+          panelNumber="CTA" 
+          type="focus" 
+          sfx="JOIN US!"
+          className="mt-20 text-center p-12"
         >
           <div className="text-4xl mb-4">✨</div>
-          <h2 className="text-3xl font-bold mystical-title mb-4 text-purple">
+          <h2 className="text-3xl font-bold font-manga-header mb-4 text-purple uppercase tracking-widest">
             Have a Theory?
           </h2>
-          <p className="text-grey mb-6 max-w-2xl mx-auto">
+          <p className="text-paper-beige/80 font-manga-body mb-6 max-w-2xl mx-auto">
             Join our community of theorists and share your insights about your favorite anime series.
           </p>
           <Link href="/account/creator">
             <motion.button
-              className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-medium"
+              className="bg-purple hover:bg-dark-purple text-paper-beige px-8 py-3 rounded-lg transition-colors font-manga-header uppercase tracking-wide"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               Share Your Theory
             </motion.button>
           </Link>
-        </motion.div>
+        </MangaPanel>
       </div>
     </div>
   );

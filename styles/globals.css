@@ -175,6 +175,178 @@ a {
   100% { background-position: 20px 20px, -20px 20px; }
 }
 
+/* Phase 3: Advanced Manga Elements */
+
+/* Manga Sound Effects */
+.manga-sfx {
+  position: relative;
+  display: inline-block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: bold;
+  color: #6c5ce7;
+  text-stroke: 2px #000000;
+  -webkit-text-stroke: 2px #000000;
+  transform: rotate(-5deg) skew(-10deg);
+  text-shadow: 
+    3px 3px 0px #000000,
+    6px 6px 0px rgba(108, 92, 231, 0.3);
+  animation: manga-zoom 0.6s ease-out;
+}
+
+/* Manga Panel Transitions */
+.manga-panel-transition {
+  background: linear-gradient(135deg, 
+    rgba(26, 26, 26, 0.9) 0%,
+    rgba(108, 92, 231, 0.1) 50%,
+    rgba(26, 26, 26, 0.9) 100%);
+  border: 3px solid #6c5ce7;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  animation: panel-slide 0.8s ease-out;
+}
+
+.manga-panel-transition::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(217, 214, 195, 0.1) 50%, 
+    transparent 70%);
+  animation: speed-lines 2s linear infinite;
+  pointer-events: none;
+}
+
+/* Character Speech Variations */
+.manga-thought-bubble {
+  background: rgba(217, 214, 195, 0.95);
+  color: #1A1A1A;
+  border: 3px dashed #6c5ce7;
+  border-radius: 30px 30px 30px 5px;
+  position: relative;
+  padding: 1.5rem 2rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-style: italic;
+  box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
+  animation: bubble-pop 0.6s ease-out;
+}
+
+.manga-shout-bubble {
+  background: linear-gradient(135deg, #6c5ce7 0%, #8b7ae8 100%);
+  color: #ffffff;
+  border: 4px solid #000000;
+  border-radius: 0;
+  position: relative;
+  padding: 1rem 1.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: 
+    5px 5px 0px #000000,
+    10px 10px 20px rgba(0, 0, 0, 0.5);
+  transform: rotate(-2deg);
+  animation: manga-zoom 0.4s ease-out;
+}
+
+/* Manga Focus Effects */
+.manga-focus-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.manga-focus-lines::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.1) 31%, rgba(0,0,0,0.1) 32%, transparent 33%),
+    radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.1) 41%, rgba(0,0,0,0.1) 42%, transparent 43%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.1) 51%, rgba(0,0,0,0.1) 52%, transparent 53%);
+  background-size: 20px 20px, 40px 40px, 60px 60px;
+  transform: translate(-50%, -50%);
+  animation: speed-lines 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Manga Grid Layout */
+.manga-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  position: relative;
+}
+
+.manga-grid-item {
+  background: rgba(26, 26, 26, 0.9);
+  border: 2px solid #6c5ce7;
+  border-radius: 8px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.manga-grid-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 10px 30px rgba(108, 92, 231, 0.3),
+    0 0 0 3px rgba(108, 92, 231, 0.1);
+  border-color: #8b7ae8;
+}
+
+.manga-grid-item::before {
+  content: attr(data-panel);
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #6c5ce7;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Interactive Hover States */
+.manga-interactive:hover .manga-sfx {
+  animation: manga-zoom 0.3s ease-out infinite;
+}
+
+.manga-interactive:hover .manga-action-lines {
+  animation-duration: 1s;
+}
+
+/* Responsive Manga Elements */
+@media (max-width: 768px) {
+  .manga-panel-transition {
+    border-width: 2px;
+    border-radius: 8px;
+  }
+  
+  .manga-sfx {
+    font-size: 0.9em;
+    text-stroke-width: 1px;
+    -webkit-text-stroke-width: 1px;
+  }
+  
+  .manga-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 /* Interactive Elements */
 .nav-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

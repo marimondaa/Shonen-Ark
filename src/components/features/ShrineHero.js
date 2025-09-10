@@ -160,7 +160,7 @@ const ShrineHero = () => {
           </motion.div>
         </motion.div>
 
-        {/* CTA Button with Cinematic Glow */}
+        {/* CTA Buttons with Manga Style */}
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -182,6 +182,19 @@ const ShrineHero = () => {
                 whileHover={{ opacity: 0.3 }}
                 transition={{ duration: 0.3 }}
               />
+            </motion.button>
+          </Link>
+          
+          <Link href="/manga-showcase">
+            <motion.button
+              className="relative bg-transparent hover:bg-purple/20 text-purple px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-manga-header text-base sm:text-lg tracking-widest border-2 border-purple transition-all duration-300 w-full sm:w-auto uppercase"
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 0 20px rgba(108, 92, 231, 0.3)"
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">Manga Demo</span>
             </motion.button>
           </Link>
         </motion.div>
