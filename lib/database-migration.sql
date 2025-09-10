@@ -195,6 +195,103 @@ CREATE TABLE IF NOT EXISTS system_settings (
 );
 
 -- ===========================================
+-- 📰 NEWS TABLE
+-- ===========================================
+CREATE TABLE IF NOT EXISTS news (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  excerpt TEXT,
+  content TEXT,
+  cover_image TEXT,
+  tags TEXT[],
+  published_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_published_at ON news(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_slug ON news(slug);
+
+ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "news are publicly viewable" ON news
+  FOR SELECT USING (true);
+
+-- Optional: restrict inserts to authenticated users only
+CREATE POLICY "authenticated can insert news" ON news
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+-- ===========================================
+-- 📚 COLLECTIONS TABLES
+-- ===========================================
+CREATE TABLE IF NOT EXISTS collections (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  is_private BOOLEAN DEFAULT FALSE,
+  cover_image TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_collections_owner ON collections(owner_id);
+CREATE INDEX IF NOT EXISTS idx_collections_created_at ON collections(created_at DESC);
+
+ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public can view non-private collections" ON collections
+  FOR SELECT USING (NOT is_private);
+
+CREATE POLICY "owners can view their collections" ON collections
+  FOR SELECT USING (owner_id = auth.uid());
+
+CREATE POLICY "owners can insert collections" ON collections
+  FOR INSERT WITH CHECK (owner_id = auth.uid());
+
+CREATE POLICY "owners can update their collections" ON collections
+  FOR UPDATE USING (owner_id = auth.uid());
+
+CREATE POLICY "owners can delete their collections" ON collections
+  FOR DELETE USING (owner_id = auth.uid());
+
+-- Junction for items inside collections (generic)
+CREATE TABLE IF NOT EXISTS collections_items (
+  collection_id UUID REFERENCES collections(id) ON DELETE CASCADE,
+  item_id UUID NOT NULL,
+  item_type TEXT DEFAULT 'theory',
+  added_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  added_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (collection_id, item_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_collections_items_collection ON collections_items(collection_id);
+
+ALTER TABLE collections_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public can view items in non-private collections" ON collections_items
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND (NOT c.is_private OR c.owner_id = auth.uid())
+    )
+  );
+
+CREATE POLICY "owners can manage items in their collections" ON collections_items
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND c.owner_id = auth.uid()
+    )
+  ) WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND c.owner_id = auth.uid()
+    )
+  );
+
+-- ===========================================
 -- 📄 INDEXES FOR PERFORMANCE
 -- ===========================================
 
@@ -242,6 +339,14 @@ CREATE INDEX IF NOT EXISTS idx_notification_queue_status ON notification_queue(s
 CREATE INDEX IF NOT EXISTS idx_notification_queue_scheduled_for ON notification_queue(scheduled_for);
 CREATE INDEX IF NOT EXISTS idx_notification_queue_type ON notification_queue(type);
 
+-- News indexes
+CREATE INDEX IF NOT EXISTS idx_news_published_at ON news(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_slug ON news(slug);
+
+-- Collections indexes
+CREATE INDEX IF NOT EXISTS idx_collections_owner ON collections(owner_id);
+CREATE INDEX IF NOT EXISTS idx_collections_created_at ON collections(created_at DESC);
+
 -- ===========================================
 -- 🛡️ ROW LEVEL SECURITY POLICIES
 -- ===========================================
@@ -255,6 +360,9 @@ ALTER TABLE project_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE project_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_queue ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collections_items ENABLE ROW LEVEL SECURITY;
 
 -- Projects policies
 CREATE POLICY "Public projects are viewable by all" ON projects
@@ -302,6 +410,51 @@ CREATE POLICY "Users can view their own notifications" ON notification_queue
 -- Analytics - users can only see their own events
 CREATE POLICY "Users can view their own analytics" ON analytics_events
   FOR SELECT USING (user_id = auth.uid());
+
+-- News policies
+CREATE POLICY "News are publicly viewable" ON news
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated can insert news" ON news
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+-- Collections policies
+CREATE POLICY "Public can view non-private collections" ON collections
+  FOR SELECT USING (NOT is_private);
+
+CREATE POLICY "Owners can view their collections" ON collections
+  FOR SELECT USING (owner_id = auth.uid());
+
+CREATE POLICY "Owners can insert collections" ON collections
+  FOR INSERT WITH CHECK (owner_id = auth.uid());
+
+CREATE POLICY "Owners can update their collections" ON collections
+  FOR UPDATE USING (owner_id = auth.uid());
+
+CREATE POLICY "Owners can delete their collections" ON collections
+  FOR DELETE USING (owner_id = auth.uid());
+
+-- Collections items policies
+CREATE POLICY "Public can view items in non-private collections" ON collections_items
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND (NOT c.is_private OR c.owner_id = auth.uid())
+    )
+  );
+
+CREATE POLICY "Owners can manage items in their collections" ON collections_items
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND c.owner_id = auth.uid()
+    )
+  ) WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM collections c
+      WHERE c.id = collection_id AND c.owner_id = auth.uid()
+    )
+  );
 
 -- ===========================================
 -- 🔧 FUNCTIONS AND TRIGGERS
@@ -371,6 +524,14 @@ CREATE TRIGGER trigger_calendar_entries_updated_at
 
 CREATE TRIGGER trigger_project_comments_updated_at
   BEFORE UPDATE ON project_comments
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trigger_news_updated_at
+  BEFORE UPDATE ON news
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trigger_collections_updated_at
+  BEFORE UPDATE ON collections
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ===========================================
