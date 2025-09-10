@@ -144,7 +144,7 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <div className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-purple/30 transition-colors">
+              <div className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-gray-200 dark:border-purple/30 transition-colors">
                 <h2 className="text-3xl font-bold mb-6 text-purple">Send us a Message</h2>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -158,11 +158,11 @@ export default function ContactPage() {
                       name="inquiryType"
                       value={formData.inquiryType}
                       onChange={handleInputChange}
-                      className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple"
+                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
                       required
                     >
                       {inquiryTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
+                        <option key={type.value} value={type.value} className="text-black">
                           {type.label}
                         </option>
                       ))}
@@ -181,7 +181,7 @@ export default function ContactPage() {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple"
+                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
                         required
                       />
                     </div>
@@ -195,7 +195,7 @@ export default function ContactPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple"
+                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
                         required
                       />
                     </div>
@@ -212,7 +212,7 @@ export default function ContactPage() {
                       name="subject"
                       value={formData.subject}
                       onChange={handleInputChange}
-                      className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple"
+                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
                       required
                     />
                   </div>
@@ -228,7 +228,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={handleInputChange}
                       rows={6}
-                      className="w-full bg-black/50 border border-purple/30 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-purple resize-none"
+                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple resize-none dark:bg-black/50 dark:text-white dark:border-purple/30"
                       required
                     />
                   </div>
@@ -237,13 +237,13 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-purple to-dark-purple text-white py-3 rounded-lg hover:shadow-lg hover:shadow-purple/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full bg-purple hover:bg-dark-purple text-white py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isSubmitting ? (
                       <motion.div
                         className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                       />
                     ) : (
                       'Send Message'
@@ -266,7 +266,7 @@ export default function ContactPage() {
                   {contactMethods.map((method, index) => (
                     <motion.div
                       key={index}
-                      className="bg-dark-purple/20 p-6 rounded-xl border border-purple/30 hover:bg-dark-purple/30 transition-colors"
+                      className="bg-white p-6 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors dark:bg-dark-purple/20 dark:border-purple/30 dark:hover:bg-dark-purple/30"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
@@ -274,7 +274,7 @@ export default function ContactPage() {
                       <div className="flex items-start space-x-4">
                         <div className="text-3xl">{method.icon}</div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">{method.title}</h3>
+                          <h3 className="text-xl font-bold text-black dark:text-white mb-2">{method.title}</h3>
                           <p className="text-grey mb-2">{method.description}</p>
                           <p className="text-purple font-medium">{method.contact}</p>
                           <p className="text-sm text-grey">Response time: {method.response}</p>
@@ -286,19 +286,19 @@ export default function ContactPage() {
               </div>
 
               {/* FAQ Section */}
-              <div className="bg-dark-purple/20 p-6 rounded-xl border border-purple/30">
+              <div className="bg-white p-6 rounded-xl border border-gray-200 dark:bg-dark-purple/20 dark:border-purple/30">
                 <h3 className="text-2xl font-bold text-purple mb-4">Quick Help</h3>
                 <div className="space-y-4 text-sm">
                   <div>
-                    <h4 className="font-medium text-white mb-1">Account Issues?</h4>
+                    <h4 className="font-medium text-black dark:text-white mb-1">Account Issues?</h4>
                     <p className="text-grey">Check our help center or reset your password.</p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-white mb-1">Content Creation?</h4>
+                    <h4 className="font-medium text-black dark:text-white mb-1">Content Creation?</h4>
                     <p className="text-grey">Visit our creator resources for guides and tips.</p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-white mb-1">Technical Problems?</h4>
+                    <h4 className="font-medium text-black dark:text-white mb-1">Technical Problems?</h4>
                     <p className="text-grey">Try refreshing or clearing your browser cache.</p>
                   </div>
                 </div>

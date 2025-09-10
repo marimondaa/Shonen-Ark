@@ -169,7 +169,7 @@ export default function Characters() {
         </motion.header>
 
         {/* Filters */}
-        <section className="py-8 border-b border-grey/30">
+        <section className="py-8 border-b border-gray-200 dark:border-grey/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               {/* Search */}
@@ -179,21 +179,21 @@ export default function Characters() {
                   placeholder="Search characters or series..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 bg-dark-purple/30 border border-purple/30 rounded-lg text-white placeholder-grey focus:outline-none focus:border-purple"
+                  className="w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
                 />
               </div>
               
               {/* Series Filter */}
               <div className="flex items-center space-x-4">
-                <span className="text-grey">Filter by series:</span>
+                <span className="text-gray-600 dark:text-grey">Filter by series:</span>
                 <select
                   value={selectedSeries}
                   onChange={(e) => setSelectedSeries(e.target.value)}
-                  className="px-4 py-2 bg-dark-purple/30 border border-purple/30 rounded-lg text-white focus:outline-none focus:border-purple"
+                  className="px-4 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
                 >
-                  <option value="all">All Series</option>
+                  <option value="all" className="text-black">All Series</option>
                   {getSeriesList().map(series => (
-                    <option key={series} value={series}>{series}</option>
+                    <option key={series} value={series} className="text-black">{series}</option>
                   ))}
                 </select>
               </div>
@@ -215,7 +215,7 @@ export default function Characters() {
                 <motion.div 
                   className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 />
               </div>
             ) : filteredCharacters.length > 0 ? (
@@ -228,7 +228,7 @@ export default function Characters() {
                     key={character.id}
                     variants={itemVariants}
                     whileHover={{ scale: 1.02, rotateY: 2 }}
-                    className="bg-dark-purple/30 rounded-lg p-6 border border-purple/20 hover:border-purple/50 transition-all duration-300 shrine-glow"
+                    className="bg-white rounded-lg p-6 border border-gray-200 hover:border-purple/50 transition-all duration-300 dark:bg-dark-purple/30 dark:border-purple/20 shrine-glow"
                   >
                     {/* Character Image */}
                     <div className="w-full h-48 rounded-lg mb-4 overflow-hidden">
@@ -239,7 +239,7 @@ export default function Characters() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple/20 to-dark-purple/20 flex items-center justify-center">
+                        <div className="w-full h-full bg-gray-100 dark:bg-gradient-to-br dark:from-purple/20 dark:to-dark-purple/20 flex items-center justify-center">
                           <span className="text-4xl">👤</span>
                         </div>
                       )}
@@ -247,7 +247,7 @@ export default function Characters() {
                     
                     {/* Character Info */}
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2 mystical-title">
+                      <h3 className="text-xl font-bold text-black dark:text-white mb-2 mystical-title">
                         {character.name}
                       </h3>
                       
@@ -255,13 +255,13 @@ export default function Characters() {
                         <span className="text-purple font-semibold">
                           {character.series}
                         </span>
-                        <div className="flex items-center text-yellow-400">
+                        <div className="flex items-center text-yellow-500">
                           <span className="mr-1">⭐</span>
                           <span className="text-sm">{character.popularity}%</span>
                         </div>
                       </div>
                       
-                      <p className="text-grey text-sm mb-4 line-clamp-3">
+                      <p className="text-gray-600 dark:text-grey text-sm mb-4 line-clamp-3">
                         {character.description}
                       </p>
                       
@@ -272,7 +272,7 @@ export default function Characters() {
                           {character.abilities.slice(0, 3).map((ability, index) => (
                             <span 
                               key={index}
-                              className="text-xs bg-purple/20 text-purple px-2 py-1 rounded"
+                              className="text-xs bg-purple/10 text-purple px-2 py-1 rounded"
                             >
                               {ability}
                             </span>
@@ -289,8 +289,8 @@ export default function Characters() {
                 variants={itemVariants}
               >
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-2xl font-bold text-grey mb-4">No characters found</h3>
-                <p className="text-grey">Try adjusting your search or filter criteria</p>
+                <h3 className="text-2xl font-bold text-gray-600 dark:text-grey mb-4">No characters found</h3>
+                <p className="text-gray-600 dark:text-grey">Try adjusting your search or filter criteria</p>
               </motion.div>
             )}
           </div>

@@ -1,40 +1,64 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import TheoryCard from '../src/components/features/TheoryCard';
 import MangaGrid from '../src/components/manga/MangaGrid';
 import MangaPanel from '../src/components/manga/MangaPanel';
 import { mockTheories, filterTheoriesByAnime, sortContent } from '../src/lib/utils/mockData';
+import SortBar from '../src/components/catalog/SortBar';
 
 export default function TheoriesPage() {
   const [theories, setTheories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef(null);
+
+  // Filter + sort + search against mock for now
+  const computeList = useCallback(() => {
+    let filtered = filterTheoriesByAnime(mockTheories, filter);
+    if (query) {
+      const q = query.toLowerCase();
+      filtered = filtered.filter(t =>
+        t.title.toLowerCase().includes(q) ||
+        t.excerpt?.toLowerCase().includes(q) ||
+        (t.tags || []).some(tag => tag.toLowerCase().includes(q))
+      );
+    }
+    let sortKey = sortBy;
+    if (sortBy === 'newest') sortKey = 'newest';
+    if (sortBy === 'popular') sortKey = 'popular';
+    if (sortBy === 'trending') sortKey = 'trending';
+    const sorted = sortContent(filtered, sortKey);
+    return sorted;
+  }, [filter, sortBy, query]);
 
   useEffect(() => {
-    const loadTheories = async () => {
-      try {
-        setIsLoading(true);
-        
-        // For build time, use mock data (Supabase integration for runtime)
-        let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
-        let sortedTheories = sortContent(filteredTheories, sortBy);
-        setTheories(sortedTheories);
-        
-      } catch (error) {
-        console.error('Failed to load theories:', error);
-        // Fallback to mock data
-        let filteredTheories = filterTheoriesByAnime(mockTheories, filter);
-        let sortedTheories = sortContent(filteredTheories, sortBy);
-        setTheories(sortedTheories);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setIsLoading(true);
+    const all = computeList();
+    // simple paging on mock
+    const slice = all.slice(0, page * 9);
+    setTheories(slice);
+    setHasMore(slice.length < all.length);
+    setIsLoading(false);
+  }, [computeList, page]);
 
-    loadTheories();
-  }, [filter, sortBy]);
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!loaderRef.current) return;
+    const el = loaderRef.current; // HTMLElement | null
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting && hasMore && !isLoading) {
+        setPage(p => p + 1);
+      }
+    }, { threshold: 0.2 });
+    if (el) observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, isLoading]);
 
   const animeOptions = ['all', 'One Piece', 'Jujutsu Kaisen', 'Attack on Titan', 'Demon Slayer'];
   const sortOptions = [
@@ -70,9 +94,19 @@ export default function TheoriesPage() {
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* SortBar with search */}
+        <div className="mb-6">
+          <SortBar
+            sort={sortBy === 'newest' ? 'START_DATE_DESC' : sortBy === 'popular' ? 'POPULARITY_DESC' : 'TRENDING_DESC'}
+            onChange={(val) => setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest')}
+            query={query}
+            onQueryChange={(v) => { setPage(1); setQuery(v); }}
+          />
+        </div>
+
         {/* Filters */}
         <motion.div 
-          className="manga-card flex flex-col gap-6 mb-8 p-6 bg-dark-purple/30 rounded-lg border border-purple/30"
+          className="manga-card flex flex-col gap-6 mb-8 p-6 bg-white rounded-lg border border-gray-200 dark:bg-dark-purple/30 dark:border-purple/30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -84,11 +118,11 @@ export default function TheoriesPage() {
               {animeOptions.map((anime) => (
                 <button
                   key={anime}
-                  onClick={() => setFilter(anime)}
+                  onClick={() => { setPage(1); setFilter(anime); }}
                   className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${
                     filter === anime
-                      ? 'bg-purple text-paper-beige border-purple'
-                      : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
+                      ? 'bg-purple text-white border-purple'
+                      : 'bg-white text-black border-gray-300 hover:bg-gray-50 dark:bg-transparent dark:text-white dark:border-purple/30'
                   }`}
                 >
                   {anime}
@@ -97,16 +131,16 @@ export default function TheoriesPage() {
             </div>
           </div>
 
-          {/* Sort Options */}
+          {/* Sort Options (simple select for mock) */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <span className="text-purple font-medium whitespace-nowrap">Sort by:</span>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-dark-purple/50 border border-purple/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-purple w-full sm:w-auto"
+              onChange={(e) => { setPage(1); setSortBy(e.target.value); }}
+              className="bg-white text-black border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple w-full sm:w-auto dark:bg-transparent dark:text-white dark:border-purple/30"
             >
               {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="text-black">
                   {option.label}
                 </option>
               ))}
@@ -120,7 +154,7 @@ export default function TheoriesPage() {
             <motion.div 
               className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             />
           </div>
         ) : (
@@ -137,24 +171,17 @@ export default function TheoriesPage() {
                   key={theory.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.6 }}
+                  transition={{ delay: 0.03 * index, duration: 0.5 }}
                 >
                   <TheoryCard theory={theory} />
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Load More Button */}
-            <motion.div 
-              className="text-center mt-12"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              <button className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-medium">
-                Load More Theories
-              </button>
-            </motion.div>
+            {/* Infinite loader sentinel */}
+            {hasMore && (
+              <div ref={loaderRef} className="py-10 text-center text-gray-500">Loading more…</div>
+            )}
           </>
         )}
 
@@ -174,7 +201,7 @@ export default function TheoriesPage() {
           </p>
           <Link href="/account/creator">
             <motion.button
-              className="bg-purple hover:bg-dark-purple text-paper-beige px-8 py-3 rounded-lg transition-colors font-manga-header uppercase tracking-wide"
+              className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-manga-header uppercase tracking-wide"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
