@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600&family=Rubik:wght@300;400;500;600&display=swap');
 
 :root {
   /* Base Colors */
@@ -37,8 +37,14 @@ body {
 
 body {
   color: var(--text-light);
-  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-secondary) 100%);
+  background: linear-gradient(135deg, 
+    #1A1A1A 0%, 
+    #2A2A2A 25%,
+    #1A1A1A 50%,
+    #2A2A2A 75%,
+    #1A1A1A 100%);
   min-height: 100vh;
+  font-family: 'IBM Plex Mono', 'Inter', sans-serif;
 }
 
 a {
@@ -54,6 +60,69 @@ a {
 
 .brush-font {
   font-family: 'Crimson Text', serif;
+}
+
+/* Manga Typography Classes */
+.manga-title {
+  font-family: 'Bebas Neue', 'Cinzel', serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.manga-subtitle {
+  font-family: 'Rubik', 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.manga-body {
+  font-family: 'IBM Plex Mono', 'Crimson Text', serif;
+  line-height: 1.6;
+}
+
+.manga-accent {
+  color: #A02424;
+  text-shadow: 0 0 5px rgba(160, 36, 36, 0.3);
+}
+
+/* Manga Panel Styles */
+.manga-panel {
+  background: linear-gradient(135deg, 
+    rgba(217, 214, 195, 0.05) 0%,
+    rgba(26, 26, 26, 0.95) 100%);
+  border: 2px solid #A02424;
+  border-radius: 8px;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(217, 214, 195, 0.1);
+  position: relative;
+}
+
+.manga-panel::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #A02424, #D9D6C3, #A02424);
+  border-radius: 10px;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.manga-card {
+  background: rgba(26, 26, 26, 0.9);
+  border: 1px solid rgba(160, 36, 36, 0.3);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.manga-card:hover {
+  border-color: #A02424;
+  box-shadow: 0 4px 20px rgba(160, 36, 36, 0.2);
+  transform: translateY(-2px);
 }
 
 /* Interactive Elements */

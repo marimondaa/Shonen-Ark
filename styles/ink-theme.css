@@ -83,13 +83,13 @@
 /* Enhanced Navigation Styles */
 .nav-backdrop {
   background: linear-gradient(135deg, 
-    rgba(14, 14, 14, 0.95) 0%,
-    rgba(108, 92, 231, 0.1) 25%,
-    rgba(219, 146, 157, 0.05) 50%,
-    rgba(108, 92, 231, 0.1) 75%,
-    rgba(14, 14, 14, 0.95) 100%);
+    rgba(26, 26, 26, 0.95) 0%,
+    rgba(160, 36, 36, 0.1) 25%,
+    rgba(217, 214, 195, 0.05) 50%,
+    rgba(160, 36, 36, 0.1) 75%,
+    rgba(26, 26, 26, 0.95) 100%);
   backdrop-filter: blur(10px) saturate(150%);
-  border-bottom: 1px solid rgba(219, 146, 157, 0.2);
+  border-bottom: 2px solid rgba(160, 36, 36, 0.3);
 }
 
 .nav-item-enhanced {

@@ -64,7 +64,7 @@ const Layout = ({ children }) => {
                 onTouchStart={toggleMenu} // Add touch support for mobile
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-4 rounded-lg bg-accent-pink/80 hover:bg-accent-pink text-white hover:text-white focus:outline-none focus:ring-4 focus:ring-accent-pink border-2 border-accent-pink shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
+                className="relative p-4 rounded-lg bg-blood-red/80 hover:bg-blood-red text-paper-beige hover:text-paper-beige focus:outline-none focus:ring-4 focus:ring-blood-red border-2 border-blood-red shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
                 aria-label="Toggle navigation menu"
                 aria-expanded={isMenuOpen}
                 style={{ 
@@ -102,13 +102,13 @@ const Layout = ({ children }) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-2 w-80 bg-black/95 backdrop-blur-sm rounded-xl shadow-2xl border border-accent-pink/20 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-80 bg-ink-black/95 backdrop-blur-sm rounded-xl shadow-2xl border-2 border-blood-red/30 overflow-hidden"
                     style={{ zIndex: 10000 }}
                   >
                     <div className="p-4">
                       {/* Navigation Links Section */}
                       <div className="space-y-1 mb-4">
-                        <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Navigation</h3>
+                        <h3 className="text-sm font-semibold font-manga-header text-blood-red mb-3 px-2 uppercase tracking-widest">Navigation</h3>
                         {[
                           { href: "/", label: "Home", icon: "🏯", desc: "Welcome to Shonen Ark" },
                           { href: "/theories", label: "Theories", icon: "📜", desc: "Explore fan theories" },
@@ -125,7 +125,7 @@ const Layout = ({ children }) => {
                             <Link 
                               href={item.href}
                               onClick={() => setIsMenuOpen(false)}
-                              className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                              className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-blood-red/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blood-red border border-transparent hover:border-blood-red/30"
                             >
                               <motion.span 
                                 className="text-lg opacity-70 group-hover:opacity-100 transition-opacity"
@@ -134,10 +134,10 @@ const Layout = ({ children }) => {
                                 {item.icon}
                               </motion.span>
                               <div className="flex-1">
-                                <div className="font-medium text-white group-hover:text-accent-pink transition-colors">
+                                <div className="font-medium font-manga-header text-paper-beige group-hover:text-blood-red transition-colors">
                                   {item.label}
                                 </div>
-                                <div className="text-xs text-text-muted group-hover:text-accent-pink/70 transition-colors">
+                                <div className="text-xs font-manga-body text-text-muted group-hover:text-blood-red/70 transition-colors">
                                   {item.desc}
                                 </div>
                               </div>
@@ -147,7 +147,7 @@ const Layout = ({ children }) => {
                       </div>
 
                       {/* Authentication Section */}
-                      <div className="border-t border-accent-pink/20 pt-4">
+                      <div className="border-t border-blood-red/30 pt-4">
                         {isAuthenticated() ? (
                           <>
                             <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Account</h3>

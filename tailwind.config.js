@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Simplified Color Palette
+        // Original Shonen Ark Colors (preserved)
         'black': '#000000',
         'grey': '#808080',
         'dark-purple': '#2d1b69',
@@ -16,18 +16,35 @@ module.exports = {
         'white': '#ffffff',
         'glow-purple': 'rgba(108, 92, 231, 0.3)',
         
-        // Theme Application
-        'bg-dark': '#000000',
+        // Manga Club Aesthetic Colors
+        'ink-black': '#1A1A1A',
+        'paper-beige': '#D9D6C3',
+        'blood-red': '#A02424',
+        'manga-white': '#ffffff',
+        'panel-border': '#000000',
+        
+        // Theme Application (enhanced)
+        'bg-dark': '#1A1A1A', // Updated to ink-black
         'bg-dark-secondary': '#1a1a1a',
+        'bg-canvas': '#D9D6C3', // Paper beige for manga panels
         'text-light': '#ffffff',
         'text-muted': '#808080',
-        'text-accent': '#6c5ce7',
+        'text-accent': '#A02424', // Updated to blood-red
+        'accent-pink': '#A02424', // Maintain compatibility, map to blood-red
+        'background': '#1A1A1A', // Map to ink-black
       },
       fontFamily: {
+        // Original Shonen Ark fonts (preserved)
         'mystical': ['Cinzel', 'serif'],
         'brush': ['Crimson Text', 'serif'],
         'heading': ['Inter', 'sans-serif'],
         'body': ['Inter', 'sans-serif'],
+        'japanese': ['Inter', 'sans-serif'],
+        
+        // Manga Club fonts
+        'manga-header': ['Bebas Neue', 'Anton', 'Impact', 'sans-serif'],
+        'manga-body': ['IBM Plex Mono', 'Rubik', 'Inter', 'monospace'],
+        'panel-text': ['IBM Plex Mono', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
