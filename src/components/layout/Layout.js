@@ -172,18 +172,6 @@ const Layout = ({ children }) => {
 
             {/* Right side controls */}
             <div className="flex items-center gap-3">
-              {/* Dark/Light toggle */}
-              <motion.button
-                onClick={toggleTheme}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg border border-purple/30 text-purple hover:bg-purple/10 transition-all duration-200"
-                aria-label="Toggle theme"
-                title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-              >
-                {theme === 'dark' ? '🌙' : '☀️'}
-              </motion.button>
-
               {/* Hamburger Menu */}
               <div className="relative hamburger-menu" style={{ zIndex: 9999 }}>
                 <motion.button
