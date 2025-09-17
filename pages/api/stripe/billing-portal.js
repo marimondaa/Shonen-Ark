@@ -1,16 +1,13 @@
 import Stripe from 'stripe';
 import { getSession } from 'next-auth/react';
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', 'POST');
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
@@ -20,7 +17,7 @@ export default async function handler(req, res) {
     }
 
     // Get user data
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await serverSupabase
       .from('users')
       .select('stripe_customer_id, email')
       .eq('id', session.user.id)
@@ -44,7 +41,7 @@ export default async function handler(req, res) {
       customerId = customer.id;
 
       // Update user with customer ID
-      await supabase
+      await serverSupabase
         .from('users')
         .update({ stripe_customer_id: customerId })
         .eq('id', session.user.id);
