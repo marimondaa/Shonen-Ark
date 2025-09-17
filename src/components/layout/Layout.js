@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen font-japanese transition-colors duration-200 bg-white text-black dark:bg-background dark:text-text-light">
+  <div className="min-h-screen font-japanese transition-colors duration-200 dark:bg-background dark:text-text-light">
       {/* Navigation */}
       <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl" style={{ zIndex: 999 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
