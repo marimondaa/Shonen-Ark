@@ -41,9 +41,9 @@ export default function OnboardingPage() {
         <meta name="description" content="Unlock creator tools and start sharing your anime content with the community." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
+  <div className="min-h-screen dark:bg-black dark:text-white transition-colors">
         <motion.header 
-          className="bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 py-20 transition-colors"
+          className="dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 py-20 transition-colors"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}

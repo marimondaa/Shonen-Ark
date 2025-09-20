@@ -8,7 +8,7 @@ type Props = { item: NewsItem | null };
 export default function NewsDetailPage({ item }: Props) {
   if (!item) {
     return (
-      <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+      <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
         <div className="max-w-3xl mx-auto px-4 py-24 text-center">
           <h1 className="text-2xl font-bold">Article not found</h1>
           <Link className="text-purple underline" href="/news">Back to News</Link>
@@ -18,7 +18,7 @@ export default function NewsDetailPage({ item }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       <Head>
         <title>{item.title} - Shonen Ark</title>
       </Head>

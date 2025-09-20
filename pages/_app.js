@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }) {
         <meta name="description" content="Mystical anime fan platform featuring fusion UI design. Interactive theory hub, animation analysis, creator community." />
       </Head>
       <AuthProvider>
-        <div className="bg-white text-black dark:bg-background dark:text-text-light transition-colors duration-200">
+        <div className="transition-colors duration-200 dark:bg-background dark:text-text-light">
           <Layout>
             <Component {...pageProps} />
           </Layout>

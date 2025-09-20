@@ -112,7 +112,7 @@ const FanDashboard = () => {
   // Show loading if still checking authentication
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
+  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
         <div className="text-center">
           <motion.div 
             className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full mx-auto mb-4"
@@ -137,10 +137,10 @@ const FanDashboard = () => {
         <meta name="description" content="Your personal fan dashboard for theories, bookmarks, and subscriptions." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
+  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Header */}
         <motion.header 
-          className="bg-white text-black dark:bg-gradient-to-r dark:from-purple-900 dark:to-black py-16 transition-colors"
+          className="dark:bg-gradient-to-r dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}

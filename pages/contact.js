@@ -81,7 +81,7 @@ export default function ContactPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center">
         <motion.div 
           className="text-center max-w-md mx-auto px-4"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -111,10 +111,10 @@ export default function ContactPage() {
         <meta name="description" content="Get in touch with the Shonen Ark team. We're here to help with any questions or support you need." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white">
         {/* Hero Section */}
         <motion.div 
-          className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
+          className="dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -158,7 +158,7 @@ export default function ContactPage() {
                       name="inquiryType"
                       value={formData.inquiryType}
                       onChange={handleInputChange}
-                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
+                      className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30 border"
                       required
                     >
                       {inquiryTypes.map((type) => (
@@ -181,7 +181,7 @@ export default function ContactPage() {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
+                        className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30 border"
                         required
                       />
                     </div>
@@ -195,7 +195,7 @@ export default function ContactPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
+                        className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30 border"
                         required
                       />
                     </div>
@@ -212,7 +212,7 @@ export default function ContactPage() {
                       name="subject"
                       value={formData.subject}
                       onChange={handleInputChange}
-                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30"
+                      className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-black/50 dark:text-white dark:border-purple/30 border"
                       required
                     />
                   </div>
@@ -228,7 +228,7 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={handleInputChange}
                       rows={6}
-                      className="w-full bg-white text-black border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple resize-none dark:bg-black/50 dark:text-white dark:border-purple/30"
+                      className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple resize-none dark:bg-black/50 dark:text-white dark:border-purple/30 border"
                       required
                     />
                   </div>

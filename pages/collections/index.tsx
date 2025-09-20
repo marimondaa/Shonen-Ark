@@ -51,12 +51,12 @@ export default function CollectionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       <Head>
         <title>Collections - Shonen Ark</title>
       </Head>
 
-      <section className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
+  <section className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold">Collections</h1>
@@ -88,7 +88,7 @@ export default function CollectionsPage() {
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30 border"
                 />
               </div>
               <div>
@@ -97,7 +97,7 @@ export default function CollectionsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30 border"
                 />
               </div>
             </div>

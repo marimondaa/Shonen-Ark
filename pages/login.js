@@ -74,7 +74,7 @@ export default function LoginPage() {
         <meta name="description" content="Sign in to your Shonen Ark account and access exclusive content." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center py-12 px-4 transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center py-12 px-4">
         <motion.div 
           className="max-w-md w-full"
           initial={{ opacity: 0, y: 20 }}
@@ -125,7 +125,7 @@ export default function LoginPage() {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full bg-white text-black dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
                   placeholder="Enter your username"
                   required
                 />
@@ -142,7 +142,7 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full bg-white text-black dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
                   placeholder="Enter your password"
                   required
                 />

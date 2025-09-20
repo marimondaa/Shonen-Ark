@@ -127,7 +127,7 @@ export default function RegisterPage() {
         <meta name="description" content="Join the Shonen Ark community and start your anime journey today." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white py-12 px-4 transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white py-12 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <motion.div 
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full bg-white text-black dark:bg-black/50 dark:text-white border ${errors.email ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
+                      className={`w-full dark:bg-black/50 dark:text-white border ${errors.email ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
                       placeholder="Enter your email"
                       required
                     />
@@ -217,7 +217,7 @@ export default function RegisterPage() {
                       name="username"
                       value={formData.username}
                       onChange={handleInputChange}
-                      className={`w-full bg-white text-black dark:bg-black/50 dark:text-white border ${errors.username ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
+                      className={`w-full dark:bg-black/50 dark:text-white border ${errors.username ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
                       placeholder="Choose a username"
                       required
                     />
@@ -236,7 +236,7 @@ export default function RegisterPage() {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full bg-white text-black dark:bg-black/50 dark:text-white border ${errors.password ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
+                        className={`w-full dark:bg-black/50 dark:text-white border ${errors.password ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
                         placeholder="Create password"
                         required
                       />
@@ -252,7 +252,7 @@ export default function RegisterPage() {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className={`w-full bg-white text-black dark:bg-black/50 dark:text-white border ${errors.confirmPassword ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
+                        className={`w-full dark:bg-black/50 dark:text-white border ${errors.confirmPassword ? 'border-red-500' : 'border-purple/30'} px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all`}
                         placeholder="Confirm password"
                         required
                       />

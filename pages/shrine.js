@@ -75,10 +75,10 @@ export default function Shrine() {
         <meta name="description" content="Upload and share your anime and manga related media files." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-black dark:text-white">
         {/* Header */}
         <motion.header 
-          className="bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
+          className="dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}

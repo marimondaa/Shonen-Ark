@@ -6,40 +6,29 @@ import { useAuth } from '../../lib/hooks/auth-context';
 
 const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false);
   // Theme toggle removed; default to light-first
   const { isAuthenticated, user, logout } = useAuth();
 
   // Remove dark-mode initialization; keep light-first
 
-  // Close menu when clicking outside
+  // Close hamburger menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isMenuOpen && !event.target.closest('.hamburger-menu')) {
         setIsMenuOpen(false);
       }
-      if (isFloatingMenuOpen && !event.target.closest('.floating-menu-container')) {
-        setIsFloatingMenuOpen(false);
-      }
     };
 
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [isMenuOpen, isFloatingMenuOpen]);
+  }, [isMenuOpen]);
 
   const toggleMenu = () => {
     console.log('Menu toggle clicked!', !isMenuOpen);
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const floatingMenuItems = [
-    { href: "/theories", label: "Theories", icon: "🔮", desc: "Fan theories & analysis" },
-    { href: "/discovery", label: "Discovery", icon: "🎨", desc: "Creator content" },
-    { href: "/calendar", label: "Calendar", icon: "📅", desc: "Release schedule" },
-    { href: "/gigs", label: "Gigs", icon: "⚡", desc: "Community work" },
-    { href: "/about", label: "About", icon: "❓", desc: "Our mission" },
-    { href: "/contact", label: "Contact", icon: "📧", desc: "Get in touch" }
-  ];
+  // Removed floating quick navigation to prevent duplicate menus
 
   return (
   <div className="min-h-screen font-japanese transition-colors duration-200 dark:bg-background dark:text-text-light">
@@ -47,109 +36,30 @@ const Layout = ({ children }) => {
       <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl" style={{ zIndex: 999 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo with Floating Menu */}
-            <div className="flex items-center floating-menu-container relative">
-              <motion.div
-                onMouseEnter={() => setIsFloatingMenuOpen(true)}
-                onMouseLeave={() => setIsFloatingMenuOpen(false)}
-                className="relative"
+            {/* Logo (floating quick menu removed) */}
+            <div className="flex items-center relative">
+              <Link 
+                href="/" 
+                className="flex items-center hover:opacity-80 transition-all duration-300 group"
+                aria-label="Shonen Ark Home"
               >
-                <Link 
-                  href="/" 
-                  className="flex items-center hover:opacity-80 transition-all duration-300 group"
-                  aria-label="Shonen Ark Home"
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="nav-logo-glow"
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="nav-logo-glow"
-                  >
-                    <Image 
-                      src="/images/logo/shonen-ark/symbol-192x192.png" 
-                      alt="Shonen Ark Logo" 
-                      width={40} 
-                      height={40}
-                      className="shrine-glow"
-                    />
-                  </motion.div>
-                  <span className="ml-3 text-xl font-bold mystical-title text-accent-pink group-hover:text-white transition-colors duration-300">
-                    Shonen Ark
-                  </span>
-                </Link>
-
-                {/* Floating Menu */}
-                <AnimatePresence>
-                  {isFloatingMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute top-full left-0 mt-2 w-72 bg-black/95 backdrop-blur-sm rounded-xl shadow-2xl border border-accent-pink/20 overflow-hidden"
-                      style={{ zIndex: 10000 }}
-                      onMouseEnter={() => setIsFloatingMenuOpen(true)}
-                      onMouseLeave={() => setIsFloatingMenuOpen(false)}
-                    >
-                      <div className="p-4">
-                        <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Quick Navigation</h3>
-                        <div className="space-y-1">
-                          {floatingMenuItems.map((item, index) => (
-                            <motion.div
-                              key={item.href}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05, duration: 0.3 }}
-                              whileHover={{ x: 5 }}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              <Link 
-                                href={item.href}
-                                onClick={() => setIsFloatingMenuOpen(false)}
-                                className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink"
-                              >
-                                <motion.span 
-                                  className="text-lg opacity-70 group-hover:opacity-100 transition-opacity"
-                                  whileHover={{ scale: 1.2, rotate: 10 }}
-                                >
-                                  {item.icon}
-                                </motion.span>
-                                <div className="flex-1">
-                                  <div className="font-medium text-white group-hover:text-accent-pink transition-colors">
-                                    {item.label}
-                                  </div>
-                                  <div className="text-xs text-text-muted group-hover:text-accent-pink/70 transition-colors">
-                                    {item.desc}
-                                  </div>
-                                </div>
-                              </Link>
-                            </motion.div>
-                          ))}
-                        </div>
-                        
-                        {/* Quick Actions */}
-                        <div className="border-t border-accent-pink/20 mt-4 pt-4">
-                          <div className="grid grid-cols-2 gap-2">
-                            <Link 
-                              href="/register"
-                              onClick={() => setIsFloatingMenuOpen(false)}
-                              className="bg-gradient-to-r from-purple to-accent-pink hover:from-purple/80 hover:to-accent-pink/80 text-white text-center py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 shrine-glow"
-                            >
-                              Join Now
-                            </Link>
-                            <Link 
-                              href="/login"
-                              onClick={() => setIsFloatingMenuOpen(false)}
-                              className="border border-purple text-purple hover:bg-purple/10 text-center py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300"
-                            >
-                              Sign In
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                  <Image 
+                    src="/images/logo/shonen-ark/symbol-192x192.png" 
+                    alt="Shonen Ark Logo" 
+                    width={40} 
+                    height={40}
+                    className="shrine-glow"
+                  />
+                </motion.div>
+                <span className="ml-3 text-xl font-bold mystical-title text-accent-pink group-hover:text-white transition-colors duration-300">
+                  Shonen Ark
+                </span>
+              </Link>
             </div>
 
             {/* Right side controls */}
