@@ -40,7 +40,19 @@ export default function CollectionsPage() {
       setIsSaving(false);
       return;
     }
-    const { data, error } = await supabase.from('collections').insert({ title, description }).select('*').single();
+    const { data: userData } = await supabase.auth.getUser();
+    const ownerId = userData?.user?.id;
+    if (!ownerId) {
+      setIsSaving(false);
+      alert('Please log in to create a collection.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('collections')
+      .insert({ title, description, owner_id: ownerId })
+      .select('*')
+      .single();
     setIsSaving(false);
     if (!error && data) {
       setCollections((prev) => [data as any, ...prev]);
