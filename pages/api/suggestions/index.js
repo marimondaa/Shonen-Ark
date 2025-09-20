@@ -1,9 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import serverSupabase from '../../../src/lib/supabase-server';
+const supabase = serverSupabase;
 
 import { allowMethods } from '../../../src/lib/api-helpers';
 

@@ -1,11 +1,8 @@
 // API route for community projects
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
 import { allowMethods } from '../../../src/lib/api-helpers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = serverSupabase;
 
 async function handler(req, res) {
   const { method } = req;

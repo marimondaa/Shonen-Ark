@@ -1,14 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/[...nextauth]';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { allowMethods } from '../../../src/lib/api-helpers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = serverSupabase;
 
 // Configure multer for file uploads
 const upload = multer({
