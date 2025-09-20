@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { allowMethods } from '../../../src/lib/api-helpers';
 import crypto from 'crypto';
 import { supabase } from '../../../src/lib/supabase';
 
@@ -84,7 +85,7 @@ async function logSignupEvent(payload: SignupPayload) {
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ 
@@ -186,3 +187,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
+export default allowMethods(['POST'], handler);

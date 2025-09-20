@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { supabase } from '../../src/lib/supabase';
+import { getSupabaseClient } from '../../src/lib/supabase-client';
 
 interface Collection {
   id: string;
@@ -22,6 +22,11 @@ export default function CollectionsPage() {
   }, []);
 
   async function load() {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Supabase client is not configured.');
+      return;
+    }
     const { data, error } = await supabase.from('collections').select('*').order('created_at', { ascending: false });
     if (!error && data) setCollections(data as any);
   }
@@ -29,6 +34,12 @@ export default function CollectionsPage() {
   async function createCollection() {
     if (!title.trim()) return;
     setIsSaving(true);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Supabase client is not configured.');
+      setIsSaving(false);
+      return;
+    }
     const { data, error } = await supabase.from('collections').insert({ title, description }).select('*').single();
     setIsSaving(false);
     if (!error && data) {

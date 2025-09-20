@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/[...nextauth]';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import { allowMethods } from '../../../src/lib/api-helpers';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -49,7 +50,7 @@ function runMiddleware(req, res, fn) {
   });
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).json({ error: 'Method not allowed' });
@@ -164,3 +165,5 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+export default allowMethods(['POST'], handler);

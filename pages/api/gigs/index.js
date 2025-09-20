@@ -38,7 +38,9 @@ const mockGigs = [
   }
 ];
 
-export default async function handler(req, res) {
+import { allowMethods } from '../../../src/lib/api-helpers';
+
+async function handler(req, res) {
   const { method } = req;
 
   switch (method) {
@@ -47,6 +49,7 @@ export default async function handler(req, res) {
     case 'POST':
       return handleCreateGig(req, res);
     default:
+      // Fallback (should be handled by allowMethods)
       res.setHeader('Allow', ['GET', 'POST']);
       return res.status(405).json({ error: `Method ${method} not allowed` });
   }
@@ -84,6 +87,8 @@ async function handleGetGigs(req, res) {
     });
   }
 }
+
+export default allowMethods(['GET', 'POST'], handler);
 
 async function handleCreateGig(req, res) {
   try {
