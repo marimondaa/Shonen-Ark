@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const AnimeCalendarCard = ({ anime, index }) => {
@@ -57,11 +58,13 @@ const AnimeCalendarCard = ({ anime, index }) => {
     >
       <div className="aspect-[3/4] bg-gradient-to-br from-purple/20 to-dark-purple/20 relative">
         {anime.coverImage && !imageError ? (
-          <img 
-            src={anime.coverImage} 
+          <Image
+            src={anime.coverImage}
             alt={anime.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={() => setImageError(true)}
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

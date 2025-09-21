@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import { AniListAPI, mockAnimeData } from '../src/lib/services/anilist';
+import Image from 'next/image';
 
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -210,11 +211,14 @@ const CalendarPage = () => {
                       className="bg-dark-purple/30 backdrop-blur-sm rounded-lg overflow-hidden border border-purple/20 shrine-glow hover:border-accent-pink/50 transition-all duration-300"
                     >
                       <div className="aspect-[3/4] relative">
-                        <img 
-                          src={anime.coverImage?.large || anime.coverImage || '/api/placeholder/300/400'} 
+                        <Image
+                          src={anime.coverImage?.large || anime.coverImage || '/api/placeholder/300/400'}
                           alt={title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                          className="object-cover"
+                          unoptimized
+                          priority={false}
                         />
                         {anime.averageScore && (
                           <div className="absolute top-2 right-2 bg-black/80 text-accent-pink px-2 py-1 rounded text-sm font-bold">
