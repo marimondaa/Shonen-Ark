@@ -13,6 +13,13 @@
           }
         ]
       }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "MemberExpression[object.name='process'][property.name='env']",
+        "message": "Avoid using raw process.env in client modules. Use NEXT_PUBLIC_* variables or central config."
+      }
     ]
   }
 }
