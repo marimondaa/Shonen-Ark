@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { motion, useInView } from 'framer-motion';
+import Image from 'next/image';
 
 export default function Characters() {
   const [characters, setCharacters] = useState([]);
@@ -231,12 +232,14 @@ export default function Characters() {
                     className="bg-white rounded-lg p-6 border border-gray-200 hover:border-purple/50 transition-all duration-300 dark:bg-dark-purple/30 dark:border-purple/20 shrine-glow"
                   >
                     {/* Character Image */}
-                    <div className="w-full h-48 rounded-lg mb-4 overflow-hidden">
+                    <div className="w-full h-48 rounded-lg mb-4 overflow-hidden relative">
                       {character.image ? (
-                        <img 
+                        <Image
                           src={character.image}
                           alt={character.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-100 dark:bg-gradient-to-br dark:from-purple/20 dark:to-dark-purple/20 flex items-center justify-center">

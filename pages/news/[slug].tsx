@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { getNewsBySlug, NewsItem } from '../../src/lib/news';
 import { GetServerSideProps } from 'next';
+import Image from 'next/image';
 
 type Props = { item: NewsItem | null };
 
@@ -26,7 +27,17 @@ export default function NewsDetailPage({ item }: Props) {
         <h1 className="text-3xl font-bold">{item.title}</h1>
         <div className="text-sm text-gray-500 dark:text-grey mt-1">{item.published_at ? new Date(item.published_at).toLocaleString() : ''}</div>
         {item.cover_image && (
-          <img src={item.cover_image} alt={item.title} className="w-full rounded-xl mt-6" />
+          <div className="w-full rounded-xl mt-6 overflow-hidden">
+            <Image
+              src={item.cover_image}
+              alt={item.title}
+              width={1200}
+              height={630}
+              className="w-full h-auto rounded-xl"
+              unoptimized
+              priority={false}
+            />
+          </div>
         )}
         {item.excerpt && <p className="mt-6 text-gray-600 dark:text-grey">{item.excerpt}</p>}
         {item.content && (

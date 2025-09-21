@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
@@ -153,11 +154,7 @@ const FanDashboard = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="w-20 h-20 shrine-glow rounded-full flex items-center justify-center overflow-hidden"
               >
-                <img 
-                  src="/brand-logo.png" 
-                  alt="Shonen Ark" 
-                  className="w-full h-full object-cover"
-                />
+                <Image src="/brand-logo.png" alt="Shonen Ark" width={80} height={80} className="w-full h-full object-cover" />
               </motion.div>
               <div>
                 <h1 className="text-4xl font-bold mystical-title mb-2">

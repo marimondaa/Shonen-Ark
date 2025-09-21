@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import UploadComponent from '../src/components/features/UploadComponent';
+import Image from 'next/image';
 
 export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -178,11 +179,15 @@ export default function DiscoverPage() {
                               </p>
                             </div>
                             {selectedCategory.id === 'character-designs' && (
-                              <img 
-                                src={upload.preview} 
-                                alt="Preview" 
-                                className="w-16 h-16 object-cover rounded border border-accent-pink/30"
-                              />
+                              <div className="w-16 h-16 relative rounded border border-accent-pink/30 overflow-hidden">
+                                <Image
+                                  src={upload.preview}
+                                  alt="Preview"
+                                  fill
+                                  className="object-cover"
+                                  unoptimized
+                                />
+                              </div>
                             )}
                           </div>
                         </motion.div>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const ShrineHero = () => {
   return (
@@ -12,10 +13,12 @@ const ShrineHero = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 2, ease: "easeOut" }}
         >
-          <img 
-            src="/assets/illustrations/shrine-ink-hero.png" 
-            alt="" 
-            className="w-full h-full object-cover opacity-30 blur-sm"
+          <Image
+            src="/assets/illustrations/shrine-ink-hero.png"
+            alt=""
+            fill
+            className="object-cover opacity-30 blur-sm"
+            priority
           />
         </motion.div>
         
@@ -128,13 +131,16 @@ const ShrineHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
         >
-          <motion.img
-            src="/brand-logo.png"
-            alt="Shonen Ark"
-            className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain drop-shadow-lg"
-            whileHover={{ scale: 1.02 }}
-            transition={{ hover: { duration: 0.3 } }}
-          />
+          <motion.div whileHover={{ scale: 1.02 }} transition={{ hover: { duration: 0.3 } }}>
+            <Image
+              src="/brand-logo.png"
+              alt="Shonen Ark"
+              width={256}
+              height={256}
+              className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto object-contain drop-shadow-lg"
+              priority
+            />
+          </motion.div>
         </motion.div>
 
         {/* Simple tagline */}

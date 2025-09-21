@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import UploadComponent from '../src/components/features/UploadComponent';
+import Image from 'next/image';
 
 export default function Shrine() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -172,10 +173,12 @@ export default function Shrine() {
                     {/* File Preview */}
                     <div className="aspect-square relative overflow-hidden">
                       {file.category === 'images' ? (
-                        <img 
+                        <Image
                           src={file.url}
                           alt={file.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-purple/20 to-dark-purple/20 flex items-center justify-center">

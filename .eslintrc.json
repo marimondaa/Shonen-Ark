@@ -1,7 +1,9 @@
 {
   "root": true,
   "extends": ["next", "next/core-web-vitals"],
+  "plugins": ["import"],
   "rules": {
+    "react/no-unescaped-entities": "warn",
     "import/no-restricted-paths": [
       "error",
       {
@@ -13,13 +15,33 @@
           }
         ]
       }
-    ],
-    "no-restricted-syntax": [
-      "warn",
-      {
-        "selector": "MemberExpression[object.name='process'][property.name='env']",
-        "message": "Avoid using raw process.env in client modules. Use NEXT_PUBLIC_* variables or central config."
-      }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "pages/**/*.js",
+        "pages/**/*.jsx",
+        "pages/**/*.ts",
+        "pages/**/*.tsx",
+        "src/components/**/*.js",
+        "src/components/**/*.jsx",
+        "src/components/**/*.ts",
+        "src/components/**/*.tsx"
+      ],
+      "excludedFiles": [
+        "pages/api/**",
+        "pages/sitemap.xml.ts"
+      ],
+      "rules": {
+        "no-restricted-syntax": [
+          "warn",
+          {
+            "selector": "MemberExpression[object.name='process'][property.name='env']",
+            "message": "Avoid using raw process.env in client modules. Use NEXT_PUBLIC_* variables or central config."
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { listNews, NewsItem } from '../../src/lib/news';
+import Image from 'next/image';
 
 export default function NewsIndexPage() {
   const [items, setItems] = useState<NewsItem[]>([]);
@@ -59,7 +60,7 @@ export default function NewsIndexPage() {
             <Link key={n.id} href={`/news/${n.slug}`} className="block">
               <article className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition dark:bg-dark-purple/20 dark:border-purple/30">
                 {n.cover_image ? (
-                  <img src={n.cover_image} alt={n.title} className="w-full h-44 object-cover" />
+                  <Image src={n.cover_image} alt={n.title} width={800} height={352} className="w-full h-44 object-cover" />
                 ) : (
                   <div className="w-full h-44 bg-gray-100 dark:bg-black/30" />
                 )}
