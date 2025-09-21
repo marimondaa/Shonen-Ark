@@ -141,11 +141,11 @@ export default function Characters() {
         <meta name="description" content="Explore detailed profiles of your favorite anime and manga characters." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+  <div className="min-h-screen dark:bg-background dark:text-text-light transition-colors">
         {/* Header */}
         <motion.header 
           ref={headerRef}
-          className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
+          className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
           initial={{ opacity: 0, y: -50 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
@@ -179,7 +179,7 @@ export default function Characters() {
                   placeholder="Search characters or series..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
+                  className="w-full px-4 py-2 border rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
                 />
               </div>
               
@@ -189,7 +189,7 @@ export default function Characters() {
                 <select
                   value={selectedSeries}
                   onChange={(e) => setSelectedSeries(e.target.value)}
-                  className="px-4 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
+                  className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/30 dark:text-white dark:border-purple/30"
                 >
                   <option value="all" className="text-black">All Series</option>
                   {getSeriesList().map(series => (

@@ -68,10 +68,10 @@ export default function TheoriesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       {/* Hero Section */}
       <motion.div 
-        className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-20 transition-colors"
+        className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-20 transition-colors"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -122,7 +122,7 @@ export default function TheoriesPage() {
                   className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${
                     filter === anime
                       ? 'bg-purple text-white border-purple'
-                      : 'bg-white text-black border-gray-300 hover:bg-gray-50 dark:bg-transparent dark:text-white dark:border-purple/30'
+                      : 'dark:bg-transparent dark:text-white dark:border-purple/30'
                   }`}
                 >
                   {anime}
@@ -137,7 +137,7 @@ export default function TheoriesPage() {
             <select
               value={sortBy}
               onChange={(e) => { setPage(1); setSortBy(e.target.value); }}
-              className="bg-white text-black border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple w-full sm:w-auto dark:bg-transparent dark:text-white dark:border-purple/30"
+              className="px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple w-full sm:w-auto dark:bg-transparent dark:text-white dark:border-purple/30 border"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value} className="text-black">

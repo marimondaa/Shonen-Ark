@@ -1,11 +1,8 @@
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
+import { allowMethods } from '../../../src/lib/api-helpers';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 
 export const config = {
   api: {
@@ -15,7 +12,7 @@ export const config = {
   },
 };
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -62,6 +59,8 @@ export default async function handler(req, res) {
   }
 }
 
+export default allowMethods(['POST'], handler);
+
 async function handleSubscriptionChange(subscription) {
   const customerId = subscription.customer;
   const subscriptionId = subscription.id;
@@ -77,7 +76,7 @@ async function handleSubscriptionChange(subscription) {
   const tier = tierMapping[priceId] || 'free';
   
   // Get user by Stripe customer ID
-  const { data: user, error: userError } = await supabase
+  const { data: user, error: userError } = await serverSupabase
     .from('users')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -89,7 +88,7 @@ async function handleSubscriptionChange(subscription) {
   }
   
   // Update user subscription
-  const { error: updateError } = await supabase
+  const { error: updateError } = await serverSupabase
     .from('users')
     .update({
       subscription_tier: tier,
@@ -110,7 +109,7 @@ async function handleSubscriptionCancellation(subscription) {
   const customerId = subscription.customer;
   
   // Get user by Stripe customer ID
-  const { data: user, error: userError } = await supabase
+  const { data: user, error: userError } = await serverSupabase
     .from('users')
     .select('id')
     .eq('stripe_customer_id', customerId)
@@ -122,7 +121,7 @@ async function handleSubscriptionCancellation(subscription) {
   }
   
   // Downgrade to free tier
-  const { error: updateError } = await supabase
+  const { error: updateError } = await serverSupabase
     .from('users')
     .update({
       subscription_tier: 'free',
@@ -144,7 +143,7 @@ async function handlePaymentSuccess(invoice) {
   const subscriptionId = invoice.subscription;
   
   // Update payment status
-  const { error } = await supabase
+  const { error } = await serverSupabase
     .from('users')
     .update({
       last_payment_date: new Date().toISOString(),
@@ -163,7 +162,7 @@ async function handlePaymentFailure(invoice) {
   const customerId = invoice.customer;
   
   // Update payment status
-  const { error } = await supabase
+  const { error } = await serverSupabase
     .from('users')
     .update({
       payment_status: 'failed'

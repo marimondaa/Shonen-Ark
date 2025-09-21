@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { supabase } from '../../src/lib/supabase';
+import { getSupabaseClient } from '../../src/lib/supabase-client';
 
 interface Collection {
   id: string;
@@ -22,6 +22,11 @@ export default function CollectionsPage() {
   }, []);
 
   async function load() {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Supabase client is not configured.');
+      return;
+    }
     const { data, error } = await supabase.from('collections').select('*').order('created_at', { ascending: false });
     if (!error && data) setCollections(data as any);
   }
@@ -29,7 +34,25 @@ export default function CollectionsPage() {
   async function createCollection() {
     if (!title.trim()) return;
     setIsSaving(true);
-    const { data, error } = await supabase.from('collections').insert({ title, description }).select('*').single();
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Supabase client is not configured.');
+      setIsSaving(false);
+      return;
+    }
+    const { data: userData } = await supabase.auth.getUser();
+    const ownerId = userData?.user?.id;
+    if (!ownerId) {
+      setIsSaving(false);
+      alert('Please log in to create a collection.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('collections')
+      .insert({ title, description, owner_id: ownerId })
+      .select('*')
+      .single();
     setIsSaving(false);
     if (!error && data) {
       setCollections((prev) => [data as any, ...prev]);
@@ -40,12 +63,12 @@ export default function CollectionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       <Head>
         <title>Collections - Shonen Ark</title>
       </Head>
 
-      <section className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
+  <section className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold">Collections</h1>
@@ -77,7 +100,7 @@ export default function CollectionsPage() {
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30 border"
                 />
               </div>
               <div>
@@ -86,7 +109,7 @@ export default function CollectionsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30"
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-dark-purple/20 dark:text-white dark:border-purple/30 border"
                 />
               </div>
             </div>

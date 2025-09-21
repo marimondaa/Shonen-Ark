@@ -49,10 +49,10 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen py-8 bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+  <div className="min-h-screen py-8 dark:bg-background dark:text-text-light transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.header 
-          className="text-center mb-12 manga-card p-8 bg-white text-black dark:bg-ink-black dark:text-paper-beige transition-colors"
+          className="text-center mb-12 manga-card p-8 dark:bg-ink-black dark:text-paper-beige transition-colors"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}

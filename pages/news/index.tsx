@@ -41,12 +41,12 @@ export default function NewsIndexPage() {
   }, [cursor, hasMore, isLoading]);
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       <Head>
         <title>News - Shonen Ark</title>
       </Head>
 
-      <section className="manga-panel mx-4 mt-4 bg-white text-black dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
+  <section className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-4xl font-bold">News</h1>
           <p className="text-gray-600 dark:text-purple-200">Latest updates from the anime & manga world</p>

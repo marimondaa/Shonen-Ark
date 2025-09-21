@@ -1,12 +1,10 @@
 // API route for community projects
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
+import { allowMethods } from '../../../src/lib/api-helpers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = serverSupabase;
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const { method } = req;
 
   switch (method) {
@@ -53,6 +51,8 @@ async function handleGetProjects(req, res) {
     return res.status(500).json({ error: 'Failed to fetch community projects' });
   }
 }
+
+export default allowMethods(['GET', 'POST'], handler);
 
 async function handleCreateProject(req, res) {
   try {

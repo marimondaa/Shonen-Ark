@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const ShrineHero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white text-black dark:bg-background dark:text-text-light transition-colors">
+  <section className="relative min-h-screen flex items-center justify-center overflow-hidden dark:bg-background dark:text-text-light transition-colors">
       {/* Animated Torii Gate Background */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div

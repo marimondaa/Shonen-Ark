@@ -75,7 +75,7 @@ const AdminDashboard = () => {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white flex items-center justify-center transition-colors">
+  <div className="min-h-screen dark:bg-black dark:text-white flex items-center justify-center transition-colors">
         <motion.div 
           className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
           animate={{ rotate: 360 }}
@@ -96,9 +96,9 @@ const AdminDashboard = () => {
         <meta name="description" content="Admin dashboard for content moderation and site management" />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
+  <div className="min-h-screen dark:bg-black dark:text-white transition-colors">
         {/* Header */}
-        <div className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-12 transition-colors">
+  <div className="dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-12 transition-colors">
           <div className="max-w-7xl mx-auto px-4">
             <h1 className="text-4xl font-bold mystical-title">
               Admin Dashboard

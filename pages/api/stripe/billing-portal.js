@@ -1,14 +1,11 @@
 import Stripe from 'stripe';
 import { getSession } from 'next-auth/react';
 import serverSupabase from '../../../src/lib/supabase-server';
+import { allowMethods } from '../../../src/lib/api-helpers';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+async function handler(req, res) {
 
   try {
     const session = await getSession({ req });
@@ -60,3 +57,5 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Failed to create billing portal session' });
   }
 }
+
+export default allowMethods(['POST'], handler);

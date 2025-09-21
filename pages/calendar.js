@@ -73,10 +73,10 @@ const CalendarPage = () => {
         <meta name="description" content="Track upcoming anime releases, currently airing series, and top 10 anime." />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
+  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Hero Section */}
         <motion.div 
-          className="bg-white text-black dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
+          className="dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}

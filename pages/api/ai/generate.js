@@ -1,17 +1,15 @@
 // OpenAI removed in favor of n8n AI workflows
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/[...nextauth]';
-import { createClient } from '@supabase/supabase-js';
+import serverSupabase from '../../../src/lib/supabase-server';
+import { allowMethods } from '../../../src/lib/api-helpers';
 
 // Note: AI functionality is now handled through n8n workflows
 // This endpoint serves as a placeholder for future n8n integration
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = serverSupabase;
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const { method } = req;
 
   switch (method) {
@@ -184,3 +182,5 @@ Hi! The AI functionality has been moved to our n8n workflow system for better au
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+export default allowMethods(['POST'], handler);

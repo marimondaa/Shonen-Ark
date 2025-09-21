@@ -16,7 +16,7 @@ const SortBar: React.FC<Props> = ({ sort, onChange, query, onQueryChange }) => {
           id="sort"
           value={sort}
           onChange={(e) => onChange(e.target.value)}
-          className="px-3 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-transparent dark:text-white dark:border-purple/30"
+          className="px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple dark:bg-transparent dark:text-white dark:border-purple/30 border"
         >
           <option value="START_DATE_DESC" className="text-black">Newest</option>
           <option value="TRENDING_DESC" className="text-black">Trending</option>
@@ -30,7 +30,7 @@ const SortBar: React.FC<Props> = ({ sort, onChange, query, onQueryChange }) => {
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search anime..."
-          className="w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple dark:bg-transparent dark:text-white dark:border-purple/30"
+          className="w-full px-4 py-2 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple dark:bg-transparent dark:text-white dark:border-purple/30 border"
         />
       </div>
     </div>

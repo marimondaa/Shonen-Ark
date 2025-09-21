@@ -128,10 +128,10 @@ export default function GigsPage() {
         <meta name="description" content="Find work opportunities and collaborate on anime projects with the Shonen Ark community" />
       </Head>
 
-      <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
+  <div className="min-h-screen transition-colors dark:bg-black dark:text-white">
         {/* Hero Section with Brand Logo */}
         <motion.div 
-          className="bg-white text-black dark:bg-gradient-to-b dark:from-black dark:via-dark-purple/20 dark:to-black py-24 relative overflow-hidden transition-colors"
+          className="dark:bg-gradient-to-b dark:from-black dark:via-dark-purple/20 dark:to-black py-24 relative overflow-hidden transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}

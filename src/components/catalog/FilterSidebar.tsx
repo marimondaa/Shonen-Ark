@@ -26,7 +26,7 @@ const FilterSidebar: React.FC<Props> = ({ genres, selectedGenres, onToggleGenre,
                 className={`px-3 py-1 rounded-lg border text-sm transition-all ${
                   active
                     ? 'bg-purple text-white border-purple'
-                    : 'bg-white text-black border-gray-300 hover:bg-gray-50 dark:bg-transparent dark:text-white dark:border-purple/30'
+                    : 'dark:bg-transparent dark:text-white dark:border-purple/30'
                 }`}
               >
                 {g}
