@@ -49,10 +49,10 @@ export default function DiscoverPage() {
   };
 
   return (
-  <div className="min-h-screen py-8 dark:bg-background dark:text-text-light transition-colors">
+  <div className="min-h-screen py-8 bg-bg-dark text-text-light transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.header 
-          className="text-center mb-12 manga-card p-8 dark:bg-ink-black dark:text-paper-beige transition-colors"
+          className="text-center mb-12 manga-card p-8 bg-ink-black text-paper-beige transition-colors"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -60,7 +60,7 @@ export default function DiscoverPage() {
           <h1 className="text-4xl font-bold font-manga-header mb-4 text-purple uppercase tracking-widest">
             Discovery Feed
           </h1>
-          <p className="text-xl font-manga-body max-w-2xl mx-auto text-black/70 dark:text-paper-beige/80 transition-colors">
+          <p className="text-xl font-manga-body max-w-2xl mx-auto text-paper-beige/80 transition-colors">
             Explore fan creations across different categories. Share your own content 
             and discover amazing works from the community.
           </p>

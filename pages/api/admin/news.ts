@@ -17,6 +17,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (userErr) return res.status(500).json({ error: 'User lookup failed' });
     if (!userRow || userRow.account_type !== 'admin') return res.status(403).json({ error: 'Forbidden' });
 
+    if (req.method === 'GET') {
+      const limit = Number(req.query.limit ?? 20);
+      const { data, error } = await serverSupabase
+        .from('news')
+        .select('*')
+        .order('published_at', { ascending: false })
+        .limit(Number.isFinite(limit) ? limit : 20);
+      if (error) return res.status(500).json({ error: 'Fetch failed' });
+      return res.status(200).json({ data });
+    }
+
     if (req.method === 'POST') {
       const { title, slug, cover_image, content, tags, published_at } = req.body || {};
       if (!title || !slug) return res.status(400).json({ error: 'Missing title or slug' });
@@ -49,4 +60,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default allowMethods(['POST', 'PUT'], handler);
+export default allowMethods(['GET', 'POST', 'PUT'], handler);
