@@ -1,59 +1,51 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 import serverSupabase from '../../../src/lib/supabase-server';
 import { allowMethods } from '../../../src/lib/api-helpers';
-import { getSession } from 'next-auth/react';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const session = await getSession({ req });
-    const userId = (session as any)?.user?.id as string | undefined;
-    if (!session || !userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const uid = (session as any)?.user?.id;
+    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
-    // Verify admin via database (users.account_type === 'admin')
-    const { data: adminRecord, error: adminErr } = await serverSupabase
+    const { data: userRow, error: userErr } = await serverSupabase
       .from('users')
       .select('id, account_type')
-      .eq('id', userId)
-      .eq('account_type', 'admin')
+      .eq('id', uid)
       .single();
-
-    if (adminErr || !adminRecord) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
+    if (userErr) return res.status(500).json({ error: 'User lookup failed' });
+    if (!userRow || userRow.account_type !== 'admin') return res.status(403).json({ error: 'Forbidden' });
 
     if (req.method === 'POST') {
-      const { title, slug, cover, content, published_at } = req.body || {};
-      if (!title || !slug) {
-        return res.status(400).json({ error: 'Missing required fields: title, slug' });
-      }
+      const { title, slug, cover_image, content, tags, published_at } = req.body || {};
+      if (!title || !slug) return res.status(400).json({ error: 'Missing title or slug' });
       const { data, error } = await serverSupabase
         .from('news')
-        .insert({ title, slug, cover: cover ?? null, content: content ?? null, published_at: published_at ?? new Date().toISOString() })
+        .insert({ title, slug, cover_image, content, tags, published_at })
         .select('*')
         .single();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(201).json({ news: data });
+      if (error) return res.status(500).json({ error: 'Insert failed' });
+      return res.status(200).json({ data });
     }
 
     if (req.method === 'PUT') {
-      const { id, title, slug, cover, content, published_at } = req.body || {};
-      if (!id) return res.status(400).json({ error: 'Missing required field: id' });
+      const { id, ...patch } = req.body || {};
+      if (!id) return res.status(400).json({ error: 'Missing id' });
       const { data, error } = await serverSupabase
         .from('news')
-        .update({ title, slug, cover, content, published_at })
+        .update(patch)
         .eq('id', id)
         .select('*')
         .single();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json({ news: data });
+      if (error) return res.status(500).json({ error: 'Update failed' });
+      return res.status(200).json({ data });
     }
 
-    return res.status(405).json({ error: 'Method not allowed' });
-  } catch (err: any) {
-    console.error('Admin news API error', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  } catch (e) {
+    console.error('admin/news error', e);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
