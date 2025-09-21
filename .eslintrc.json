@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "extends": ["next", "next/core-web-vitals"],
+  "rules": {
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          {
+            "target": "./src",
+            "from": "./src/lib/supabase-server.ts",
+            "message": "Do not import serverSupabase in client code. Use src/lib/supabase-client.ts instead."
+          }
+        ]
+      }
+    ]
+  }
+}

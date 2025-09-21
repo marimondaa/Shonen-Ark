@@ -55,24 +55,32 @@ export default function CategoryPage() {
   useEffect(() => {
     if (!category) return;
 
-    const loadCategoryItems = async () => {
-      setIsLoading(true);
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setIsLoading(true);
+
+    const timer = setTimeout(async () => {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Use centralized mock data
+        if (signal.aborted) return;
+        // Simulate API latency
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        if (signal.aborted) return;
         const categoryItems = getDiscoveryContent(category);
         const sortedItems = sortContent(categoryItems, sortBy);
-        setItems(sortedItems);
+        if (!signal.aborted) setItems(sortedItems);
       } catch (error) {
-        console.error('Failed to load category items:', error);
+        if (error?.name !== 'AbortError') {
+          console.error('Failed to load category items:', error);
+        }
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) setIsLoading(false);
       }
-    };
+    }, 250);
 
-    loadCategoryItems();
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [category, sortBy]);
 
   const containerVariants = {
@@ -101,11 +109,11 @@ export default function CategoryPage() {
         <meta name="description" content={currentCategory.description} />
       </Head>
 
-  <div className="min-h-screen dark:bg-black dark:text-white transition-colors">
+  <div className="min-h-screen bg-bg-dark text-text-light transition-colors">
         {/* Header */}
         <motion.header 
           ref={headerRef}
-          className="dark:bg-gradient-to-r dark:from-dark-purple/80 dark:to-purple/80 dark:text-white py-16 transition-colors"
+          className="bg-gradient-to-r from-dark-purple/80 to-purple/80 text-white py-16 transition-colors"
           initial={{ opacity: 0, y: -50 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
@@ -121,7 +129,7 @@ export default function CategoryPage() {
               <h1 className="text-4xl font-bold mystical-title mb-4">
                 {currentCategory.title}
               </h1>
-              <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-grey transition-colors brush-font">
+              <p className="text-xl max-w-2xl mx-auto text-grey transition-colors brush-font">
                 {currentCategory.description}
               </p>
             </motion.div>
@@ -129,7 +137,7 @@ export default function CategoryPage() {
         </motion.header>
 
         {/* Filters */}
-        <section className="py-8 border-b border-grey/30">
+  <section className="py-8 border-b border-grey/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="flex space-x-4">
