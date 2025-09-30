@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import { AniListAPI, mockAnimeData } from '../src/lib/services/anilist';
@@ -14,6 +14,8 @@ const CalendarPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('time'); // 'time' | 'title'
 
   useEffect(() => {
     const loadAnimeData = async () => {
@@ -57,8 +59,48 @@ const CalendarPage = () => {
     loadAnimeData();
   }, []);
 
-  const getCurrentData = () => {
+  const getCurrentData = useCallback(() => {
     return animeData[activeTab] || [];
+  }, [animeData, activeTab]);
+
+  // Compute filtered + sorted list for the active tab
+  const visibleData = useMemo(() => {
+    const list = getCurrentData();
+    const q = searchQuery.trim().toLowerCase();
+
+    const filtered = q
+      ? list.filter((anime) => {
+          const t = typeof anime.title === 'string'
+            ? anime.title
+            : (anime.title?.english || anime.title?.romaji || anime.title?.native || '');
+          return t.toLowerCase().includes(q);
+        })
+      : list;
+
+    const getWhen = (a) => {
+      // upcoming uses a.airingAt (ISO string), airing uses a.nextAiringAt (ISO string), top10 has none
+      const s = a.airingAt || a.nextAiringAt || null;
+      return s ? Date.parse(s) : 0;
+    };
+
+    const getTitle = (a) =>
+      typeof a.title === 'string'
+        ? a.title
+        : (a.title?.english || a.title?.romaji || a.title?.native || '');
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === 'title') return getTitle(a).localeCompare(getTitle(b));
+      return getWhen(a) - getWhen(b);
+    });
+
+    return sorted;
+  }, [searchQuery, sortBy, getCurrentData]);
+
+  const aniListUrl = (anime) => {
+    // Prefer direct siteUrl when present (top10 data), fallback to id path
+    if (anime?.siteUrl) return anime.siteUrl;
+    const id = anime?.id || anime?.anilistId || anime?.idAniList;
+    return id ? `https://anilist.co/anime/${id}` : 'https://anilist.co/';
   };
 
   const tabs = [
@@ -165,6 +207,35 @@ const CalendarPage = () => {
             </div>
           </motion.div>
 
+          {/* Filters bar */}
+          <motion.div
+            className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex-1 max-w-md">
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search anime by title..."
+                className="w-full px-4 py-2 rounded-lg border border-purple/30 bg-dark-purple/30 text-white placeholder-purple-200/60 focus:outline-none focus:ring-2 focus:ring-purple"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label htmlFor="sortBy" className="text-sm text-grey">Sort by</label>
+              <select
+                id="sortBy"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 rounded-lg border border-purple/30 bg-dark-purple/30 text-white focus:outline-none focus:ring-2 focus:ring-purple"
+              >
+                <option value="time" className="text-black">Air time</option>
+                <option value="title" className="text-black">Title</option>
+              </select>
+            </div>
+          </motion.div>
+
           {/* Anime Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -184,7 +255,7 @@ const CalendarPage = () => {
                 <div className="text-6xl mb-4">⚠️</div>
                 <h3 className="text-xl font-bold mb-2">Something went wrong</h3>
                 <p className="text-gray-400 mb-6">
-                  We're having trouble loading the anime calendar. Please try refreshing the page.
+                  We&apos;re having trouble loading the anime calendar. Please try refreshing the page.
                 </p>
                 <button 
                   onClick={() => window.location.reload()}
@@ -193,55 +264,78 @@ const CalendarPage = () => {
                   🔄 Refresh Page
                 </button>
               </div>
-            ) : getCurrentData().length > 0 ? (
+            ) : visibleData.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {getCurrentData().map((anime, index) => {
+                {visibleData.map((anime, index) => {
                   // Handle different data structures for different tabs
                   const title = typeof anime.title === 'string' 
                     ? anime.title 
                     : anime.title?.english || anime.title?.romaji || anime.title?.native || 'Unknown Title';
                   
                   return (
-                    <motion.div
+                    <a
                       key={anime.id || index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ scale: 1.05 }}
-                      className="bg-dark-purple/30 backdrop-blur-sm rounded-lg overflow-hidden border border-purple/20 shrine-glow hover:border-accent-pink/50 transition-all duration-300"
+                      href={aniListUrl(anime)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
                     >
-                      <div className="aspect-[3/4] relative">
-                        <Image
-                          src={anime.coverImage?.large || anime.coverImage || '/api/placeholder/300/400'}
-                          alt={title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                          className="object-cover"
-                          unoptimized
-                          priority={false}
-                        />
-                        {anime.averageScore && (
-                          <div className="absolute top-2 right-2 bg-black/80 text-accent-pink px-2 py-1 rounded text-sm font-bold">
-                            ⭐ {anime.averageScore}/100
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ scale: 1.03 }}
+                        className="bg-dark-purple/30 backdrop-blur-sm rounded-lg overflow-hidden border border-purple/20 shrine-glow hover:border-accent-pink/50 transition-all duration-300"
+                      >
+                        <div className="aspect-[3/4] relative">
+                          <Image
+                            src={anime.coverImage?.large || anime.coverImage || '/api/placeholder/300/400'}
+                            alt={title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                            className="object-cover"
+                            unoptimized
+                            priority={false}
+                          />
+                          {anime.averageScore && (
+                            <div className="absolute top-2 right-2 bg-black/80 text-accent-pink px-2 py-1 rounded text-sm font-bold">
+                              ⭐ {anime.averageScore}/100
+                            </div>
+                          )}
+                          {(anime.airingAt || anime.nextAiringAt || anime.startDate) && (
+                            <div className="absolute bottom-2 left-2 bg-black/80 text-white/90 px-2 py-1 rounded text-xs">
+                              {anime.airingAt || anime.nextAiringAt
+                                ? new Date(anime.airingAt || anime.nextAiringAt).toLocaleString()
+                                : (anime.startDate?.year ? `Started ${anime.startDate.year}` : '')}
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-bold text-white mb-2 line-clamp-2">
+                            {title}
+                          </h3>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {anime.genres?.slice(0, 2).map((genre, i) => (
+                              <span key={i} className="text-xs bg-purple/30 text-purple-200 px-2 py-1 rounded">
+                                {genre}
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-bold text-white mb-2 line-clamp-2">
-                          {title}
-                        </h3>
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {anime.genres?.slice(0, 2).map((genre, i) => (
-                            <span key={i} className="text-xs bg-purple/30 text-purple-200 px-2 py-1 rounded">
-                              {genre}
-                            </span>
-                          ))}
+                          <div className="text-sm text-gray-400 flex flex-wrap items-center gap-2">
+                            {anime.format && <span className="text-purple-200">{anime.format}</span>}
+                            <span>•</span>
+                            <span>{anime.episodes ? `${anime.episodes} episodes` : 'Ongoing'}</span>
+                            {anime.nextEpisode && (
+                              <>
+                                <span>•</span>
+                                <span>Next ep {anime.nextEpisode}</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="mt-2 text-xs text-grey">Click to view on AniList</div>
                         </div>
-                        <div className="text-sm text-gray-400">
-                          {anime.format} • {anime.episodes ? `${anime.episodes} episodes` : 'Ongoing'}
-                        </div>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    </a>
                   );
                 })}
               </div>
