@@ -103,6 +103,7 @@ export class AniListAPI {
           media(
             status: RELEASING
             type: ANIME
+            format_in: [TV]
             sort: POPULARITY_DESC
           ) {
             id
@@ -123,6 +124,7 @@ export class AniListAPI {
             genres
             averageScore
             popularity
+            format
             studios {
               nodes {
                 name
@@ -211,7 +213,9 @@ export class AniListAPI {
           description: schedule.media.description,
           genres: schedule.media.genres || [],
           startDate: schedule.media.startDate
-        }));
+        }))
+        // TV-only filter: drop SPECIAL, ONA, OVA, TV_SHORT, MOVIE, etc.
+        .filter(item => item.format === 'TV');
     } catch (error) {
       console.error('Failed to fetch upcoming anime:', error);
       return null; // Return null to trigger fallback
