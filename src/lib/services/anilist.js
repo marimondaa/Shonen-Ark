@@ -329,6 +329,44 @@ export class AniListAPI {
     }
   }
 
+  // Get top anime TV-only (Top 100 by score)
+  static async getTopAnime(page = 1, perPage = 100) {
+    const query = `
+      query ($page: Int, $perPage: Int) {
+        Page(page: $page, perPage: $perPage) {
+          media(
+            type: ANIME,
+            status_not: NOT_YET_RELEASED,
+            format_in: [TV],
+            sort: [SCORE_DESC, POPULARITY_DESC]
+          ) {
+            id
+            title { romaji english native }
+            coverImage { large medium }
+            averageScore
+            meanScore
+            episodes
+            duration
+            status
+            format
+            startDate { year month day }
+            description(asHtml: false)
+            siteUrl
+            genres
+          }
+        }
+      }
+    `;
+
+    try {
+      const result = await this.query(query, { page, perPage });
+      return result?.Page?.media || [];
+    } catch (error) {
+      console.error('Failed to fetch top anime TV-only:', error);
+      return [];
+    }
+  }
+
   // Format time until airing
   static formatTimeUntilAiring(seconds) {
     if (!seconds) return null;
