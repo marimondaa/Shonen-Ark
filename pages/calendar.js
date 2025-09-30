@@ -8,7 +8,8 @@ const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [animeData, setAnimeData] = useState({
     upcoming: [],
-    airing: []
+    airing: [],
+    top: []
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,19 +25,21 @@ const CalendarPage = () => {
         setUsingFallback(false);
 
         // Try to fetch from AniList API
-        const [upcomingData, airingData] = await Promise.all([
+        const [upcomingData, airingData, topData] = await Promise.all([
           AniListAPI.getUpcomingAnime(1, 100),
-          AniListAPI.getCurrentlyAiring(1, 100)
+          AniListAPI.getCurrentlyAiring(1, 100),
+          AniListAPI.getTopAnime(1, 100)
         ]);
 
         // Check if any API calls failed
-        if (!upcomingData || !airingData) {
+        if (!upcomingData || !airingData || !topData) {
           throw new Error('Failed to fetch from AniList API');
         }
 
         setAnimeData({
           upcoming: upcomingData || [],
-          airing: airingData || []
+          airing: airingData || [],
+          top: topData || []
         });
 
         console.log('✅ Successfully loaded data from AniList API');
@@ -103,7 +106,7 @@ const CalendarPage = () => {
   const tabs = [
     { id: 'upcoming', label: 'Upcoming', icon: '🔮', desc: 'New releases coming soon' },
     { id: 'airing', label: 'Currently Airing', icon: '📺', desc: 'Series airing now' },
-    // Removed Top 10 per requirements
+    { id: 'top', label: 'Top 100', icon: '🏆', desc: 'Highest rated TV series' },
   ];
 
   return (
