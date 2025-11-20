@@ -1,9 +1,10 @@
+import { SessionProvider } from 'next-auth/react'
 import '../styles/globals.css'
 import Layout from '../src/components/layout/Layout'
 import { AuthProvider } from '../src/lib/hooks/useAuth'
 import Head from 'next/head'
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <>
       <Head>
@@ -12,13 +13,15 @@ export default function App({ Component, pageProps }) {
         <title>Shonen Ark - Mystical Anime Fan Platform</title>
         <meta name="description" content="Mystical anime fan platform featuring fusion UI design. Interactive theory hub, animation analysis, creator community." />
       </Head>
-      <AuthProvider>
-        <div className="transition-colors duration-200 dark:bg-background dark:text-text-light">
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </div>
-      </AuthProvider>
+      <SessionProvider session={session}>
+        <AuthProvider>
+          <div className="transition-colors duration-200 dark:bg-background dark:text-text-light">
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </div>
+        </AuthProvider>
+      </SessionProvider>
     </>
   )
 }
