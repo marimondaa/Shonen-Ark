@@ -4,7 +4,6 @@ import Link from 'next/link';
 import TheoryCard from '../src/components/features/TheoryCard';
 import MangaGrid from '../src/components/manga/MangaGrid';
 import MangaPanel from '../src/components/manga/MangaPanel';
-import { mockTheories, filterTheoriesByAnime, sortContent } from '../src/lib/utils/mockData';
 import SortBar from '../src/components/catalog/SortBar';
 
 export default function TheoriesPage() {
@@ -17,39 +16,65 @@ export default function TheoriesPage() {
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef(null);
 
-  // Filter + sort + search against mock for now
-  const computeList = useCallback(() => {
-    let filtered = filterTheoriesByAnime(mockTheories, filter);
-    if (query) {
-      const q = query.toLowerCase();
-      filtered = filtered.filter(t =>
-        t.title.toLowerCase().includes(q) ||
-        t.excerpt?.toLowerCase().includes(q) ||
-        (t.tags || []).some(tag => tag.toLowerCase().includes(q))
-      );
+  const fetchTheories = useCallback(async (reset = false) => {
+    if (reset) {
+      setIsLoading(true);
+      setTheories([]);
     }
-    let sortKey = sortBy;
-    if (sortBy === 'newest') sortKey = 'newest';
-    if (sortBy === 'popular') sortKey = 'popular';
-    if (sortBy === 'trending') sortKey = 'trending';
-    const sorted = sortContent(filtered, sortKey);
-    return sorted;
+
+    try {
+      const params = new URLSearchParams({
+        page: reset ? 1 : page,
+        limit: 9,
+        sortBy: sortBy === 'POPULARITY_DESC' ? 'popular' : sortBy === 'TRENDING_DESC' ? 'trending' : 'newest',
+      });
+
+      if (filter !== 'all') params.append('category', filter); // Note: API uses 'category' but UI uses 'anime' filter logic. We might need to adjust API or UI.
+      // The UI says "Filter by anime", but the API expects 'category' or we need to add 'anime' filter to API.
+      // Looking at API code: it has 'category' filter. It doesn't seem to have 'anime' filter explicitly in the snippet I saw, 
+      // but let's check if we can pass 'search' for anime or if we should add 'anime' param to API.
+      // The API snippet showed: if (search) query.or(...)
+      // It didn't show explicit anime filter. 
+      // However, the mock data had 'anime' field. The DB schema has 'anime_series'.
+      // Let's assume we can pass 'search' for now or we need to update API.
+      // For this step, I will pass 'search' if query is present, and I'll pass 'anime' as a custom param if I update the API, 
+      // but for now let's stick to what the API supports or just use 'search' for anime if the user types it.
+      // Wait, the UI has specific buttons for Anime. 
+      // Let's pass it as 'search' for now if filter is not 'all', combined with query.
+
+      let searchQuery = query;
+      if (filter !== 'all') {
+        searchQuery = searchQuery ? `${searchQuery} ${filter}` : filter;
+      }
+
+      if (searchQuery) params.append('search', searchQuery);
+
+      const res = await fetch(`/api/theories?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.theories) {
+        setTheories(prev => reset ? data.theories : [...prev, ...data.theories]);
+        setHasMore(data.theories.length === 9); // Assuming limit is 9
+      }
+    } catch (error) {
+      console.error('Error fetching theories:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filter, sortBy, query, page]);
+
+  useEffect(() => {
+    fetchTheories(true);
   }, [filter, sortBy, query]);
 
   useEffect(() => {
-    setIsLoading(true);
-    const all = computeList();
-    // simple paging on mock
-    const slice = all.slice(0, page * 9);
-    setTheories(slice);
-    setHasMore(slice.length < all.length);
-    setIsLoading(false);
-  }, [computeList, page]);
+    if (page > 1) fetchTheories(false);
+  }, [page, fetchTheories]);
 
   // Infinite scroll observer
   useEffect(() => {
     if (!loaderRef.current) return;
-    const el = loaderRef.current; // HTMLElement | null
+    const el = loaderRef.current;
     const observer = new IntersectionObserver((entries) => {
       const first = entries[0];
       if (first.isIntersecting && hasMore && !isLoading) {
@@ -70,7 +95,7 @@ export default function TheoriesPage() {
   return (
     <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
       {/* Hero Section */}
-      <motion.div 
+      <motion.div
         className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-20 transition-colors"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -98,14 +123,17 @@ export default function TheoriesPage() {
         <div className="mb-6">
           <SortBar
             sort={sortBy === 'newest' ? 'START_DATE_DESC' : sortBy === 'popular' ? 'POPULARITY_DESC' : 'TRENDING_DESC'}
-            onChange={(val) => setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest')}
+            onChange={(val) => {
+              setPage(1);
+              setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest');
+            }}
             query={query}
             onQueryChange={(v) => { setPage(1); setQuery(v); }}
           />
         </div>
 
         {/* Filters */}
-        <motion.div 
+        <motion.div
           className="manga-card flex flex-col gap-6 mb-8 p-6 bg-white rounded-lg border border-gray-200 dark:bg-dark-purple/30 dark:border-purple/30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,11 +147,10 @@ export default function TheoriesPage() {
                 <button
                   key={anime}
                   onClick={() => { setPage(1); setFilter(anime); }}
-                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${
-                    filter === anime
+                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${filter === anime
                       ? 'bg-purple text-white border-purple'
                       : 'dark:bg-transparent dark:text-white dark:border-purple/30'
-                  }`}
+                    }`}
                 >
                   {anime}
                 </button>
@@ -149,9 +176,9 @@ export default function TheoriesPage() {
         </motion.div>
 
         {/* Loading State */}
-        {isLoading ? (
+        {isLoading && theories.length === 0 ? (
           <div className="flex justify-center items-center py-16">
-            <motion.div 
+            <motion.div
               className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -160,7 +187,7 @@ export default function TheoriesPage() {
         ) : (
           <>
             {/* Theories Grid */}
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -186,9 +213,9 @@ export default function TheoriesPage() {
         )}
 
         {/* Call to Action - Enhanced with Manga Panel */}
-        <MangaPanel 
-          panelNumber="CTA" 
-          type="focus" 
+        <MangaPanel
+          panelNumber="CTA"
+          type="focus"
           sfx="JOIN US!"
           className="mt-20 text-center p-12"
         >

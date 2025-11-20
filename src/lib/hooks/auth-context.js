@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 const AuthContext = createContext();
 
@@ -11,119 +12,59 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Admin credentials
-  const ADMIN_CREDENTIALS = {
-    username: 'admin',
-    password: 'admin'
-  };
-
-  // Mock user stats for admin dashboard
-  const ADMIN_USER_DATA = {
-    id: 1,
-    username: 'admin',
-    role: 'admin',
-    stats: {
-      theoriesPosted: 42,
-      upvotes: 1337,
-      commentsReceived: 256,
-      followers: 89,
-      following: 34,
-      joinedDate: '2023-01-15'
-    },
-    profile: {
-      bio: 'Administrator of Shonen Ark - Keeper of theories and master of the anime realm.',
-      favoriteAnime: ['One Piece', 'Naruto', 'Attack on Titan', 'Demon Slayer'],
-      badges: ['Theory Master', 'Community Leader', 'Early Adopter', 'Verified Creator']
-    }
-  };
+  const isLoading = status === 'loading';
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem('shonenark_user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
-        localStorage.removeItem('shonenark_user');
-      }
+    if (session?.user) {
+      // Map NextAuth session user to our app's user structure
+      setUser({
+        ...session.user,
+        role: session.user.role || 'fan', // Default role if not present
+        // Add other mapped properties if needed
+      });
+    } else {
+      setUser(null);
     }
-    setIsLoading(false);
-  }, []);
+  }, [session]);
 
   const login = async (username, password) => {
-    setIsLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-      const userData = ADMIN_USER_DATA;
-      setUser(userData);
-      localStorage.setItem('shonenark_user', JSON.stringify(userData));
-      setIsLoading(false);
-      return { success: true, user: userData };
-    } else {
-      setIsLoading(false);
-      return { success: false, error: 'Invalid credentials' };
+    try {
+      // We map 'username' to 'email' for the Credentials provider
+      // Assuming the login form might pass username or email
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: username, // The provider expects 'email'
+        password: password
+      });
+
+      if (result?.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Login error:", error);
+      return { success: false, error: 'Login failed' };
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await signOut({ redirect: false });
     setUser(null);
-    localStorage.removeItem('shonenark_user');
   };
 
   const register = async (userData) => {
-    setIsLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // For demo purposes, just create a basic user
-    const newUser = {
-      id: Date.now(),
-      username: userData.username,
-      email: userData.email,
-      role: 'fan',
-      stats: {
-        theoriesPosted: 0,
-        upvotes: 0,
-        commentsReceived: 0,
-        followers: 0,
-        following: 0,
-        joinedDate: new Date().toISOString().split('T')[0]
-      },
-      profile: {
-        bio: '',
-        favoriteAnime: [],
-        badges: ['New Member']
-      }
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('shonenark_user', JSON.stringify(newUser));
-    setIsLoading(false);
-    return { success: true, user: newUser };
+    // Registration should be handled by a separate API endpoint that creates the user in Supabase
+    // For now, we'll just return a placeholder error or redirect
+    console.log("Registration not yet implemented via AuthContext, use API endpoint");
+    return { success: false, error: "Please use the registration page" };
   };
 
   const updateProfile = (profileData) => {
-    if (!user) return;
-    
-    const updatedUser = {
-      ...user,
-      profile: {
-        ...user.profile,
-        ...profileData
-      }
-    };
-    
-    setUser(updatedUser);
-    localStorage.setItem('shonenark_user', JSON.stringify(updatedUser));
+    // This would typically call an API endpoint to update the user profile
+    console.log("Update profile:", profileData);
   };
 
   const isAdmin = () => {
