@@ -1,4 +1,5 @@
 import { SessionProvider } from 'next-auth/react'
+import ParticleCursor from '../components/ParticleCursor'
 import '../styles/globals.css'
 import Layout from '../src/components/layout/Layout'
 import { AuthProvider } from '../src/lib/hooks/useAuth'
@@ -19,6 +20,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
             <Layout>
               <Component {...pageProps} />
             </Layout>
+            <ParticleCursor />
           </div>
         </AuthProvider>
       </SessionProvider>

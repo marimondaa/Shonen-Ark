@@ -46,7 +46,7 @@ const CalendarPage = () => {
 
       } catch (error) {
         console.warn('⚠️ AniList API failed, using fallback data:', error.message);
-        
+
         // Use mock data as fallback
         setAnimeData(mockAnimeData);
         setUsingFallback(true);
@@ -70,11 +70,11 @@ const CalendarPage = () => {
 
     const filtered = q
       ? list.filter((anime) => {
-          const t = typeof anime.title === 'string'
-            ? anime.title
-            : (anime.title?.english || anime.title?.romaji || anime.title?.native || '');
-          return t.toLowerCase().includes(q);
-        })
+        const t = typeof anime.title === 'string'
+          ? anime.title
+          : (anime.title?.english || anime.title?.romaji || anime.title?.native || '');
+        return t.toLowerCase().includes(q);
+      })
       : list;
 
     const getWhen = (a) => {
@@ -116,122 +116,82 @@ const CalendarPage = () => {
         <meta name="description" content="Track upcoming anime releases, currently airing series, and top 10 anime." />
       </Head>
 
-  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
+      <div className="min-h-screen bg-void-black text-ash-white transition-colors relative overflow-hidden">
+        {/* Soft Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-midnight-purple/40 via-void-black to-void-black pointer-events-none" />
+
         {/* Hero Section */}
-        <motion.div 
-          className="dark:bg-gradient-to-b dark:from-purple-900 dark:to-black py-16 transition-colors"
+        <motion.div
+          className="relative py-20 text-center z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              <div className="text-8xl mb-6">📅</div>
-              <h1 className="text-5xl font-bold mystical-title mb-4">
-                Anime Calendar
-              </h1>
-              <p className="text-xl max-w-2xl mx-auto text-black/70 dark:text-purple-200 transition-colors brush-font">
-                Track upcoming releases, currently airing series, and top 10 anime
-              </p>
-
-              {/* Status indicator */}
-              {usingFallback && (
-                <motion.div 
-                  className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 max-w-md mx-auto mt-6 dark:bg-orange-500/20"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <p className="text-orange-700 dark:text-orange-200 text-sm font-mystical">
-                    ⚠️ Using offline data - Live updates temporarily unavailable
-                  </p>
-                </motion.div>
-              )}
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <h1 className="text-6xl md:text-7xl font-display font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-electric-purple to-neon-violet drop-shadow-lg">
+              ANIME CALENDAR
+            </h1>
+            <p className="text-xl text-steel-gray max-w-2xl mx-auto font-body tracking-wide">
+              Track releases. Discover new series. Stay updated.
+            </p>
+          </motion.div>
         </motion.div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Tab Navigation */}
-          <motion.div 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10">
+          {/* Tab Navigation - Rounded & Soft */}
+          <motion.div
             className="flex justify-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="bg-black/95 backdrop-blur-sm p-2 rounded-xl border border-accent-pink/20 shadow-2xl">
-              <div className="flex flex-wrap justify-center gap-2">
-                {tabs.map((tab) => (
-                  <motion.button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`group relative px-6 py-4 rounded-lg transition-all duration-300 flex flex-col items-center space-y-1 min-w-[140px] ${
-                      activeTab === tab.id
-                        ? 'bg-gradient-to-r from-purple to-accent-pink text-white shadow-lg shrine-glow'
-                        : 'text-text-light hover:bg-purple/20 hover:text-accent-pink border border-purple/30'
+            <div className="bg-shadow-dark/50 backdrop-blur-md p-2 rounded-full border border-white/5 shadow-xl inline-flex">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative px-8 py-3 rounded-full transition-all duration-300 flex items-center gap-2 font-heading font-bold tracking-wide ${activeTab === tab.id
+                      ? 'bg-electric-purple text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]'
+                      : 'text-steel-gray hover:text-white hover:bg-white/5'
                     }`}
-                  >
-                    <motion.span 
-                      className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity"
-                      whileHover={{ scale: 1.2, rotate: 10 }}
-                    >
-                      {tab.icon}
-                    </motion.span>
-                    <div className="text-center">
-                      <div className="font-medium text-sm">
-                        {tab.label}
-                      </div>
-                      <div className="text-xs opacity-70 group-hover:opacity-100 transition-opacity">
-                        {tab.desc}
-                      </div>
-                    </div>
-                    
-                    {/* Active indicator */}
-                    {activeTab === tab.id && (
-                      <motion.div
-                        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-white rounded-full"
-                        layoutId="tab-indicator"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
-              </div>
+                >
+                  <span className="text-xl">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </motion.div>
 
           {/* Filters bar */}
           <motion.div
-            className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8"
+            className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 bg-shadow-dark/30 p-4 rounded-2xl border border-white/5 backdrop-blur-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex-1 max-w-md">
+            <div className="flex-1 max-w-md relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-steel-gray">🔍</span>
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search anime by title..."
-                className="w-full px-4 py-2 rounded-lg border border-purple/30 bg-dark-purple/30 text-white placeholder-purple-200/60 focus:outline-none focus:ring-2 focus:ring-purple"
+                placeholder="Search anime..."
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-white/10 bg-void-black/50 text-white placeholder-steel-gray focus:outline-none focus:border-electric-purple focus:ring-1 focus:ring-electric-purple transition-all"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label htmlFor="sortBy" className="text-sm text-grey">Sort by</label>
+            <div className="flex items-center gap-3">
+              <label htmlFor="sortBy" className="text-sm text-steel-gray font-medium">Sort by</label>
               <select
                 id="sortBy"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-purple/30 bg-dark-purple/30 text-white focus:outline-none focus:ring-2 focus:ring-purple"
+                className="px-4 py-3 rounded-xl border border-white/10 bg-void-black/50 text-white focus:outline-none focus:border-electric-purple transition-all cursor-pointer"
               >
-                <option value="time" className="text-black">Air time</option>
-                <option value="title" className="text-black">Title</option>
+                <option value="time">Air Time</option>
+                <option value="title">Title</option>
               </select>
             </div>
           </motion.div>
@@ -243,96 +203,93 @@ const CalendarPage = () => {
             transition={{ duration: 0.6 }}
           >
             {isLoading ? (
-              <div className="flex justify-center items-center py-16">
-                <motion.div 
-                  className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
+              <div className="flex justify-center items-center py-32">
+                <div className="w-16 h-16 border-4 border-electric-purple border-t-transparent rounded-full animate-spin" />
               </div>
             ) : error ? (
-              <div className="text-center py-16">
+              <div className="text-center py-20">
                 <div className="text-6xl mb-4">⚠️</div>
-                <h3 className="text-xl font-bold mb-2">Something went wrong</h3>
-                <p className="text-gray-400 mb-6">
-                  We&apos;re having trouble loading the anime calendar. Please try refreshing the page.
-                </p>
-                <button 
+                <h3 className="text-2xl font-bold text-white mb-2">Connection Error</h3>
+                <p className="text-steel-gray mb-6">Could not load anime data.</p>
+                <button
                   onClick={() => window.location.reload()}
-                  className="bg-purple hover:bg-purple/80 text-white px-6 py-3 rounded-lg transition-colors"
+                  className="bg-electric-purple hover:bg-neon-violet text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-electric-purple/25"
                 >
-                  🔄 Refresh Page
+                  Retry
                 </button>
               </div>
             ) : visibleData.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {visibleData.map((anime, index) => {
-                  // Handle different data structures for different tabs
-                  const title = typeof anime.title === 'string' 
-                    ? anime.title 
+                  const title = typeof anime.title === 'string'
+                    ? anime.title
                     : anime.title?.english || anime.title?.romaji || anime.title?.native || 'Unknown Title';
-                  
+
                   return (
                     <a
                       key={anime.id || index}
                       href={aniListUrl(anime)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block"
+                      className="block group"
                     >
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        whileHover={{ scale: 1.03 }}
-                        className="bg-dark-purple/30 backdrop-blur-sm rounded-lg overflow-hidden border border-purple/20 shrine-glow hover:border-accent-pink/50 transition-all duration-300"
+                        transition={{ delay: index * 0.05 }}
+                        className="bg-shadow-dark rounded-2xl overflow-hidden border border-white/5 hover:border-electric-purple/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] hover:-translate-y-1 h-full flex flex-col"
                       >
-                        <div className="aspect-[3/4] relative">
+                        <div className="aspect-[3/4] relative overflow-hidden">
                           <Image
                             src={anime.coverImage?.large || anime.coverImage || '/api/placeholder/300/400'}
                             alt={title}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                            className="object-cover"
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
                             unoptimized
-                            priority={false}
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+
                           {anime.averageScore && (
-                            <div className="absolute top-2 right-2 bg-black/80 text-accent-pink px-2 py-1 rounded text-sm font-bold">
-                              ⭐ {anime.averageScore}/100
+                            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-neon-violet px-3 py-1 rounded-full text-xs font-bold border border-white/10">
+                              {anime.averageScore}%
                             </div>
                           )}
+
                           {(anime.airingAt || anime.nextAiringAt || anime.startDate) && (
-                            <div className="absolute bottom-2 left-2 bg-black/80 text-white/90 px-2 py-1 rounded text-xs">
-                              {anime.airingAt || anime.nextAiringAt
-                                ? new Date(anime.airingAt || anime.nextAiringAt).toLocaleString()
-                                : (anime.startDate?.year ? `Started ${anime.startDate.year}` : '')}
+                            <div className="absolute bottom-3 left-3 right-3">
+                              <div className="bg-electric-purple/90 backdrop-blur-md text-white text-center py-2 rounded-xl text-xs font-bold shadow-lg">
+                                {anime.airingAt || anime.nextAiringAt
+                                  ? new Date((anime.airingAt || anime.nextAiringAt) * 1000).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                                  : (anime.startDate?.year ? `${anime.startDate.year}` : 'TBA')}
+                              </div>
                             </div>
                           )}
                         </div>
-                        <div className="p-4">
-                          <h3 className="font-bold text-white mb-2 line-clamp-2">
+
+                        <div className="p-5 flex-1 flex flex-col">
+                          <h3 className="font-heading font-bold text-white text-lg mb-2 line-clamp-2 group-hover:text-electric-purple transition-colors">
                             {title}
                           </h3>
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {anime.genres?.slice(0, 2).map((genre, i) => (
-                              <span key={i} className="text-xs bg-purple/30 text-purple-200 px-2 py-1 rounded">
+
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {anime.genres?.slice(0, 3).map((genre, i) => (
+                              <span key={i} className="text-[10px] uppercase tracking-wider font-bold bg-white/5 text-steel-gray px-2 py-1 rounded-md border border-white/5">
                                 {genre}
                               </span>
                             ))}
                           </div>
-                          <div className="text-sm text-gray-400 flex flex-wrap items-center gap-2">
-                            {anime.format && <span className="text-purple-200">{anime.format}</span>}
-                            <span>•</span>
-                            <span>{anime.episodes ? `${anime.episodes} episodes` : 'Ongoing'}</span>
-                            {anime.nextEpisode && (
-                              <>
-                                <span>•</span>
-                                <span>Next ep {anime.nextEpisode}</span>
-                              </>
-                            )}
+
+                          <div className="mt-auto flex items-center justify-between text-xs text-steel-gray border-t border-white/5 pt-3">
+                            <div className="flex items-center gap-1">
+                              <span>📺</span>
+                              <span>{anime.format || 'TV'}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span>🎬</span>
+                              <span>{anime.episodes || '?'} eps</span>
+                            </div>
                           </div>
-                          <div className="mt-2 text-xs text-grey">Click to view on AniList</div>
                         </div>
                       </motion.div>
                     </a>
@@ -340,12 +297,10 @@ const CalendarPage = () => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-16">
+              <div className="text-center py-20">
                 <div className="text-6xl mb-4">📭</div>
-                <h3 className="text-xl font-bold mb-2">No data available</h3>
-                <p className="text-gray-400">
-                  No anime found for the {activeTab} section.
-                </p>
+                <h3 className="text-xl font-bold text-white mb-2">No Anime Found</h3>
+                <p className="text-steel-gray">Try adjusting your search or filters.</p>
               </div>
             )}
           </motion.div>

@@ -119,37 +119,49 @@ export default function TheoriesPage() {
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* SortBar with search */}
-        <div className="mb-6">
-          <SortBar
-            sort={sortBy === 'newest' ? 'START_DATE_DESC' : sortBy === 'popular' ? 'POPULARITY_DESC' : 'TRENDING_DESC'}
-            onChange={(val) => {
-              setPage(1);
-              setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest');
-            }}
-            query={query}
-            onQueryChange={(v) => { setPage(1); setQuery(v); }}
-          />
+        {/* SortBar with search and Submit Button */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex-1 w-full">
+            <SortBar
+              sort={sortBy === 'newest' ? 'START_DATE_DESC' : sortBy === 'popular' ? 'POPULARITY_DESC' : 'TRENDING_DESC'}
+              onChange={(val) => {
+                setPage(1);
+                setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest');
+              }}
+              query={query}
+              onQueryChange={(v) => { setPage(1); setQuery(v); }}
+            />
+          </div>
+          <Link href="/submit-theory">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full md:w-auto px-6 py-3 bg-electric-purple hover:bg-neon-violet text-white font-bold rounded-lg shadow-lg shadow-electric-purple/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+            >
+              <span>✨</span>
+              <span>Submit Theory</span>
+            </motion.button>
+          </Link>
         </div>
 
         {/* Filters */}
         <motion.div
-          className="manga-card flex flex-col gap-6 mb-8 p-6 bg-white rounded-lg border border-gray-200 dark:bg-dark-purple/30 dark:border-purple/30"
+          className="flex flex-col gap-6 mb-8 p-6 bg-shadow-dark rounded-xl border border-white/5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           {/* Anime Filter */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-purple font-manga-header font-medium whitespace-nowrap uppercase tracking-wide">Filter by anime:</span>
+            <span className="text-electric-purple font-heading font-bold whitespace-nowrap uppercase tracking-wide">Filter by anime:</span>
             <div className="flex flex-wrap gap-2">
               {animeOptions.map((anime) => (
                 <button
                   key={anime}
                   onClick={() => { setPage(1); setFilter(anime); }}
-                  className={`px-3 py-2 rounded-lg border transition-all text-sm font-manga-body font-medium ${filter === anime
-                      ? 'bg-purple text-white border-purple'
-                      : 'dark:bg-transparent dark:text-white dark:border-purple/30'
+                  className={`px-3 py-1.5 rounded-md border transition-all text-sm font-bold tracking-wide ${filter === anime
+                    ? 'bg-electric-purple text-white border-electric-purple shadow-glow'
+                    : 'bg-void-black/50 text-steel-gray border-white/10 hover:border-electric-purple/50 hover:text-white'
                     }`}
                 >
                   {anime}
@@ -160,11 +172,11 @@ export default function TheoriesPage() {
 
           {/* Sort Options (simple select for mock) */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-purple font-medium whitespace-nowrap">Sort by:</span>
+            <span className="text-steel-gray font-medium whitespace-nowrap">Sort by:</span>
             <select
               value={sortBy}
               onChange={(e) => { setPage(1); setSortBy(e.target.value); }}
-              className="px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple w-full sm:w-auto dark:bg-transparent dark:text-white dark:border-purple/30 border"
+              className="px-4 py-2 rounded-lg focus:outline-none focus:border-electric-purple bg-void-black/50 text-white border border-white/10 w-full sm:w-auto"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value} className="text-black">

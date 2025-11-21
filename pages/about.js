@@ -1,146 +1,125 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { LucideScroll, LucidePalette, LucideBriefcase, LucideCpu, LucideCode, LucideLayers, LucideDatabase } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-20 bg-void-black text-ash-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.header 
-          className="text-center mb-12"
+        <motion.header
+          className="text-center mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold mystical-title mb-4 text-accent-pink">
+          <h1 className="text-5xl md:text-6xl font-bold font-heading mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-electric-purple to-white animate-gradient-x">
             About Shonen Ark
           </h1>
-          <p className="text-xl text-text-muted brush-font max-w-2xl mx-auto">
-            A mystical platform where anime fans unite to explore theories, 
+          <p className="text-xl text-steel-gray font-body max-w-2xl mx-auto leading-relaxed">
+            A professional platform where anime fans unite to explore theories,
             share creations, and celebrate the art of storytelling.
           </p>
         </motion.header>
 
         {/* Mission Section */}
-        <motion.section 
-          className="mb-16"
+        <motion.section
+          className="mb-20"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="bg-gradient-shrine rounded-lg p-8 text-center">
-            <h2 className="text-3xl font-bold mystical-title mb-6 text-accent-pink">
-              Our Mission
-            </h2>
-            <p className="text-lg text-text-muted brush-font max-w-3xl mx-auto leading-relaxed">
-              Shonen Ark is a sanctuary for anime enthusiasts who believe that every story holds deeper mysteries. 
-              We combine traditional Japanese aesthetics with modern technology to create a platform where 
-              fan theories flourish, creators showcase their talents, and the community bonds over shared passion.
+          <div className="bg-shadow-dark border border-white/5 rounded-2xl p-8 md:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-electric-purple/5 rounded-full blur-3xl -mr-32 -mt-32" />
+
+            <h2 className="text-3xl font-bold mb-6 text-white font-heading">Our Mission</h2>
+            <p className="text-lg text-steel-gray leading-relaxed mb-6 font-body">
+              Shonen Ark is built for the dedicated anime community. We provide a professional platform for fans to connect, create, and collaborate.
+            </p>
+            <p className="text-lg text-steel-gray leading-relaxed font-body">
+              Beyond consumption, we empower creators. Whether you're a theorist, artist, or editor, Shonen Ark is your stage to showcase talent and build a career in the industry.
             </p>
           </div>
         </motion.section>
 
         {/* Features Grid */}
-        <motion.section 
-          className="mb-16"
+        <motion.section
+          className="mb-20"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold mystical-title text-center mb-12 text-accent-pink">
-            Platform Features
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className="text-3xl font-bold mb-10 text-center text-white font-heading">Platform Features</h2>
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: '🔮',
-                title: 'Theory Hub',
-                description: 'Share and explore deep anime theories with AI-assisted content generation and community discussions.'
+                title: "Theory Crafting",
+                desc: "Advanced tools for deep analysis and prediction tracking.",
+                icon: "scroll"
               },
               {
-                icon: '🎨',
-                title: 'Creator Platform',
-                description: 'Upload animations, artwork, and audio content. Build your following and grow your creative presence.'
+                title: "Creative Studio",
+                desc: "Share AMVs, fan art, and original manga with a global audience.",
+                icon: "palette"
               },
               {
-                icon: '📅',
-                title: 'Release Calendar',
-                description: 'Stay updated with real-time anime and manga release schedules via AniList integration.'
-              },
-              {
-                icon: '🏮',
-                title: 'Mystical Design',
-                description: 'Experience fusion UI design combining Design Yokocho and Phantom 980 aesthetics.'
-              },
-              {
-                icon: '💫',
-                title: 'Community Features',
-                description: 'Follow creators, bookmark content, engage in discussions, and build meaningful connections.'
-              },
-              {
-                icon: '⚡',
-                title: 'Creator Tools',
-                description: 'Professional dashboard with analytics, subscriber management, and monetization options.'
+                title: "Pro Network",
+                desc: "Find paid gigs and collaborate on massive community projects.",
+                icon: "briefcase"
               }
             ].map((feature, index) => (
               <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-anime-blue/30 backdrop-blur-sm rounded-lg p-6 border border-accent-pink/20 shrine-glow hover:scale-105 transition-all duration-300"
+                key={index}
+                className="bg-void-black/50 border border-white/10 p-8 rounded-xl hover:border-electric-purple/50 transition-colors group"
+                whileHover={{ y: -5 }}
               >
-                <div className="text-4xl mb-4 text-center">{feature.icon}</div>
-                <h3 className="text-xl font-bold mystical-title text-accent-pink mb-3 text-center">
-                  {feature.title}
-                </h3>
-                <p className="text-text-muted brush-font text-center">
-                  {feature.description}
-                </p>
+                <div className="w-12 h-12 bg-electric-purple/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-electric-purple/20 transition-colors">
+                  <div className="w-6 h-6 bg-electric-purple rounded-sm" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-white group-hover:text-electric-purple transition-colors">{feature.title}</h3>
+                <p className="text-steel-gray">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
         {/* Founder Section */}
-        <motion.section 
-          className="mb-16"
+        <motion.section
+          className="mb-20"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="bg-bg-dark-secondary/50 rounded-lg p-8">
-            <h2 className="text-3xl font-bold mystical-title text-center mb-8 text-accent-pink">
-              Meet the Founder
-            </h2>
-            
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="w-32 h-32 bg-gradient-shrine rounded-full mx-auto mb-6 flex items-center justify-center text-4xl">
-                🏯
+          <div className="bg-shadow-dark border border-white/5 rounded-2xl p-8 md:p-12 text-center">
+            <h2 className="text-3xl font-bold mb-8 text-white font-heading">Meet the Founder</h2>
+
+            <div className="max-w-4xl mx-auto">
+              <div className="w-24 h-24 bg-gradient-to-br from-electric-purple to-neon-blue rounded-full mx-auto mb-6 flex items-center justify-center text-3xl text-white font-bold shadow-glow">
+                M
               </div>
-              
-              <h3 className="text-2xl font-bold mystical-title text-accent-pink mb-4">
+
+              <h3 className="text-2xl font-bold text-white mb-4 font-heading">
                 marimondaa
               </h3>
-              
-              <p className="text-lg text-text-muted brush-font mb-6 leading-relaxed">
-                A passionate anime enthusiast and developer who envisioned a platform where the mystical world 
-                of anime theories could flourish. With a deep appreciation for Japanese aesthetics and modern 
-                design principles, the goal is to create a space that honors both tradition and innovation.
+
+              <p className="text-lg text-steel-gray mb-8 leading-relaxed font-body max-w-2xl mx-auto">
+                A passionate developer and anime enthusiast dedicated to building the ultimate platform for the community.
               </p>
-              
-              <div className="flex justify-center space-x-4">
-                <a 
-                  href="https://github.com/marimondaa" 
-                  target="_blank" 
+
+              <div className="flex justify-center gap-4">
+                <a
+                  href="https://github.com/marimondaa"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-accent-pink/20 hover:bg-accent-pink/30 text-accent-pink px-4 py-2 rounded transition-colors"
+                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10 font-bold"
                 >
                   GitHub
                 </a>
                 <Link
                   href="/contact"
-                  className="bg-accent-pink hover:bg-accent-rose text-bg-dark px-4 py-2 rounded transition-colors"
+                  className="px-6 py-2 bg-electric-purple hover:bg-neon-violet text-white rounded-lg transition-colors shadow-lg shadow-electric-purple/20 font-bold"
                 >
                   Contact
                 </Link>
@@ -150,63 +129,60 @@ export default function AboutPage() {
         </motion.section>
 
         {/* Technology Stack */}
-        <motion.section 
-          className="mb-16"
+        <motion.section
+          className="mb-20"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold mystical-title text-center mb-8 text-accent-pink">
-            Built With Modern Technology
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-3xl font-bold mb-10 text-center text-white font-heading">Built With Modern Tech</h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { name: 'Next.js', icon: '⚛️', description: 'React framework for production' },
-              { name: 'Tailwind CSS', icon: '🎨', description: 'Utility-first CSS framework' },
-              { name: 'Framer Motion', icon: '✨', description: 'Animation library for React' },
-              { name: 'Supabase', icon: '🗄️', description: 'Backend as a service' }
+              { name: 'Next.js', desc: 'React Framework' },
+              { name: 'Tailwind CSS', desc: 'Utility-first CSS' },
+              { name: 'Framer Motion', desc: 'Animation Library' },
+              { name: 'Supabase', desc: 'Backend Infrastructure' }
             ].map((tech, index) => (
               <motion.div
-                key={tech.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-anime-blue/20 backdrop-blur-sm rounded-lg p-6 text-center border border-accent-pink/20"
+                key={index}
+                className="bg-void-black/30 border border-white/5 p-6 rounded-xl text-center hover:border-electric-purple/30 transition-colors"
+                whileHover={{ scale: 1.05 }}
               >
-                <div className="text-3xl mb-3">{tech.icon}</div>
-                <h3 className="font-bold text-accent-pink mb-2">{tech.name}</h3>
-                <p className="text-sm text-text-muted">{tech.description}</p>
+                <h3 className="font-bold text-white mb-1">{tech.name}</h3>
+                <p className="text-sm text-steel-gray">{tech.desc}</p>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
         {/* Call to Action */}
-        <motion.section 
+        <motion.section
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="bg-gradient-shrine rounded-lg p-8">
-            <h2 className="text-3xl font-bold mystical-title mb-6 text-accent-pink">
-              Join Our Mystical Community
+          <div className="bg-gradient-to-br from-electric-purple/20 to-void-black border border-electric-purple/30 rounded-2xl p-12 relative overflow-hidden">
+            <div className="absolute inset-0 bg-grid-white/[0.02]" />
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white font-heading relative z-10">
+              Join the Community
             </h2>
-            <p className="text-lg text-text-muted brush-font mb-8 max-w-2xl mx-auto">
-              Whether you're a theorist, creator, or just someone who loves anime, 
-              there's a place for you in the Shonen Ark community.
+            <p className="text-lg text-steel-gray mb-8 max-w-2xl mx-auto relative z-10">
+              Whether you're a theorist, creator, or fan, there's a place for you in Shonen Ark.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
               <Link
                 href="/theories"
-                className="bg-accent-pink hover:bg-accent-rose text-bg-dark font-bold py-3 px-8 rounded-lg transition-all duration-300 shrine-glow"
+                className="px-8 py-3 bg-electric-purple hover:bg-neon-violet text-white font-bold rounded-lg shadow-lg shadow-electric-purple/20 transition-all hover:-translate-y-1"
               >
                 Explore Theories
               </Link>
               <Link
                 href="/discovery"
-                className="border-2 border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-bg-dark font-bold py-3 px-8 rounded-lg transition-all duration-300"
+                className="px-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 font-bold rounded-lg transition-all hover:-translate-y-1"
               >
                 Start Creating
               </Link>

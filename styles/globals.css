@@ -88,7 +88,10 @@ a {
 
 .electric-text {
   color: var(--electric-purple);
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  text-shadow:
+    0 0 10px rgba(139, 92, 246, 0.8),
+    0 0 20px rgba(139, 92, 246, 0.5),
+    0 0 40px rgba(139, 92, 246, 0.3);
 }
 
 /* Sharp Card System (No Rounded Edges) */

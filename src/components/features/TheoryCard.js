@@ -11,7 +11,8 @@ const TheoryCard = ({ theory }) => {
   const [isLiked, setIsLiked] = useState(false); // In a real app, we'd check if the user liked it from the API response
   const [isLiking, setIsLiking] = useState(false);
 
-  const handleLike = async () => {
+  const handleLike = async (e) => {
+    e.preventDefault(); // Prevent navigation if clicking like button
     if (!session) {
       router.push('/login');
       return;
@@ -32,9 +33,7 @@ const TheoryCard = ({ theory }) => {
         method: 'POST',
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to like');
-      }
+      if (!res.ok) throw new Error('Failed to like');
 
       // Optional: sync with server response if needed
       // const data = await res.json();
@@ -50,65 +49,75 @@ const TheoryCard = ({ theory }) => {
   };
 
   return (
-    <motion.article
-      className="manga-card backdrop-blur-sm rounded-lg p-6 border border-purple/30 transition-all duration-300"
-      whileHover={{ scale: 1.05, y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <header className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold text-purple line-clamp-2 font-manga-header uppercase tracking-wide">
-          {theory.title}
-        </h3>
-        {theory.category && (
-          <span className="text-xs text-paper-beige bg-purple/20 px-2 py-1 rounded border border-purple/30 font-manga-body">
-            {theory.category}
-          </span>
-        )}
-      </header>
+    <Link href={`/theories/${theory.id}`} className="block h-full">
+      <motion.article
+        className="h-full bg-shadow-dark rounded-xl overflow-hidden border border-white/5 hover:border-electric-purple/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] hover:-translate-y-1 flex flex-col group"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Header / Meta */}
+        <div className="p-6 pb-4 border-b border-white/5 bg-void-black/30">
+          <div className="flex justify-between items-start gap-4 mb-3">
+            <div className="flex flex-wrap gap-2">
+              {theory.category && (
+                <span className="text-[10px] uppercase tracking-wider font-bold bg-electric-purple/10 text-electric-purple px-2 py-1 rounded border border-electric-purple/20">
+                  {theory.category}
+                </span>
+              )}
+              {theory.source && (
+                <span className="text-[10px] uppercase tracking-wider font-bold bg-white/5 text-steel-gray px-2 py-1 rounded border border-white/10">
+                  Source: {theory.source}
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-steel-gray font-mono">
+              {theory.created_at ? new Date(theory.created_at).toLocaleDateString() : 'Just now'}
+            </span>
+          </div>
 
-      <p className="text-paper-beige/80 mb-4 line-clamp-3 font-manga-body">
-        {theory.excerpt || theory.description || theory.content?.substring(0, 100) + '...'}
-      </p>
-
-      <div className="flex items-center justify-between text-sm text-text-muted mb-4">
-        <span>By {theory.creator?.name || theory.author || 'Unknown'}</span>
-        <span>{theory.created_at ? new Date(theory.created_at).toLocaleDateString() : 'Recently'}</span>
-      </div>
-
-      <footer className="flex justify-between items-center">
-        <div className="flex space-x-4">
-          <motion.button
-            onClick={handleLike}
-            disabled={isLiking}
-            className={`flex items-center space-x-1 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink rounded p-1 ${isLiked ? 'text-accent-pink' : 'text-text-muted hover:text-accent-pink'
-              }`}
-            whileTap={{ scale: 0.95 }}
-            aria-label={`Like theory: ${theory.title}`}
-          >
-            <motion.span
-              animate={isLiked ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 0.3 }}
-            >
-              {isLiked ? '👍' : '👍'}
-            </motion.span>
-            <span>{likes}</span>
-          </motion.button>
-          <span className="flex items-center space-x-1 text-text-muted">
-            <span>💬</span>
-            <span>{theory.comments?.count || theory.comments || 0}</span>
-          </span>
+          <h3 className="text-xl font-heading font-bold text-white group-hover:text-electric-purple transition-colors line-clamp-2 leading-tight">
+            {theory.title}
+          </h3>
         </div>
 
-        <Link
-          href={`/theories/${theory.id}`}
-          className="bg-accent-pink/20 hover:bg-accent-pink/30 text-accent-pink px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ink-brush-edge"
-        >
-          Read More
-        </Link>
-      </footer>
-    </motion.article>
+        {/* Body / Summary */}
+        <div className="p-6 flex-1 flex flex-col">
+          <p className="text-steel-gray text-sm leading-relaxed line-clamp-4 mb-6 font-body">
+            {theory.excerpt || theory.description || theory.content?.substring(0, 150) + '...'}
+          </p>
+
+          {/* Footer / Actions */}
+          <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-xs text-steel-gray">
+                <div className="w-6 h-6 rounded-full bg-electric-purple/20 flex items-center justify-center text-[10px] text-electric-purple font-bold border border-electric-purple/30">
+                  {(theory.creator?.name || theory.author || 'A').charAt(0).toUpperCase()}
+                </div>
+                <span>{theory.creator?.name || theory.author || 'Anonymous'}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`flex items-center gap-1.5 text-xs font-bold transition-colors ${isLiked ? 'text-electric-purple' : 'text-steel-gray hover:text-white'
+                  }`}
+              >
+                <span>{isLiked ? '★' : '☆'}</span>
+                <span>{likes}</span>
+              </button>
+
+              <div className="flex items-center gap-1.5 text-xs font-bold text-steel-gray">
+                <span>💬</span>
+                <span>{theory.comments?.count || theory.comments || 0}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.article>
+    </Link>
   );
 };
 
