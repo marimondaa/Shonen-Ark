@@ -1,7 +1,6 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      NODE_ENV: 'development' | 'production' | 'test' | 'staging';
       RAILWAY_ENVIRONMENT?: string;
       NEXTAUTH_URL?: string;
       NEXTAUTH_SECRET?: string;
@@ -26,4 +25,4 @@ declare global {
   }
 }
 
-export {};
+export { };

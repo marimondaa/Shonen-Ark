@@ -1,6 +1,6 @@
 import serverSupabase from '../../../../src/lib/supabase-server';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/[...nextauth]';
+import { authOptions } from '../../auth/[...nextauth]';
 import { allowMethods } from '../../../../src/lib/api-helpers';
 
 async function handler(req, res) {
