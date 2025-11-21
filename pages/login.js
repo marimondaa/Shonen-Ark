@@ -9,7 +9,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     rememberMe: false
   });
@@ -38,8 +38,8 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const result = await login(formData.username, formData.password);
-      
+      const result = await login(formData.email, formData.password);
+
       if (result.success) {
         console.log('Login successful:', result.user);
         router.push('/account/fan'); // Redirect to dashboard
@@ -74,15 +74,15 @@ export default function LoginPage() {
         <meta name="description" content="Sign in to your Shonen Ark account and access exclusive content." />
       </Head>
 
-  <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center py-12 px-4">
-        <motion.div 
+      <div className="min-h-screen transition-colors dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center py-12 px-4">
+        <motion.div
           className="max-w-md w-full"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           {/* Header */}
-          <motion.div 
+          <motion.div
             className="text-center mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,42 +98,40 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Login Form */}
-          <motion.div 
-            className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-purple/30 backdrop-blur-sm transition-colors"
+          <motion.div
+            className="bg-shadow-dark p-8 border border-electric-purple/30 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            {/* Demo Credentials */}
-            <div className="bg-purple/10 border border-purple/30 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-medium text-purple mb-2">Demo Credentials</h3>
-              <p className="text-xs text-grey">
-                <strong>Username:</strong> admin<br />
-                <strong>Password:</strong> admin
+            {/* Info Note */}
+            <div className="bg-electric-purple/10 border border-electric-purple/30 p-4 mb-6">
+              <p className="text-sm text-ash-white">
+                Use your Supabase account credentials to sign in.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Username Field */}
+              {/* Email Field */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-purple mb-2">
-                  Username
+                <label htmlFor="email" className="block text-sm font-medium text-electric-purple mb-2">
+                  Email
                 </label>
                 <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
-                  placeholder="Enter your username"
+                  className="w-full bg-void-black text-ash-white border border-electric-purple/30 px-4 py-3 focus:outline-none focus:border-electric-purple focus:ring-2 focus:ring-electric-purple/20 transition-all"
+                  placeholder="your@email.com"
                   required
                 />
               </div>
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-purple mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-electric-purple mb-2">
                   Password
                 </label>
                 <input
@@ -142,8 +140,8 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
-                  placeholder="Enter your password"
+                  className="w-full bg-void-black text-ash-white border border-electric-purple/30 px-4 py-3 focus:outline-none focus:border-electric-purple focus:ring-2 focus:ring-electric-purple/20 transition-all"
+                  placeholder="Your password"
                   required
                 />
               </div>
@@ -167,7 +165,7 @@ export default function LoginPage() {
 
               {/* Error Message */}
               {error && (
-                <motion.div 
+                <motion.div
                   className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -221,7 +219,7 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Sign Up Link */}
-          <motion.div 
+          <motion.div
             className="text-center mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -236,7 +234,7 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Back to Home */}
-          <motion.div 
+          <motion.div
             className="text-center mt-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

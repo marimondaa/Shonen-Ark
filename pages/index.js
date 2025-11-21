@@ -48,30 +48,16 @@ export default function Home() {
               <h1 className="font-display text-7xl md:text-9xl mb-6 electric-text">
                 SHONEN ARK
               </h1>
-              <p className="text-2xl md:text-4xl mb-4 text-electric-purple font-bold">
-                WHERE LEGENDS RISE
-              </p>
-              <p className="text-lg md:text-xl text-steel-gray max-w-2xl mx-auto mb-12">
-                Unleash your power. Craft theories that shake the community.
-                Analyze anime like never before. This is your arena.
+              <p className="text-4xl md:text-6xl mb-12 text-ash-white font-display tracking-wider">
+                Only time will tell.
               </p>
 
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/theories">
                   <button className="power-button">
-                    EXPLORE THEORIES
+                    ENTER
                   </button>
                 </Link>
-                {!user && (
-                  <Link href="/register">
-                    <button className="power-button" style={{
-                      background: 'linear-gradient(135deg, #1f1535 0%, #2d1b4e 100%)',
-                      border: '1px solid #8b5cf6',
-                    }}>
-                      JOIN THE ARK
-                    </button>
-                  </Link>
-                )}
               </div>
             </motion.div>
           </div>

@@ -535,3 +535,18 @@ a {
     margin: 4rem 0;
   }
 }
+
+/* Custom Cursor Effect */
+@media (pointer: fine) {
+  body {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%238b5cf6"><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z"/></svg>') 12 12, auto;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23a78bfa"><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z"/></svg>') 12 12, pointer;
+  }
+}
