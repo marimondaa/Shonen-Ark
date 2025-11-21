@@ -10,102 +10,83 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Original Shonen Ark Colors (preserved)
-        'black': '#000000',
-        'grey': '#808080',
-        'dark-purple': '#2d1b69',
-        'purple': '#6c5ce7',
-        'white': '#ffffff',
-        'glow-purple': 'rgba(108, 92, 231, 0.3)',
-        
-        // Manga Club Aesthetic Colors
-        'ink-black': '#1A1A1A',
-        'paper-beige': '#D9D6C3',
-        'blood-red': '#6c5ce7', // Changed back to purple
-        'manga-white': '#ffffff',
-        'panel-border': '#000000',
-        
-        // Theme Application (enhanced)
-        'bg-dark': '#1A1A1A', // Updated to ink-black
-        'bg-dark-secondary': '#1a1a1a',
-        'bg-canvas': '#D9D6C3', // Paper beige for manga panels
-        'text-light': '#ffffff',
-        'text-muted': '#808080',
-        'text-accent': '#6c5ce7', // Back to purple
-        'accent-pink': '#6c5ce7', // Back to purple
-        'background': '#1A1A1A', // Map to ink-black
+        // Solo Leveling Inspired - Dark & Electric
+        'void-black': '#0a0a0f',        // Darkest background
+        'shadow-dark': '#12121a',        // Primary background
+        'abyss': '#1a1a2e',              // Secondary background
+        'midnight-purple': '#1f1535',    // Dark purple bg
+        'electric-purple': '#8b5cf6',    // Primary accent (vibrant)
+        'neon-violet': '#a78bfa',        // Secondary accent
+        'plasma-purple': '#c084fc',      // Highlight
+        'steel-blue': '#64748b',         // Muted accent
+        'steel-gray': '#94a3b8',         // Text secondary
+        'ash-white': '#e2e8f0',          // Text primary
+        'pure-white': '#ffffff',         // Pure white
+
+        // Status colors (masculine)
+        'blood-red': '#dc2626',
+        'warning-amber': '#f59e0b',
+        'success-emerald': '#10b981',
+
+        // Legacy compatibility (map to new colors)
+        'background': '#12121a',
+        'text-light': '#e2e8f0',
+        'text-muted': '#94a3b8',
+        'text-accent': '#8b5cf6',
       },
       fontFamily: {
-        // Original Shonen Ark fonts (preserved)
-        'mystical': ['Cinzel', 'serif'],
-        'brush': ['Crimson Text', 'serif'],
-        'heading': ['Inter', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
-        'japanese': ['Inter', 'sans-serif'],
-        
-        // Manga Club fonts
-        'manga-header': ['Bebas Neue', 'Anton', 'Impact', 'sans-serif'],
-        'manga-body': ['IBM Plex Mono', 'Rubik', 'Inter', 'monospace'],
-        'panel-text': ['IBM Plex Mono', 'monospace'],
+        'display': ['Bebas Neue', 'Impact', 'sans-serif'],        // Bold headers
+        'heading': ['Inter', 'sans-serif'],                        // Subheadings  
+        'body': ['Inter', 'sans-serif'],                           // Body text
+        'mono': ['IBM Plex Mono', 'Courier New', 'monospace'],    // Code/stats
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'float': 'float 6s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-        'manga-zoom': 'mangaZoom 0.3s ease-out',
-        'panel-slide': 'panelSlide 0.5s ease-in-out',
-        'speed-lines': 'speedLines 0.8s linear infinite',
-        'bubble-pop': 'bubblePop 0.4s ease-out',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-in',
+        'electric': 'electric 1.5s ease-in-out infinite',
       },
       keyframes: {
-        fadeIn: {
+        glowPulse: {
+          '0%, 100%': {
+            boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)',
+          },
+          '50%': {
+            boxShadow: '0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3)',
+          },
+        },
+        slideUp: {
           from: {
             opacity: '0',
-            transform: 'translateY(20px)',
+            transform: 'translateY(30px)'
           },
           to: {
             opacity: '1',
-            transform: 'translateY(0)',
+            transform: 'translateY(0)'
           },
         },
-        float: {
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        electric: {
           '0%, 100%': {
-            transform: 'translateY(0px)',
+            filter: 'brightness(1)',
           },
           '50%': {
-            transform: 'translateY(-20px)',
+            filter: 'brightness(1.2)',
           },
-        },
-        glow: {
-          from: {
-            'text-shadow': '0 0 20px #6c5ce7, 0 0 30px #6c5ce7, 0 0 40px #6c5ce7',
-          },
-          to: {
-            'text-shadow': '0 0 10px #6c5ce7, 0 0 20px #6c5ce7, 0 0 30px #6c5ce7',
-          },
-        },
-        mangaZoom: {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
-          '100%': { transform: 'scale(1)' },
-        },
-        panelSlide: {
-          from: { transform: 'translateX(-100%)', opacity: '0' },
-          to: { transform: 'translateX(0)', opacity: '1' },
-        },
-        speedLines: {
-          '0%': { backgroundPosition: '0 0' },
-          '100%': { backgroundPosition: '100px 100px' },
-        },
-        bubblePop: {
-          '0%': { transform: 'scale(0)', opacity: '0' },
-          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
         },
       },
       backgroundImage: {
-        'gradient-mystical': 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)',
-        'gradient-shrine': 'linear-gradient(135deg, #0e0e0e 0%, #1a1a1a 50%, #db929d 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #1a1a2e 100%)',
+        'gradient-purple': 'linear-gradient(135deg, #1f1535 0%, #8b5cf6 100%)',
+        'gradient-electric': 'linear-gradient(90deg, #8b5cf6, #a78bfa, #c084fc)',
+      },
+      boxShadow: {
+        'glow': '0 0 20px rgba(139, 92, 246, 0.4)',
+        'glow-lg': '0 0 40px rgba(139, 92, 246, 0.6)',
+        'dark': '0 10px 30px rgba(0, 0, 0, 0.5)',
       },
     },
   },
