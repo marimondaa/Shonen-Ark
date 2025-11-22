@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { LucideScroll, LucidePalette, LucideBriefcase, LucideCpu, LucideCode, LucideLayers, LucideDatabase } from 'lucide-react';
+import { Scroll, Palette, Briefcase, Cpu, Code, Layers, Database } from 'lucide-react';
 
 export default function AboutPage() {
   return (
@@ -37,7 +37,7 @@ export default function AboutPage() {
               Shonen Ark is built for the dedicated anime community. We provide a professional platform for fans to connect, create, and collaborate.
             </p>
             <p className="text-lg text-steel-gray leading-relaxed font-body">
-              Beyond consumption, we empower creators. Whether you're a theorist, artist, or editor, Shonen Ark is your stage to showcase talent and build a career in the industry.
+              Beyond consumption, we empower creators. Whether you&apos;re a theorist, artist, or editor, Shonen Ark is your stage to showcase talent and build a career in the industry.
             </p>
           </div>
         </motion.section>
@@ -56,17 +56,17 @@ export default function AboutPage() {
               {
                 title: "Theory Crafting",
                 desc: "Advanced tools for deep analysis and prediction tracking.",
-                icon: "scroll"
+                icon: <Scroll className="w-12 h-12 text-electric-purple" />
               },
               {
                 title: "Creative Studio",
                 desc: "Share AMVs, fan art, and original manga with a global audience.",
-                icon: "palette"
+                icon: <Palette className="w-12 h-12 text-electric-purple" />
               },
               {
                 title: "Pro Network",
                 desc: "Find paid gigs and collaborate on massive community projects.",
-                icon: "briefcase"
+                icon: <Briefcase className="w-12 h-12 text-electric-purple" />
               }
             ].map((feature, index) => (
               <motion.div
@@ -75,7 +75,7 @@ export default function AboutPage() {
                 whileHover={{ y: -5 }}
               >
                 <div className="w-12 h-12 bg-electric-purple/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-electric-purple/20 transition-colors">
-                  <div className="w-6 h-6 bg-electric-purple rounded-sm" />
+                  {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-4 text-white group-hover:text-electric-purple transition-colors">{feature.title}</h3>
                 <p className="text-steel-gray">{feature.desc}</p>
@@ -171,7 +171,7 @@ export default function AboutPage() {
               Join the Community
             </h2>
             <p className="text-lg text-steel-gray mb-8 max-w-2xl mx-auto relative z-10">
-              Whether you're a theorist, creator, or fan, there's a place for you in Shonen Ark.
+              Whether you&apos;re a theorist, creator, or fan, there&apos;s a place for you in Shonen Ark.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
               <Link

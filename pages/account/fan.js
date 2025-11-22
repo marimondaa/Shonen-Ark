@@ -33,7 +33,7 @@ const FanDashboard = () => {
         setIsLoading(true);
         // Simulate API loading delay
         await new Promise(resolve => setTimeout(resolve, 800));
-        
+
         // Load data from centralized mock data
         setSubscriptions(mockSubscriptions);
         setBookmarks(mockBookmarks);
@@ -56,7 +56,7 @@ const FanDashboard = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           priceId,
           successUrl: `${window.location.origin}/account/fan?success=true`,
           cancelUrl: `${window.location.origin}/account/fan?canceled=true`
@@ -113,9 +113,9 @@ const FanDashboard = () => {
   // Show loading if still checking authentication
   if (authLoading) {
     return (
-  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
+      <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white flex items-center justify-center transition-colors">
         <div className="text-center">
-          <motion.div 
+          <motion.div
             className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full mx-auto mb-4"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -138,9 +138,9 @@ const FanDashboard = () => {
         <meta name="description" content="Your personal fan dashboard for theories, bookmarks, and subscriptions." />
       </Head>
 
-  <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
+      <div className="min-h-screen dark:bg-gradient-to-b dark:from-black dark:to-purple-900 dark:text-white transition-colors">
         {/* Header */}
-        <motion.header 
+        <motion.header
           className="dark:bg-gradient-to-r dark:from-purple-900 dark:to-black py-16 transition-colors"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -170,7 +170,7 @@ const FanDashboard = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Tab Navigation */}
-          <motion.div 
+          <motion.div
             className="flex border-b border-purple/20 mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -185,11 +185,10 @@ const FanDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-6 py-4 font-medium transition-all relative ${
-                  activeTab === tab.id
+                className={`flex items-center space-x-2 px-6 py-4 font-medium transition-all relative ${activeTab === tab.id
                     ? 'text-purple'
                     : 'text-grey hover:text-white'
-                }`}
+                  }`}
               >
                 <span>{tab.icon}</span>
                 <span>{tab.label}</span>
@@ -205,7 +204,7 @@ const FanDashboard = () => {
 
           {isLoading ? (
             <div className="flex justify-center py-16">
-              <motion.div 
+              <motion.div
                 className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -221,7 +220,7 @@ const FanDashboard = () => {
               {activeTab === 'overview' && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {/* User Profile */}
-                  <motion.div 
+                  <motion.div
                     variants={itemVariants}
                     className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow lg:col-span-3"
                   >
@@ -237,7 +236,7 @@ const FanDashboard = () => {
                         {user?.profile?.badges && (
                           <div className="flex flex-wrap gap-2 mb-4">
                             {user.profile.badges.map((badge, index) => (
-                              <span 
+                              <span
                                 key={index}
                                 className="px-3 py-1 rounded-full text-xs font-medium bg-purple/20 text-purple border border-purple/30"
                               >
@@ -251,7 +250,7 @@ const FanDashboard = () => {
                             <h4 className="text-sm font-medium text-purple mb-2">Favorite Anime:</h4>
                             <div className="flex flex-wrap gap-2">
                               {user.profile.favoriteAnime.slice(0, 4).map((anime, index) => (
-                                <span 
+                                <span
                                   key={index}
                                   className="px-2 py-1 rounded text-xs bg-black/30 text-grey"
                                 >
@@ -266,7 +265,7 @@ const FanDashboard = () => {
                   </motion.div>
 
                   {/* Quick Stats */}
-                  <motion.div 
+                  <motion.div
                     variants={itemVariants}
                     className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
                   >
@@ -300,7 +299,7 @@ const FanDashboard = () => {
                   </motion.div>
 
                   {/* Recent Activity */}
-                  <motion.div 
+                  <motion.div
                     variants={itemVariants}
                     className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
                   >
@@ -313,9 +312,9 @@ const FanDashboard = () => {
                           </span>
                           <div className="flex-1">
                             <p className="text-sm text-grey line-clamp-2">
-                              {item.type === 'comment' ? `Commented: "${item.content}"` : 
-                               item.type === 'like' ? `Liked: ${item.target}` :
-                               `Bookmarked: ${item.target}`}
+                              {item.type === 'comment' ? `Commented: "${item.content}"` :
+                                item.type === 'like' ? `Liked: ${item.target}` :
+                                  `Bookmarked: ${item.target}`}
                             </p>
                             <span className="text-xs text-grey/60">
                               {new Date(item.timestamp).toLocaleDateString()}
@@ -327,7 +326,7 @@ const FanDashboard = () => {
                   </motion.div>
 
                   {/* Quick Actions */}
-                  <motion.div 
+                  <motion.div
                     variants={itemVariants}
                     className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20 shrine-glow"
                   >
@@ -351,7 +350,7 @@ const FanDashboard = () => {
               {activeTab === 'subscriptions' && (
                 <div className="space-y-8">
                   {/* Current Subscription Status */}
-                  <motion.div 
+                  <motion.div
                     variants={itemVariants}
                     className="bg-dark-purple/30 p-6 rounded-lg border border-purple/20"
                   >
@@ -364,7 +363,7 @@ const FanDashboard = () => {
                     <p className="text-grey mb-6">
                       Upgrade to unlock premium features and support your favorite creators!
                     </p>
-                    
+
                     <div className="grid md:grid-cols-2 gap-4">
                       <motion.button
                         onClick={() => handleUpgrade(process.env.NEXT_PUBLIC_STRIPE_PRICE_CREATOR)}
@@ -375,7 +374,7 @@ const FanDashboard = () => {
                       >
                         {upgradeLoading ? 'Processing...' : 'Upgrade to Creator ($9.99/mo)'}
                       </motion.button>
-                      
+
                       <motion.button
                         onClick={() => handleUpgrade(process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM)}
                         disabled={upgradeLoading}
@@ -386,7 +385,7 @@ const FanDashboard = () => {
                         {upgradeLoading ? 'Processing...' : 'Upgrade to Premium ($19.99/mo)'}
                       </motion.button>
                     </div>
-                    
+
                     <div className="mt-4 text-center">
                       <button
                         onClick={handleBillingPortal}
@@ -416,17 +415,16 @@ const FanDashboard = () => {
                               <h3 className="font-bold text-white">{sub.creator}</h3>
                               <p className="text-sm text-grey">{sub.subscribers.toLocaleString()} subscribers</p>
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              sub.tier === 'premium' 
-                                ? 'bg-purple/20 text-purple' 
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${sub.tier === 'premium'
+                                ? 'bg-purple/20 text-purple'
                                 : 'bg-grey/20 text-grey'
-                            }`}>
+                              }`}>
                               {sub.tier}
                             </span>
                           </div>
-                          
+
                           <p className="text-sm text-grey mb-4">Latest: {sub.latestContent}</p>
-                          
+
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-grey">Next payment: {sub.nextPayment}</span>
                             <button className="text-purple hover:text-white transition-colors">
@@ -481,8 +479,8 @@ const FanDashboard = () => {
                         <div className="flex-1">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-medium text-white">
-                              {item.type === 'comment' ? 'Comment' : 
-                               item.type === 'like' ? 'Liked' : 'Bookmarked'}
+                              {item.type === 'comment' ? 'Comment' :
+                                item.type === 'like' ? 'Liked' : 'Bookmarked'}
                             </h4>
                             <span className="text-sm text-grey">
                               {new Date(item.timestamp).toLocaleDateString()}
@@ -490,7 +488,7 @@ const FanDashboard = () => {
                           </div>
                           <p className="text-grey">{item.target}</p>
                           {item.content && (
-                            <p className="text-sm text-white/80 mt-2 italic">"{item.content}"</p>
+                            <p className="text-sm text-white/80 mt-2 italic">&quot;{item.content}&quot;</p>
                           )}
                         </div>
                       </div>

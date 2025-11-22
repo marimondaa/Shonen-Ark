@@ -70,7 +70,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={`bg-gradient-to-br from-purple-900/30 to-black/50 p-8 rounded-lg border border-purple/20 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -81,11 +81,11 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
       </h3>
 
       <p className="text-grey text-center mb-6">
-        Help us discover what anime and manga series you'd like to see covered on Shonen Ark!
+        Help us discover what anime and manga series you&apos;d like to see covered on Shonen Ark!
       </p>
 
       {submitStatus === 'success' && (
-        <motion.div 
+        <motion.div
           className="bg-green-600/20 border border-green-500/30 p-4 rounded-lg mb-6"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -98,7 +98,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
       )}
 
       {submitStatus === 'error' && (
-        <motion.div 
+        <motion.div
           className="bg-red-600/20 border border-red-500/30 p-4 rounded-lg mb-6"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -106,7 +106,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
           <div className="text-red-400 text-center">
             <div className="text-2xl mb-2">❌</div>
             <p>Sorry, there was an error submitting your suggestion. Please try again.</p>
-            <button 
+            <button
               onClick={resetStatus}
               className="mt-2 text-sm underline hover:no-underline"
             >
@@ -200,7 +200,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
               placeholder="How should we credit you?"
             />
           </div>
-          
+
           <div>
             <label htmlFor="submitterEmail" className="block text-sm font-medium text-purple-200 mb-2">
               Email (Optional)
@@ -226,7 +226,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
         >
           {isSubmitting ? (
             <div className="flex items-center justify-center">
-              <motion.div 
+              <motion.div
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-3"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}

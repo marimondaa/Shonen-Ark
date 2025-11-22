@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const ShrineHero = () => {
   return (
-  <section className="relative min-h-screen flex items-center justify-center overflow-hidden dark:bg-background dark:text-text-light transition-colors">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden dark:bg-background dark:text-text-light transition-colors">
       {/* Animated Torii Gate Background */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
@@ -21,11 +21,11 @@ const ShrineHero = () => {
             priority
           />
         </motion.div>
-        
+
         {/* Animated Fog Layers (apply only in dark mode for contrast) */}
         <motion.div
           className="absolute inset-0 dark:bg-gradient-to-t dark:from-ink-black dark:via-transparent dark:to-grey opacity-60"
-          animate={{ 
+          animate={{
             background: [
               "linear-gradient(to top, #0a0a0a 0%, transparent 50%, #2b2b2b 100%)",
               "linear-gradient(to top, #0a0a0a 10%, transparent 60%, #2b2b2b 90%)",
@@ -34,7 +34,7 @@ const ShrineHero = () => {
           }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
-        
+
         {/* Floating Ink Particles */}
         {Array.from({ length: 12 }).map((_, i) => (
           <motion.div
@@ -63,7 +63,7 @@ const ShrineHero = () => {
           const startX = Math.random() * 100;
           const startY = Math.random() * 100;
           const angle = Math.atan2(50 - startY, 50 - startX); // Calculate angle to center
-          
+
           return (
             <motion.div
               key={`qi-${i}`}
@@ -94,7 +94,7 @@ const ShrineHero = () => {
         {Array.from({ length: 15 }).map((_, i) => {
           const startX = Math.random() * 100;
           const startY = Math.random() * 100;
-          
+
           return (
             <motion.div
               key={`qi-small-${i}`}
@@ -150,7 +150,7 @@ const ShrineHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 0.2, ease: "easeOut" }}
         >
-          "only time will tell"
+          &quot;only time will tell&quot;
         </motion.p>
 
         {/* CTA Button */}
