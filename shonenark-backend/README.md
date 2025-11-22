@@ -2,33 +2,45 @@
 
 Node.js/Express backend for the Shonen Ark platform.
 
-## Setup
+## Quick Start
 
-1. **Install Dependencies**
+### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-2. **Configure Environment**
-Create a `.env` file based on `.env.example`:
-```bash
-cp .env.example .env
+### 2. Configure Environment
+Create a `.env` file in the root directory:
+```env
+PORT=5000
+MONGODB_URI=mongodb+srv://shonenark:<password>@cluster0.mongodb.net/shonenark?retryWrites=true&w=majority
+JWT_SECRET=supersecurejwtsecret123
+ADMIN_EMAIL=admin@shonenark.com
+ADMIN_PASSWORD=ShonenArkAdmin!2025
 ```
 
-Update the values:
-- `MONGODB_URI`: Your MongoDB connection string
-- `JWT_SECRET`: Secret key for JWT tokens
-- `OPENAI_API_KEY`: For AI theory generation (optional)
+**Replace `<password>` with your MongoDB Atlas password.**
 
-3. **Start MongoDB**
-Make sure MongoDB is running locally or use a cloud instance (MongoDB Atlas).
+### 3. Seed Admin User
+```bash
+npm run seed
+```
 
-4. **Run Server**
+This creates:
+- Admin: `admin@shonenark.com` / `ShonenArkAdmin!2025`
+- AI User: `ai@shonenark.com` (for automated theories)
+
+### 4. Start Server
 ```bash
 npm start
 ```
 
-Server will run on `http://localhost:5000`
+Server runs on `http://localhost:5000`
+
+### 5. Run Tests
+```bash
+npm test
+```
 
 ## API Endpoints
 
