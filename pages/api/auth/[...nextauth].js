@@ -23,25 +23,42 @@ export const authOptions = {
           return null;
         }
 
-        // Authenticate with Supabase Auth
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: credentials.email,
-          password: credentials.password,
-        });
+        try {
+          // Call our new backend API
+          const response = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
-        if (error || !data.user) {
-          console.error("Supabase auth error:", error);
+          if (!response.ok) {
+            console.error('Backend auth error:', response.statusText);
+            return null;
+          }
+
+          const data = await response.json();
+
+          if (!data.token || !data.user) {
+            return null;
+          }
+
+          // Return the user object to be saved in the session
+          return {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.username,
+            role: data.user.role,
+            accessToken: data.token,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
           return null;
         }
-
-        // Return the user object to be saved in the session
-        return {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name || data.user.email.split('@')[0],
-          image: data.user.user_metadata?.avatar_url,
-          accessToken: data.session.access_token,
-        };
       }
     }),
     GoogleProvider({
@@ -61,14 +78,16 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.accessToken = user.accessToken;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        session.user.role = token.role;
         session.accessToken = token.accessToken;
-        
+
         // Fetch additional user data from the 'users' table if needed
         // For now, we rely on the token data
       }

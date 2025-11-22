@@ -31,15 +31,15 @@ const Layout = ({ children }) => {
   // Removed floating quick navigation to prevent duplicate menus
 
   return (
-  <div className="min-h-screen font-japanese transition-colors duration-200 dark:bg-background dark:text-text-light">
+    <div className="min-h-screen font-japanese transition-colors duration-200 dark:bg-background dark:text-text-light">
       {/* Navigation */}
-      <nav className="nav-backdrop sticky top-0 z-50 shadow-2xl" style={{ zIndex: 999 }}>
+      <nav className="sticky top-0 z-50 shadow-2xl bg-void-black/90 backdrop-blur-md border-b border-white/5" style={{ zIndex: 999 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo (floating quick menu removed) */}
             <div className="flex items-center relative">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="flex items-center hover:opacity-80 transition-all duration-300 group"
                 aria-label="Shonen Ark Home"
               >
@@ -48,10 +48,10 @@ const Layout = ({ children }) => {
                   transition={{ type: "spring", stiffness: 300 }}
                   className="nav-logo-glow"
                 >
-                  <Image 
-                    src="/images/logo/shonen-ark/symbol-192x192.png" 
-                    alt="Shonen Ark Logo" 
-                    width={40} 
+                  <Image
+                    src="/images/logo/shonen-ark/symbol-192x192.png"
+                    alt="Shonen Ark Logo"
+                    width={40}
                     height={40}
                     className="shrine-glow"
                   />
@@ -74,9 +74,9 @@ const Layout = ({ children }) => {
                   className="relative p-4 rounded-lg bg-purple/80 hover:bg-purple text-paper-beige hover:text-paper-beige focus:outline-none focus:ring-4 focus:ring-purple border-2 border-purple shrine-glow transition-all duration-300 cursor-pointer touch-manipulation shadow-lg"
                   aria-label="Toggle navigation menu"
                   aria-expanded={isMenuOpen}
-                  style={{ 
-                    zIndex: 9999, 
-                    minWidth: '56px', 
+                  style={{
+                    zIndex: 9999,
+                    minWidth: '56px',
                     minHeight: '56px',
                     position: 'relative',
                     isolation: 'isolate'
@@ -129,12 +129,12 @@ const Layout = ({ children }) => {
                               whileHover={{ x: 5 }}
                               whileTap={{ scale: 0.98 }}
                             >
-                              <Link 
+                              <Link
                                 href={item.href}
                                 onClick={() => setIsMenuOpen(false)}
                                 className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple border border-transparent hover:border-purple/30"
                               >
-                                <motion.span 
+                                <motion.span
                                   className="text-lg opacity-70 group-hover:opacity-100 transition-opacity"
                                   whileHover={{ scale: 1.2, rotate: 10 }}
                                 >
@@ -158,13 +158,13 @@ const Layout = ({ children }) => {
                           {isAuthenticated() ? (
                             <>
                               <h3 className="text-sm font-semibold text-accent-pink mb-3 px-2">Account</h3>
-                              
+
                               {/* Dashboard Link */}
                               <motion.div
                                 whileHover={{ x: 5 }}
                                 whileTap={{ scale: 0.98 }}
                               >
-                                <Link 
+                                <Link
                                   href="/account/fan"
                                   onClick={() => setIsMenuOpen(false)}
                                   className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-gradient-to-r hover:from-purple/20 hover:to-accent-pink/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow mb-3"
@@ -180,7 +180,7 @@ const Layout = ({ children }) => {
                                   </div>
                                 </Link>
                               </motion.div>
-                              
+
                               {/* User Info & Logout */}
                               <div className="auth-badge px-3 py-3 rounded-lg">
                                 <div className="flex items-center justify-between mb-2">
@@ -194,7 +194,7 @@ const Layout = ({ children }) => {
                                   </div>
                                   <span className="text-lg">{user?.role === 'admin' ? '👑' : '🌟'}</span>
                                 </div>
-                                <motion.button 
+                                <motion.button
                                   onClick={() => {
                                     logout();
                                     setIsMenuOpen(false);
@@ -215,7 +215,7 @@ const Layout = ({ children }) => {
                                   whileHover={{ x: 5 }}
                                   whileTap={{ scale: 0.98 }}
                                 >
-                                  <Link 
+                                  <Link
                                     href="/login"
                                     onClick={() => setIsMenuOpen(false)}
                                     className="group flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-purple/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink"
@@ -231,12 +231,12 @@ const Layout = ({ children }) => {
                                     </div>
                                   </Link>
                                 </motion.div>
-                                
+
                                 <motion.div
                                   whileHover={{ x: 5 }}
                                   whileTap={{ scale: 0.98 }}
                                 >
-                                  <Link 
+                                  <Link
                                     href="/register"
                                     onClick={() => setIsMenuOpen(false)}
                                     className="group flex items-center justify-center px-3 py-3 rounded-lg bg-gradient-to-r from-purple to-accent-pink hover:from-purple/80 hover:to-accent-pink/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-pink shrine-glow"
@@ -272,10 +272,10 @@ const Layout = ({ children }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="space-y-4">
                 <Link href="/" className="flex items-center hover:opacity-80 transition-opacity group">
-                  <Image 
-                    src="/images/logo/shonen-ark/symbol-192x192.png" 
-                    alt="Shonen Ark Logo" 
-                    width={32} 
+                  <Image
+                    src="/images/logo/shonen-ark/symbol-192x192.png"
+                    alt="Shonen Ark Logo"
+                    width={32}
                     height={32}
                     className="shrine-glow"
                   />
@@ -298,8 +298,8 @@ const Layout = ({ children }) => {
                     { href: "/gigs", label: "Gigs" }
                   ].map((item) => (
                     <li key={item.href}>
-                      <Link 
-                        href={item.href} 
+                      <Link
+                        href={item.href}
                         className="text-text-muted hover:text-accent-pink transition-colors text-sm"
                       >
                         {item.label}
@@ -319,8 +319,8 @@ const Layout = ({ children }) => {
                     { href: "/register", label: "Join Us" }
                   ].map((item) => (
                     <li key={item.href}>
-                      <Link 
-                        href={item.href} 
+                      <Link
+                        href={item.href}
                         className="text-text-muted hover:text-accent-pink transition-colors text-sm"
                       >
                         {item.label}

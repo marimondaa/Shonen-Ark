@@ -99,23 +99,15 @@ export default function LoginPage() {
 
           {/* Login Form */}
           <motion.div
-            className="bg-shadow-dark p-8 border border-electric-purple/30 backdrop-blur-sm"
+            className="bg-white dark:bg-dark-purple/20 p-8 rounded-xl border border-purple/30 backdrop-blur-sm transition-colors"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            {/* Info Note */}
-            <div className="bg-electric-purple/10 border border-electric-purple/30 p-4 mb-6">
-              <p className="text-sm text-ash-white">
-                Use your Supabase account credentials to sign in.
-              </p>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-electric-purple mb-2">
-                  Email
+                <label htmlFor="email" className="block text-sm font-medium text-purple mb-2">
+                  Email Address
                 </label>
                 <input
                   type="email"
@@ -123,15 +115,14 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full bg-void-black text-ash-white border border-electric-purple/30 px-4 py-3 focus:outline-none focus:border-electric-purple focus:ring-2 focus:ring-electric-purple/20 transition-all"
-                  placeholder="your@email.com"
+                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
 
-              {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-electric-purple mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-purple mb-2">
                   Password
                 </label>
                 <input
@@ -140,13 +131,12 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full bg-void-black text-ash-white border border-electric-purple/30 px-4 py-3 focus:outline-none focus:border-electric-purple focus:ring-2 focus:ring-electric-purple/20 transition-all"
-                  placeholder="Your password"
+                  className="w-full dark:bg-black/50 dark:text-white border border-purple/30 px-4 py-3 rounded-lg focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  placeholder="Enter your password"
                   required
                 />
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <label className="flex items-center">
                   <input
@@ -154,7 +144,7 @@ export default function LoginPage() {
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-purple bg-white dark:bg-black/50 border-purple/30 rounded focus:ring-purple focus:ring-2"
+                    className="w-4 h-4 text-purple bg-black/50 border-purple/30 rounded focus:ring-purple focus:ring-2"
                   />
                   <span className="ml-2 text-sm text-grey">Remember me</span>
                 </label>
@@ -163,23 +153,20 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              {/* Error Message */}
               {error && (
                 <motion.div
                   className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
                 >
                   {error}
                 </motion.div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-purple to-dark-purple text-white py-3 rounded-lg hover:shadow-lg hover:shadow-purple/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full px-8 py-3 bg-gradient-to-r from-purple to-dark-purple text-white rounded-lg hover:shadow-lg hover:shadow-purple/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-bold"
               >
                 {isLoading ? (
                   <motion.div
@@ -193,28 +180,26 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="my-6 flex items-center">
-              <div className="flex-1 border-t border-purple/30"></div>
-              <span className="px-4 text-sm text-grey">or continue with</span>
-              <div className="flex-1 border-t border-purple/30"></div>
-            </div>
+            <div className="mt-8">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-purple/30"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white dark:bg-void-black text-grey">Or continue with</span>
+                </div>
+              </div>
 
-            {/* Social Login */}
-            <div className="grid grid-cols-3 gap-3">
-              {socialLogins.map((social, index) => (
-                <motion.button
-                  key={social.name}
-                  className={`bg-gradient-to-r ${social.color} p-3 rounded-lg hover:shadow-lg transition-all flex items-center justify-center`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
-                >
-                  <span className="text-xl">{social.icon}</span>
-                </motion.button>
-              ))}
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                {socialLogins.map((provider) => (
+                  <button
+                    key={provider.name}
+                    className="flex justify-center items-center py-2 px-4 border border-purple/30 rounded-lg hover:bg-purple/10 transition-colors"
+                  >
+                    <span className="text-xl">{provider.icon}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </motion.div>
 
@@ -226,9 +211,9 @@ export default function LoginPage() {
             transition={{ delay: 0.6, duration: 0.6 }}
           >
             <p className="text-grey">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" className="text-purple hover:text-white transition-colors font-medium">
-                Sign up here
+                Create one now
               </Link>
             </p>
           </motion.div>

@@ -155,8 +155,8 @@ const CalendarPage = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative px-8 py-3 rounded-full transition-all duration-300 flex items-center gap-2 font-heading font-bold tracking-wide ${activeTab === tab.id
-                      ? 'bg-electric-purple text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]'
-                      : 'text-steel-gray hover:text-white hover:bg-white/5'
+                    ? 'bg-electric-purple text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]'
+                    : 'text-steel-gray hover:text-white hover:bg-white/5'
                     }`}
                 >
                   <span className="text-xl">{tab.icon}</span>
@@ -260,7 +260,7 @@ const CalendarPage = () => {
                             <div className="absolute bottom-3 left-3 right-3">
                               <div className="bg-electric-purple/90 backdrop-blur-md text-white text-center py-2 rounded-xl text-xs font-bold shadow-lg">
                                 {anime.airingAt || anime.nextAiringAt
-                                  ? new Date((anime.airingAt || anime.nextAiringAt) * 1000).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                                  ? new Date(anime.airingAt || anime.nextAiringAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
                                   : (anime.startDate?.year ? `${anime.startDate.year}` : 'TBA')}
                               </div>
                             </div>

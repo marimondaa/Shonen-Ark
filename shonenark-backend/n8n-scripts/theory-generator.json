@@ -1,0 +1,154 @@
+{
+    "name": "Shonen Ark - Theory Generator",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 0 * * *"
+                        }
+                    ]
+                }
+            },
+            "name": "Daily Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://api.jikan.moe/v4/seasons/upcoming",
+                "options": {}
+            },
+            "name": "Fetch Upcoming Anime",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "fieldToSplitOut": "data"
+            },
+            "name": "Split Anime List",
+            "type": "n8n-nodes-base.itemLists",
+            "typeVersion": 1,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are an anime theory expert. Generate a compelling, dark, and mysterious theory about the following anime based on its synopsis. The theory should be suitable for a Shonen audience."
+                        },
+                        {
+                            "role": "user",
+                            "content": "Anime: {{ $json.title }}\\nSynopsis: {{ $json.synopsis }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Generate Theory AI",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "http://localhost:5000/api/theories",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "title",
+                            "value": "Theory: {{ $json.title }}"
+                        },
+                        {
+                            "name": "theoryText",
+                            "value": "{{ $json.message.content }}"
+                        },
+                        {
+                            "name": "animeTitle",
+                            "value": "{{ $json.title }}"
+                        },
+                        {
+                            "name": "isAiGenerated",
+                            "value": "true"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Save to Backend",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                1050,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Daily Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Upcoming Anime",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Upcoming Anime": {
+            "main": [
+                [
+                    {
+                        "node": "Split Anime List",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split Anime List": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Theory AI",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Theory AI": {
+            "main": [
+                [
+                    {
+                        "node": "Save to Backend",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
