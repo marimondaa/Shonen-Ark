@@ -1,195 +1,170 @@
+import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Scroll, Palette, Briefcase, Cpu, Code, Layers, Database } from 'lucide-react';
+import { ArrowRight, Zap, Users, Shield, Code, Database, Globe } from 'lucide-react';
 
 export default function AboutPage() {
+  const features = [
+    {
+      icon: <Zap className="w-8 h-8 text-electric-purple" />,
+      title: "Theory Crafting",
+      description: "A dedicated space for deep analysis and prediction. Our structured debate system ensures the best theories rise to the top."
+    },
+    {
+      icon: <Users className="w-8 h-8 text-blue-400" />,
+      title: "Pro Network",
+      description: "Connect with serious creators. From AMV editors to manga illustrators, find your team and build your legacy."
+    },
+    {
+      icon: <Shield className="w-8 h-8 text-green-400" />,
+      title: "Quality First",
+      description: "Curated content and community moderation keep the standard high. No spam, just pure passion."
+    }
+  ];
+
+  const techStack = [
+    { name: "Next.js 13", icon: <Globe className="w-6 h-6" /> },
+    { name: "Tailwind CSS", icon: <Code className="w-6 h-6" /> },
+    { name: "Supabase", icon: <Database className="w-6 h-6" /> },
+    { name: "Framer Motion", icon: <Zap className="w-6 h-6" /> }
+  ];
+
   return (
-    <div className="min-h-screen py-20 bg-void-black text-ash-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.header
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-5xl md:text-6xl font-bold font-heading mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-electric-purple to-white animate-gradient-x">
-            About Shonen Ark
-          </h1>
-          <p className="text-xl text-steel-gray font-body max-w-2xl mx-auto leading-relaxed">
-            A professional platform where anime fans unite to explore theories,
-            share creations, and celebrate the art of storytelling.
-          </p>
-        </motion.header>
+    <>
+      <Head>
+        <title>About - Shonen Ark</title>
+      </Head>
 
-        {/* Mission Section */}
-        <motion.section
-          className="mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="bg-shadow-dark border border-white/5 rounded-2xl p-8 md:p-12 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-electric-purple/5 rounded-full blur-3xl -mr-32 -mt-32" />
+      <div className="min-h-screen bg-void-black text-ash-white relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-electric-purple/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px]" />
+        </div>
 
-            <h2 className="text-3xl font-bold mb-6 text-white font-heading">Our Mission</h2>
-            <p className="text-lg text-steel-gray leading-relaxed mb-6 font-body">
-              Shonen Ark is built for the dedicated anime community. We provide a professional platform for fans to connect, create, and collaborate.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-24"
+          >
+            <h1 className="text-5xl md:text-7xl font-display font-bold mb-8 electric-text">
+              FOR THE STRONGEST
+            </h1>
+            <p className="text-xl md:text-2xl text-steel-gray max-w-3xl mx-auto leading-relaxed">
+              Shonen Ark is more than a platform. It's a proving ground for the next generation of anime creators, theorists, and fans.
             </p>
-            <p className="text-lg text-steel-gray leading-relaxed font-body">
-              Beyond consumption, we empower creators. Whether you&apos;re a theorist, artist, or editor, Shonen Ark is your stage to showcase talent and build a career in the industry.
-            </p>
-          </div>
-        </motion.section>
+          </motion.div>
 
-        {/* Features Grid */}
-        <motion.section
-          className="mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl font-bold mb-10 text-center text-white font-heading">Platform Features</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Theory Crafting",
-                desc: "Advanced tools for deep analysis and prediction tracking.",
-                icon: <Scroll className="w-12 h-12 text-electric-purple" />
-              },
-              {
-                title: "Creative Studio",
-                desc: "Share AMVs, fan art, and original manga with a global audience.",
-                icon: <Palette className="w-12 h-12 text-electric-purple" />
-              },
-              {
-                title: "Pro Network",
-                desc: "Find paid gigs and collaborate on massive community projects.",
-                icon: <Briefcase className="w-12 h-12 text-electric-purple" />
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="bg-void-black/50 border border-white/10 p-8 rounded-xl hover:border-electric-purple/50 transition-colors group"
-                whileHover={{ y: -5 }}
-              >
-                <div className="w-12 h-12 bg-electric-purple/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-electric-purple/20 transition-colors">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-white group-hover:text-electric-purple transition-colors">{feature.title}</h3>
-                <p className="text-steel-gray">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Founder Section */}
-        <motion.section
-          className="mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="bg-shadow-dark border border-white/5 rounded-2xl p-8 md:p-12 text-center">
-            <h2 className="text-3xl font-bold mb-8 text-white font-heading">Meet the Founder</h2>
-
-            <div className="max-w-4xl mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-electric-purple to-neon-blue rounded-full mx-auto mb-6 flex items-center justify-center text-3xl text-white font-bold shadow-glow">
-                M
+          {/* Mission Section */}
+          <div className="grid md:grid-cols-2 gap-16 items-center mb-32">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-white">
+                THE MISSION
+              </h2>
+              <div className="space-y-6 text-lg text-steel-gray">
+                <p>
+                  The anime community deserves better than scattered forums and toxic comment sections. We built Shonen Ark to be the ultimate headquarters for fans who take their passion seriously.
+                </p>
+                <p>
+                  Whether you're crafting a complex theory about the One Piece void century, looking for a team to animate a fight scene, or just tracking the latest releases, you belong here.
+                </p>
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-4 font-heading">
-                marimondaa
-              </h3>
-
-              <p className="text-lg text-steel-gray mb-8 leading-relaxed font-body max-w-2xl mx-auto">
-                A passionate developer and anime enthusiast dedicated to building the ultimate platform for the community.
-              </p>
-
-              <div className="flex justify-center gap-4">
-                <a
-                  href="https://github.com/marimondaa"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10 font-bold"
-                >
-                  GitHub
-                </a>
-                <Link
-                  href="/contact"
-                  className="px-6 py-2 bg-electric-purple hover:bg-neon-violet text-white rounded-lg transition-colors shadow-lg shadow-electric-purple/20 font-bold"
-                >
-                  Contact
+              <div className="mt-8">
+                <Link href="/register">
+                  <button className="flex items-center gap-2 text-electric-purple font-bold hover:text-white transition-colors group">
+                    Join the Ark <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </Link>
               </div>
-            </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-electric-purple to-blue-600 rounded-2xl blur-2xl opacity-20" />
+              <div className="bg-shadow-dark border border-white/10 rounded-2xl p-8 relative">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-void-black p-4 rounded-xl border border-white/5">
+                    <div className="text-3xl font-bold text-white mb-1">10K+</div>
+                    <div className="text-sm text-steel-gray">Active Users</div>
+                  </div>
+                  <div className="bg-void-black p-4 rounded-xl border border-white/5">
+                    <div className="text-3xl font-bold text-white mb-1">5K+</div>
+                    <div className="text-sm text-steel-gray">Theories</div>
+                  </div>
+                  <div className="bg-void-black p-4 rounded-xl border border-white/5">
+                    <div className="text-3xl font-bold text-white mb-1">50+</div>
+                    <div className="text-sm text-steel-gray">Projects</div>
+                  </div>
+                  <div className="bg-void-black p-4 rounded-xl border border-white/5">
+                    <div className="text-3xl font-bold text-white mb-1">24/7</div>
+                    <div className="text-sm text-steel-gray">Activity</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.section>
 
-        {/* Technology Stack */}
-        <motion.section
-          className="mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl font-bold mb-10 text-center text-white font-heading">Built With Modern Tech</h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { name: 'Next.js', desc: 'React Framework' },
-              { name: 'Tailwind CSS', desc: 'Utility-first CSS' },
-              { name: 'Framer Motion', desc: 'Animation Library' },
-              { name: 'Supabase', desc: 'Backend Infrastructure' }
-            ].map((tech, index) => (
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-32">
+            {features.map((feature, index) => (
               <motion.div
-                key={index}
-                className="bg-void-black/30 border border-white/5 p-6 rounded-xl text-center hover:border-electric-purple/30 transition-colors"
-                whileHover={{ scale: 1.05 }}
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+                className="bg-shadow-dark p-8 rounded-2xl border border-white/5 hover:border-electric-purple/30 transition-all hover:-translate-y-2"
               >
-                <h3 className="font-bold text-white mb-1">{tech.name}</h3>
-                <p className="text-sm text-steel-gray">{tech.desc}</p>
+                <div className="bg-void-black w-16 h-16 rounded-xl flex items-center justify-center mb-6 border border-white/5">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-4 font-display tracking-wide">
+                  {feature.title}
+                </h3>
+                <p className="text-steel-gray leading-relaxed">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>
-        </motion.section>
 
-        {/* Call to Action */}
-        <motion.section
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="bg-gradient-to-br from-electric-purple/20 to-void-black border border-electric-purple/30 rounded-2xl p-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid-white/[0.02]" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white font-heading relative z-10">
-              Join the Community
-            </h2>
-            <p className="text-lg text-steel-gray mb-8 max-w-2xl mx-auto relative z-10">
-              Whether you&apos;re a theorist, creator, or fan, there&apos;s a place for you in Shonen Ark.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-              <Link
-                href="/theories"
-                className="px-8 py-3 bg-electric-purple hover:bg-neon-violet text-white font-bold rounded-lg shadow-lg shadow-electric-purple/20 transition-all hover:-translate-y-1"
-              >
-                Explore Theories
-              </Link>
-              <Link
-                href="/discovery"
-                className="px-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 font-bold rounded-lg transition-all hover:-translate-y-1"
-              >
-                Start Creating
-              </Link>
+          {/* Tech Stack */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center border-t border-white/5 pt-20"
+          >
+            <h3 className="text-sm font-bold text-steel-gray uppercase tracking-widest mb-12">
+              Powered By Modern Tech
+            </h3>
+            <div className="flex flex-wrap justify-center gap-12 opacity-70">
+              {techStack.map((tech) => (
+                <div key={tech.name} className="flex flex-col items-center gap-3 group">
+                  <div className="p-4 bg-white/5 rounded-full group-hover:bg-electric-purple/20 group-hover:text-electric-purple transition-colors">
+                    {tech.icon}
+                  </div>
+                  <span className="text-sm font-medium">{tech.name}</span>
+                </div>
+              ))}
             </div>
-          </div>
-        </motion.section>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

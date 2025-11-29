@@ -97,8 +97,8 @@ a {
 /* Sharp Card System (No Rounded Edges) */
 .power-card {
   background: linear-gradient(135deg,
-      rgba(18, 18, 26, 0.95) 0%,
-      rgba(26, 26, 46, 0.9) 100%);
+      rgba(10, 10, 15, 0.98) 0%,
+      rgba(18, 18, 26, 0.95) 100%);
   border: 1px solid rgba(139, 92, 246, 0.3);
   position: relative;
   backdrop-filter: blur(10px);
@@ -240,7 +240,7 @@ a {
 
 /* Dark Panel System */
 .dark-panel {
-  background: rgba(10, 10, 15, 0.9);
+  background: rgba(5, 5, 10, 0.95);
   border: 1px solid rgba(139, 92, 246, 0.2);
   backdrop-filter: blur(10px);
   position: relative;
@@ -542,14 +542,15 @@ a {
 /* Custom Cursor Effect */
 @media (pointer: fine) {
   body {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%238b5cf6"><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z"/></svg>') 12 12, auto;
+    cursor: url('/cursors/kunai-cursor.svg') 16 16, auto;
   }
 
   a,
   button,
   input,
   select,
-  textarea {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23a78bfa"><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z"/></svg>') 12 12, pointer;
+  textarea,
+  .cursor-pointer {
+    cursor: url('/cursors/kunai-cursor.svg') 16 16, pointer;
   }
 }

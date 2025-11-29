@@ -1,411 +1,288 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Head from 'next/head';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useAuth } from '../src/lib/hooks/useAuth';
 
 export default function GigsPage() {
-  const { user, isAuthenticated } = useAuth();
-  const [isEarlyAccess, setIsEarlyAccess] = useState(false);
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('jobs');
-  const [featuredJobs, setFeaturedJobs] = useState([]);
-  const [communityProjects, setCommunityProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    // Load featured gigs data from API
-    const loadGigsData = async () => {
-      try {
-        setIsLoading(true);
+  const jobListings = [
+    {
+      id: 1,
+      title: "Manga Illustrator Needed",
+      type: "Paid Contract",
+      budget: "$500 - $1000",
+      deadline: "2023-12-01",
+      description: "Looking for an artist to illustrate a 20-page one-shot. Style should be similar to Jujutsu Kaisen or Bleach.",
+      tags: ["Illustration", "Manga", "Character Design"],
+      author: "Studio Eclipse",
+      applicants: 12
+    },
+    {
+      id: 2,
+      title: "AMV Editor for YouTube Channel",
+      type: "Recurring",
+      budget: "$50 - $100 per video",
+      deadline: "Open",
+      description: "Seeking a skilled editor for weekly AMV uploads. Must be proficient in After Effects and have a good sense of rhythm.",
+      tags: ["Video Editing", "AMV", "VFX"],
+      author: "AnimeHype TV",
+      applicants: 45
+    },
+    {
+      id: 3,
+      title: "Voice Actor - Male Protagonist",
+      type: "Project Based",
+      budget: "$200",
+      deadline: "2023-11-25",
+      description: "Need a voice actor for a fan animation project. Character is a hot-headed shonen protagonist. Deep voice preferred.",
+      tags: ["Voice Acting", "Audio", "Dubbing"],
+      author: "RedLine Animation",
+      applicants: 8
+    },
+    {
+      id: 4,
+      title: "Theory Writer / Scriptwriter",
+      type: "Collaboration",
+      budget: "Revenue Share",
+      deadline: "Open",
+      description: "Join our team of theory crafters. We need someone to research and write scripts for deep-dive analysis videos.",
+      tags: ["Writing", "Research", "Scripting"],
+      author: "TheoryCraft",
+      applicants: 3
+    },
+    {
+      id: 5,
+      title: "Unity Dev for Fan Game",
+      type: "Hobby / Portfolio",
+      budget: "Unpaid",
+      deadline: "Open",
+      description: "Building a 2D fighting game based on obscure shonen series. Need a programmer familiar with Unity and hitboxes.",
+      tags: ["Game Dev", "Unity", "Programming"],
+      author: "IndieFighters",
+      applicants: 15
+    }
+  ];
 
-        if (activeTab === 'jobs') {
-          const response = await fetch('/api/gigs?limit=10');
-          const data = await response.json();
-
-          if (response.ok) {
-            setFeaturedJobs(data.gigs || []);
-          } else {
-            // Fallback to mock data if API fails
-            setFeaturedJobs([
-              {
-                id: 1,
-                title: "Video Editor for AMV Channel",
-                budget: "$200 - $500",
-                deadline: "2 weeks",
-                description: "Looking for an experienced editor to create high-energy AMVs using After Effects. Must be familiar with flow editing and typography.",
-                tags: ["Video Editing", "After Effects", "AMV"],
-                applications: 12
-              },
-              {
-                id: 2,
-                title: "Thumbnail Artist for Theory Channel",
-                budget: "$50 - $100 per thumbnail",
-                deadline: "Ongoing",
-                description: "Need click-worthy thumbnails for a One Piece theory channel. Style should be vibrant and high contrast.",
-                tags: ["Graphic Design", "Photoshop", "YouTube"],
-                applications: 45
-              },
-              {
-                id: 3,
-                title: "Scriptwriter for Anime Analysis",
-                budget: "$0.10 per word",
-                deadline: "1 week",
-                description: "Seeking a writer with deep knowledge of JJK and Chainsaw Man for deep-dive analysis scripts.",
-                tags: ["Writing", "Scripting", "Analysis"],
-                applications: 8
-              }
-            ]);
-          }
-        }
-
-        if (activeTab === 'community') {
-          const response = await fetch('/api/community-projects?limit=10');
-          const data = await response.json();
-
-          if (response.ok) {
-            setCommunityProjects(data.projects || []);
-          } else {
-            // Fallback to mock data if API fails
-            setCommunityProjects([
-              {
-                id: 1,
-                title: "Shonen Ark Community Manga",
-                status: "Recruiting",
-                organizer: "ArkAdmin",
-                description: "A collaborative manga project created by the community. Looking for artists, writers, and letterers.",
-                participants: 24,
-                roles: ["Artist", "Writer", "Letterer"]
-              },
-              {
-                id: 2,
-                title: "Fan Animation Collab 2024",
-                status: "In Progress",
-                organizer: "StudioArk",
-                description: "Multi-animator project focusing on the best fights of 2024. Join the discord to participate.",
-                participants: 156,
-                roles: ["Animator", "Background Artist"]
-              }
-            ]);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load gigs data:', error);
-        // Set mock data as fallback
-        setFeaturedJobs([]);
-        setCommunityProjects([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadGigsData();
-  }, [activeTab]);
-
-  const handleEarlyAccessSignup = async (email) => {
-    // Here you would typically save to your backend
-    console.log('Early access signup:', email);
-    setIsEarlyAccess(true);
-  };
-
-  const tabs = [
-    { id: 'jobs', label: 'Job Board', icon: '💼' },
-    { id: 'community', label: 'Community Projects', icon: '🤝' },
-    { id: 'marketplace', label: 'Services', icon: '🛒' }
+  const communityProjects = [
+    {
+      id: 101,
+      title: "Project: SHONEN ALL-STARS",
+      role: "Animator",
+      status: "In Progress",
+      description: "A massive collaborative animation project featuring characters from 50+ series.",
+      members: 24,
+      needed: ["Background Artist", "Sound Designer"]
+    },
+    {
+      id: 102,
+      title: "Zine: Villains Only",
+      role: "Artist / Writer",
+      status: "Recruiting",
+      description: "A digital fanzine dedicated to the best antagonists in anime history. Proceeds go to charity.",
+      members: 15,
+      needed: ["Illustrator", "Layout Designer"]
+    }
   ];
 
   return (
     <>
       <Head>
-        <title>Gigs & Community Work - Shonen Ark</title>
-        <meta name="description" content="Find work opportunities and collaborate on anime projects with the Shonen Ark community" />
+        <title>Gigs & Projects - Shonen Ark</title>
       </Head>
 
-      <div className="min-h-screen transition-colors dark:bg-black dark:text-white">
-        {/* Hero Section with Brand Logo */}
-        <motion.div
-          className="dark:bg-gradient-to-b dark:from-black dark:via-dark-purple/20 dark:to-black py-24 relative overflow-hidden transition-colors"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Subtle particle effect */}
-          <div className="absolute inset-0 pointer-events-none">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-purple/40 rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  y: [-10, 10, -10],
-                  opacity: [0.2, 0.6, 0.2],
-                  scale: [0.8, 1.2, 0.8],
-                }}
-                transition={{
-                  duration: 4 + Math.random() * 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
-          </div>
+      <div className="min-h-screen py-20 bg-void-black text-ash-white relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-electric-purple/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="max-w-4xl mx-auto text-center px-4 relative z-10">
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              {/* Brand Logo */}
-              <motion.div className="mb-6 flex justify-center">
-                <motion.img
-                  src="/brand-logo.png"
-                  alt="Shonen Ark"
-                  className="h-16 sm:h-20 md:h-24 w-auto object-contain"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.div>
-
-              <h1 className="text-4xl sm:text-5xl font-bold mb-6 mystical-title">
-                <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
-                  Gigs & Community Work
-                </span>
-              </h1>
-
-              <motion.p
-                className="text-lg sm:text-xl text-grey mb-8 font-mystical max-w-2xl mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-              >
-                Connect with fellow creators and find opportunities in the anime community
-              </motion.p>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Navigation Tabs */}
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
-            className="flex justify-center space-x-4 mb-12"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.8 }}
           >
-            {tabs.map((tab) => (
-              <motion.button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-lg border transition-all duration-300 font-mystical ${activeTab === tab.id
-                    ? 'bg-gradient-to-r from-purple/20 to-dark-purple/20 text-white border-purple'
-                    : 'border-purple/30 text-purple hover:border-purple/50 hover:bg-purple/10'
-                  }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="text-lg mr-2">{tab.icon}</span>
-                {tab.label}
-              </motion.button>
-            ))}
+            <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 electric-text">
+              QUEST BOARD
+            </h1>
+            <p className="text-xl text-steel-gray max-w-2xl mx-auto">
+              Find paid work, join collaborative projects, and build your portfolio.
+              The guild awaits.
+            </p>
           </motion.div>
 
-          {/* Content Sections */}
-          {activeTab === 'jobs' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4 mystical-title">
-                  <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
-                    Job Board
-                  </span>
-                </h2>
-                <p className="text-grey max-w-2xl mx-auto font-mystical">
-                  Find paid opportunities to work on anime-related projects with creators around the world.
-                </p>
-              </div>
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-12">
+            <div className="bg-shadow-dark border border-white/10 p-1 rounded-xl inline-flex">
+              {['jobs', 'projects'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-8 py-3 rounded-lg font-bold transition-all ${activeTab === tab
+                      ? 'bg-electric-purple text-white shadow-lg shadow-electric-purple/25'
+                      : 'text-steel-gray hover:text-white hover:bg-white/5'
+                    }`}
+                >
+                  {tab === 'jobs' ? 'Paid Gigs' : 'Community Projects'}
+                </button>
+              ))}
+            </div>
+          </div>
 
-              <div className="grid gap-6 mb-8">
-                {isLoading ? (
-                  <div className="flex justify-center items-center py-16">
-                    <motion.div
-                      className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
+          {activeTab === 'jobs' ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="grid gap-6"
+            >
+              {jobListings.map((job, index) => (
+                <motion.div
+                  key={job.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-shadow-dark border border-white/5 hover:border-electric-purple/50 rounded-xl p-6 md:p-8 transition-all hover:shadow-glow group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="text-6xl">📜</span>
                   </div>
-                ) : featuredJobs.length > 0 ? (
-                  featuredJobs.map((job) => (
-                    <motion.div
-                      key={job.id}
-                      className="bg-gradient-to-br from-dark-purple/30 to-black/50 p-6 rounded-lg border border-purple/20 hover:border-purple/40 transition-all duration-300 shrine-glow"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-white mystical-title">{job.title}</h3>
-                        <span className="bg-gradient-to-r from-purple to-dark-purple text-white px-3 py-1 rounded-full text-sm font-mystical">
+
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap gap-3 mb-3">
+                        <span className="px-3 py-1 bg-electric-purple/10 text-electric-purple border border-electric-purple/20 rounded-full text-xs font-bold uppercase tracking-wider">
+                          {job.type}
+                        </span>
+                        <span className="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-bold uppercase tracking-wider">
                           {job.budget}
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {job.tags && job.tags.map((tag, index) => (
-                          <span key={index} className="text-xs bg-purple/10 text-purple px-2 py-1 rounded border border-purple/20">
-                            {tag}
+                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-electric-purple transition-colors">
+                        {job.title}
+                      </h3>
+
+                      <p className="text-steel-gray mb-6 max-w-3xl">
+                        {job.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2">
+                        {job.tags.map((tag) => (
+                          <span key={tag} className="text-xs font-bold text-steel-gray bg-void-black px-3 py-1 rounded-md border border-white/5">
+                            #{tag}
                           </span>
                         ))}
                       </div>
+                    </div>
 
-                      <p className="text-grey mb-6 line-clamp-2 font-mystical">{job.description}</p>
-
-                      <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                        <span className="text-sm text-grey">
-                          Deadline: {job.deadline}
-                        </span>
-                        <motion.button
-                          className="px-4 py-2 bg-purple text-white rounded hover:bg-dark-purple transition-colors font-mystical"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          Apply Now
-                        </motion.button>
+                    <div className="flex flex-col items-end gap-4 min-w-[150px]">
+                      <div className="text-right">
+                        <div className="text-sm text-steel-gray">Posted by</div>
+                        <div className="font-bold text-white">{job.author}</div>
                       </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center py-12 text-grey font-mystical">
-                    No jobs found at the moment. Check back later!
+
+                      <button className="power-button w-full md:w-auto text-sm py-2 px-6">
+                        Apply Now
+                      </button>
+
+                      <div className="text-xs text-steel-gray">
+                        {job.applicants} applicants
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+                </motion.div>
+              ))}
             </motion.div>
-          )}
-
-          {activeTab === 'community' && (
+          ) : (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="grid gap-6"
             >
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4 mystical-title">
-                  <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
-                    Community Projects
-                  </span>
-                </h2>
-                <p className="text-grey max-w-2xl mx-auto font-mystical">
-                  Collaborate with other fans on massive projects.
-                </p>
-              </div>
-
-              <div className="grid gap-6 mb-8">
-                {isLoading ? (
-                  <div className="flex justify-center items-center py-16">
-                    <motion.div
-                      className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
+              {communityProjects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-shadow-dark border border-white/5 hover:border-blue-500/50 rounded-xl p-6 md:p-8 transition-all hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="text-6xl">🤝</span>
                   </div>
-                ) : communityProjects.length > 0 ? (
-                  communityProjects.map((project) => (
-                    <motion.div
-                      key={project.id}
-                      className="bg-gradient-to-br from-dark-purple/30 to-black/50 p-6 rounded-lg border border-purple/20 hover:border-purple/40 transition-all duration-300 shrine-glow"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-white mystical-title">{project.title}</h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-mystical ${project.status === 'Recruiting' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
-                          }`}>
+
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap gap-3 mb-3">
+                        <span className="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold uppercase tracking-wider">
                           {project.status}
                         </span>
+                        <span className="px-3 py-1 bg-white/5 text-white border border-white/10 rounded-full text-xs font-bold uppercase tracking-wider">
+                          {project.members} Members
+                        </span>
                       </div>
 
-                      <p className="text-grey mb-6 font-mystical">{project.description}</p>
+                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                        {project.title}
+                      </h3>
 
-                      <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm text-grey">
-                            Organizer: <span className="text-purple">{project.organizer}</span>
-                          </span>
-                          <span className="text-sm text-grey">
-                            Participants: {project.participants}
-                          </span>
+                      <p className="text-steel-gray mb-6 max-w-3xl">
+                        {project.description}
+                      </p>
+
+                      <div className="bg-void-black/50 p-4 rounded-lg border border-white/5">
+                        <span className="text-xs font-bold text-steel-gray uppercase block mb-2">Looking For:</span>
+                        <div className="flex flex-wrap gap-2">
+                          {project.needed.map((role) => (
+                            <span key={role} className="text-xs font-bold text-blue-300 bg-blue-500/10 px-3 py-1 rounded-md border border-blue-500/20">
+                              {role}
+                            </span>
+                          ))}
                         </div>
-                        <motion.button
-                          className="px-4 py-2 border border-purple text-purple rounded hover:bg-purple/10 transition-colors font-mystical"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          View Details
-                        </motion.button>
                       </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center py-12 text-grey font-mystical">
-                    No community projects found. Start one today!
+                    </div>
+
+                    <div className="flex flex-col items-end gap-4 min-w-[150px]">
+                      <button className="px-6 py-3 bg-white/5 hover:bg-blue-600 text-white font-bold rounded-lg border border-white/10 hover:border-blue-600 transition-all w-full md:w-auto">
+                        Join Project
+                      </button>
+                    </div>
                   </div>
-                )}
-              </div>
+                </motion.div>
+              ))}
             </motion.div>
           )}
 
-          {activeTab === 'marketplace' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center py-16"
-            >
-              <div className="max-w-2xl mx-auto bg-gradient-to-br from-dark-purple/30 to-black/50 p-8 rounded-xl border border-purple/20">
-                <h2 className="text-3xl font-bold mb-4 mystical-title">
-                  <span className="text-transparent bg-gradient-to-r from-purple via-white to-purple bg-clip-text">
-                    Marketplace Coming Soon
-                  </span>
-                </h2>
-                <p className="text-grey mb-8 font-mystical">
-                  We're building a dedicated marketplace for creators to sell their services directly.
-                  Sign up for early access to be the first to know when we launch.
-                </p>
-
-                {!isEarlyAccess ? (
-                  <div className="flex max-w-md mx-auto gap-2">
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="flex-1 bg-black/50 border border-purple/30 rounded px-4 py-2 text-white focus:outline-none focus:border-purple"
-                    />
-                    <motion.button
-                      onClick={() => handleEarlyAccessSignup('test@example.com')}
-                      className="px-6 py-2 bg-purple text-white rounded font-bold hover:bg-dark-purple transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Notify Me
-                    </motion.button>
-                  </div>
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-green-500/20 border border-green-500/40 text-green-400 px-6 py-4 rounded-lg inline-block"
-                  >
-                    Thanks! We'll be in touch soon.
-                  </motion.div>
-                )}
+          {/* Marketplace Teaser */}
+          <motion.div
+            className="mt-20 p-12 rounded-2xl bg-gradient-to-r from-midnight-purple to-void-black border border-electric-purple/30 text-center relative overflow-hidden"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+            <div className="relative z-10">
+              <h2 className="text-4xl font-display font-bold mb-4 text-white">MARKETPLACE COMING SOON</h2>
+              <p className="text-xl text-steel-gray mb-8 max-w-2xl mx-auto">
+                Sell your art, presets, and assets directly to the community.
+                Secure payments. Instant delivery.
+              </p>
+              <div className="flex justify-center gap-4">
+                <input
+                  type="email"
+                  placeholder="Enter your email for early access"
+                  className="px-6 py-3 rounded-lg bg-black/50 border border-white/10 text-white focus:border-electric-purple focus:outline-none w-full max-w-sm"
+                />
+                <button className="power-button">Notify Me</button>
               </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
         </div>
       </div>
     </>

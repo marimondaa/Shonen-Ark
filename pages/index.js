@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useAuth } from '../src/lib/hooks/useAuth';
+import CursorTrail from '../src/components/effects/CursorTrail';
 
 export default function Home() {
   const { user } = useAuth();
@@ -12,6 +13,8 @@ export default function Home() {
         <title>Shonen Ark - Where Legends Rise</title>
         <meta name="description" content="The ultimate platform for shonen anime theories, analysis, and community. Join the strongest fans." />
       </Head>
+
+      <CursorTrail />
 
       <div className="relative min-h-screen">
         {/* Hero Section */}

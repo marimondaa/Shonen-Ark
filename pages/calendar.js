@@ -119,6 +119,7 @@ const CalendarPage = () => {
       <div className="min-h-screen bg-void-black text-ash-white transition-colors relative overflow-hidden">
         {/* Soft Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-midnight-purple/40 via-void-black to-void-black pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-electric-purple/5 rounded-full blur-[120px] pointer-events-none" />
 
         {/* Hero Section */}
         <motion.div
@@ -132,7 +133,7 @@ const CalendarPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <h1 className="text-6xl md:text-7xl font-display font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-electric-purple to-neon-violet drop-shadow-lg">
+            <h1 className="text-6xl md:text-7xl font-display font-bold mb-4 electric-text">
               ANIME CALENDAR
             </h1>
             <p className="text-xl text-steel-gray max-w-2xl mx-auto font-body tracking-wide">
@@ -219,7 +220,7 @@ const CalendarPage = () => {
                 </button>
               </div>
             ) : visibleData.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {visibleData.map((anime, index) => {
                   const title = typeof anime.title === 'string'
                     ? anime.title
@@ -237,7 +238,7 @@ const CalendarPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="bg-shadow-dark rounded-2xl overflow-hidden border border-white/5 hover:border-electric-purple/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] hover:-translate-y-1 h-full flex flex-col"
+                        className="bg-shadow-dark rounded-3xl overflow-hidden border border-white/5 hover:border-electric-purple/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] hover:-translate-y-2 h-full flex flex-col relative"
                       >
                         <div className="aspect-[3/4] relative overflow-hidden">
                           <Image
@@ -245,50 +246,38 @@ const CalendarPage = () => {
                             alt={title}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                             unoptimized
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
 
                           {anime.averageScore && (
-                            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-neon-violet px-3 py-1 rounded-full text-xs font-bold border border-white/10">
+                            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-neon-violet px-3 py-1 rounded-full text-xs font-bold border border-white/10 shadow-lg">
                               {anime.averageScore}%
                             </div>
                           )}
 
-                          {(anime.airingAt || anime.nextAiringAt || anime.startDate) && (
-                            <div className="absolute bottom-3 left-3 right-3">
-                              <div className="bg-electric-purple/90 backdrop-blur-md text-white text-center py-2 rounded-xl text-xs font-bold shadow-lg">
+                          <div className="absolute bottom-0 left-0 right-0 p-5">
+                            <h3 className="font-heading font-bold text-white text-lg mb-2 line-clamp-2 group-hover:text-electric-purple transition-colors drop-shadow-md">
+                              {title}
+                            </h3>
+
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {anime.genres?.slice(0, 2).map((genre, i) => (
+                                <span key={i} className="text-[10px] uppercase tracking-wider font-bold bg-white/10 text-white/90 px-2 py-1 rounded-md backdrop-blur-sm">
+                                  {genre}
+                                </span>
+                              ))}
+                            </div>
+
+                            {(anime.airingAt || anime.nextAiringAt || anime.startDate) && (
+                              <div className="flex items-center gap-2 text-xs text-steel-gray font-bold">
+                                <span className="text-electric-purple">📅</span>
                                 {anime.airingAt || anime.nextAiringAt
                                   ? new Date(anime.airingAt || anime.nextAiringAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
                                   : (anime.startDate?.year ? `${anime.startDate.year}` : 'TBA')}
                               </div>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="p-5 flex-1 flex flex-col">
-                          <h3 className="font-heading font-bold text-white text-lg mb-2 line-clamp-2 group-hover:text-electric-purple transition-colors">
-                            {title}
-                          </h3>
-
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {anime.genres?.slice(0, 3).map((genre, i) => (
-                              <span key={i} className="text-[10px] uppercase tracking-wider font-bold bg-white/5 text-steel-gray px-2 py-1 rounded-md border border-white/5">
-                                {genre}
-                              </span>
-                            ))}
-                          </div>
-
-                          <div className="mt-auto flex items-center justify-between text-xs text-steel-gray border-t border-white/5 pt-3">
-                            <div className="flex items-center gap-1">
-                              <span>📺</span>
-                              <span>{anime.format || 'TV'}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>🎬</span>
-                              <span>{anime.episodes || '?'} eps</span>
-                            </div>
+                            )}
                           </div>
                         </div>
                       </motion.div>

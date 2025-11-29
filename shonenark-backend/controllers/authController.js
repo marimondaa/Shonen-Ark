@@ -1,15 +1,29 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-// Register User
-exports.register = async (req, res) => {
+// Generate JWT Token
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '30d',
+    });
+};
+
+// @desc    Register new user
+// @route   POST /api/auth/register
+// @access  Public
+const register = async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password } = req.body;
+
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: 'Please add all fields' });
+        }
 
         // Check if user exists
-        let user = await User.findOne({ email });
-        if (user) {
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
@@ -18,85 +32,74 @@ exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Create user
-        user = new User({
+        const user = await User.create({
             username,
             email,
             password: hashedPassword,
-            role: role || 'user'
         });
 
-        await user.save();
-
-        // Create token
-        const payload = {
-            user: {
-                id: user.id,
-                role: user.role
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET || 'secret',
-            { expiresIn: '7d' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username, email: user.email, role: user.role } });
-            }
-        );
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        if (user) {
+            res.status(201).json({
+                _id: user.id,
+                username: user.username,
+                email: user.email,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid user data' });
+        }
+    } catch (error) {
+        console.error('Register Error:', error);
+        res.status(500).json({ message: 'Server error during registration', error: error.message });
     }
 };
 
-// Login User
-exports.login = async (req, res) => {
+// @desc    Authenticate a user
+// @route   POST /api/auth/login
+// @access  Public
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check if user exists
-        let user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid Credentials' });
+        // Check for user email
+        const user = await User.findOne({ email });
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            res.json({
+                _id: user.id,
+                username: user.username,
+                email: user.email,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid credentials' });
         }
-
-        // Validate password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid Credentials' });
-        }
-
-        // Create token
-        const payload = {
-            user: {
-                id: user.id,
-                role: user.role
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET || 'secret',
-            { expiresIn: '7d' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username, email: user.email, role: user.role } });
-            }
-        );
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+    } catch (error) {
+        console.error('Login Error:', error);
+        res.status(500).json({ message: 'Server error during login', error: error.message });
     }
 };
 
-// Get Current User
-exports.getMe = async (req, res) => {
+// @desc    Get user data
+// @route   GET /api/auth/me
+// @access  Private
+const getMe = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        const user = await User.findById(req.user.id);
+
+        res.status(200).json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+        });
+    } catch (error) {
+        console.error('GetMe Error:', error);
+        res.status(500).json({ message: 'Server error fetching user data', error: error.message });
     }
+};
+
+module.exports = {
+    register,
+    login,
+    getMe,
 };

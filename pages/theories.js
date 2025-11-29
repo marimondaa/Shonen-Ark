@@ -146,7 +146,7 @@ export default function TheoriesPage() {
 
         {/* Filters */}
         <motion.div
-          className="flex flex-col gap-6 mb-8 p-6 bg-shadow-dark rounded-xl border border-white/5"
+          className="flex flex-col gap-6 mb-8 p-6 bg-shadow-dark/95 rounded-xl border border-electric-purple/20 backdrop-blur-md"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -176,7 +176,7 @@ export default function TheoriesPage() {
             <select
               value={sortBy}
               onChange={(e) => { setPage(1); setSortBy(e.target.value); }}
-              className="px-4 py-2 rounded-lg focus:outline-none focus:border-electric-purple bg-void-black/50 text-white border border-white/10 w-full sm:w-auto"
+              className="px-4 py-2 rounded-lg focus:outline-none focus:border-electric-purple bg-void-black text-white border border-electric-purple/30 w-full sm:w-auto"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value} className="text-black">

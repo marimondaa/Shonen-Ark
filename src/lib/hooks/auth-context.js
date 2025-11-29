@@ -31,22 +31,23 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      // We map 'username' to 'email' for the Credentials provider
-      // Assuming the login form might pass username or email
+      // Try to login via NextAuth credentials provider
+      // This will eventually call our backend API if configured in [...nextauth].js
       const result = await signIn('credentials', {
         redirect: false,
-        email: username, // The provider expects 'email'
+        email: username,
         password: password
       });
 
       if (result?.error) {
+        console.error("Login failed:", result.error);
         return { success: false, error: result.error };
       }
 
       return { success: true };
     } catch (error) {
       console.error("Login error:", error);
-      return { success: false, error: 'Login failed' };
+      return { success: false, error: 'An unexpected error occurred during login.' };
     }
   };
 
