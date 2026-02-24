@@ -1,254 +1,144 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion } from 'framer-motion';
+'use client';
+
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
-import TheoryCard from '../src/components/features/TheoryCard';
-import MangaGrid from '../src/components/manga/MangaGrid';
-import MangaPanel from '../src/components/manga/MangaPanel';
-import SortBar from '../src/components/catalog/SortBar';
+import { motion } from 'framer-motion';
+import { PageLayout } from '../components/PageLayout';
+import { Button } from '../components/Button';
+import { Card, CardHeader, CardContent } from '../components/Card';
+import { Search, Plus, Filter } from 'lucide-react';
 
 export default function TheoriesPage() {
   const [theories, setTheories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const loaderRef = useRef(null);
-
-  const fetchTheories = useCallback(async (reset = false) => {
-    if (reset) {
-      setIsLoading(true);
-      setTheories([]);
-    }
-
-    try {
-      const params = new URLSearchParams({
-        page: reset ? 1 : page,
-        limit: 9,
-        sortBy: sortBy === 'POPULARITY_DESC' ? 'popular' : sortBy === 'TRENDING_DESC' ? 'trending' : 'newest',
-      });
-
-      if (filter !== 'all') params.append('category', filter); // Note: API uses 'category' but UI uses 'anime' filter logic. We might need to adjust API or UI.
-      // The UI says "Filter by anime", but the API expects 'category' or we need to add 'anime' filter to API.
-      // Looking at API code: it has 'category' filter. It doesn't seem to have 'anime' filter explicitly in the snippet I saw, 
-      // but let's check if we can pass 'search' for anime or if we should add 'anime' param to API.
-      // The API snippet showed: if (search) query.or(...)
-      // It didn't show explicit anime filter. 
-      // However, the mock data had 'anime' field. The DB schema has 'anime_series'.
-      // Let's assume we can pass 'search' for now or we need to update API.
-      // For this step, I will pass 'search' if query is present, and I'll pass 'anime' as a custom param if I update the API, 
-      // but for now let's stick to what the API supports or just use 'search' for anime if the user types it.
-      // Wait, the UI has specific buttons for Anime. 
-      // Let's pass it as 'search' for now if filter is not 'all', combined with query.
-
-      let searchQuery = query;
-      if (filter !== 'all') {
-        searchQuery = searchQuery ? `${searchQuery} ${filter}` : filter;
-      }
-
-      if (searchQuery) params.append('search', searchQuery);
-
-      const res = await fetch(`/api/theories?${params.toString()}`);
-      const data = await res.json();
-
-      if (data.theories) {
-        setTheories(prev => reset ? data.theories : [...prev, ...data.theories]);
-        setHasMore(data.theories.length === 9); // Assuming limit is 9
-      }
-    } catch (error) {
-      console.error('Error fetching theories:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filter, sortBy, query, page]);
 
   useEffect(() => {
-    fetchTheories(true);
-  }, [filter, sortBy, query]);
-
-  useEffect(() => {
-    if (page > 1) fetchTheories(false);
-  }, [page, fetchTheories]);
-
-  // Infinite scroll observer
-  useEffect(() => {
-    if (!loaderRef.current) return;
-    const el = loaderRef.current;
-    const observer = new IntersectionObserver((entries) => {
-      const first = entries[0];
-      if (first.isIntersecting && hasMore && !isLoading) {
-        setPage(p => p + 1);
+    const fetchTheories = async () => {
+      try {
+        const res = await fetch('/api/theories');
+        const data = await res.json();
+        setTheories(data.theories || []);
+      } catch (err) {
+        console.error('Failed to load theories:', err);
+      } finally {
+        setIsLoading(false);
       }
-    }, { threshold: 0.2 });
-    if (el) observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasMore, isLoading]);
+    };
 
-  const animeOptions = ['all', 'One Piece', 'Jujutsu Kaisen', 'Attack on Titan', 'Demon Slayer'];
-  const sortOptions = [
-    { value: 'newest', label: 'Newest' },
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'trending', label: 'Trending' }
-  ];
+    fetchTheories();
+  }, []);
+
+  const filteredTheories = theories.filter(theory => {
+    const matchesSearch = theory.title?.toLowerCase().includes(search.toLowerCase());
+    const matchesFilter = filter === 'all' || theory.status === filter;
+    return matchesSearch && matchesFilter;
+  });
 
   return (
-    <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">
-      {/* Hero Section */}
-      <motion.div
-        className="manga-panel mx-4 mt-4 dark:bg-gradient-to-r dark:from-dark-purple dark:to-purple dark:text-white py-20 transition-colors"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="text-6xl mb-6">🔮</div>
-            <h1 className="text-5xl font-bold font-manga-header mb-6 manga-accent uppercase tracking-widest">
-              Fan Theories
-            </h1>
-            <p className="text-xl text-paper-beige/90 font-manga-body max-w-3xl mx-auto">
-              Dive deep into the mysteries of your favorite anime with theories, analysis, and predictions from the community
-            </p>
-          </motion.div>
-        </div>
-      </motion.div>
+    <>
+      <Head>
+        <title>Theories - Shonen Ark</title>
+        <meta name="description" content="Explore anime fan theories and deep analysis." />
+      </Head>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* SortBar with search and Submit Button */}
-        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex-1 w-full">
-            <SortBar
-              sort={sortBy === 'newest' ? 'START_DATE_DESC' : sortBy === 'popular' ? 'POPULARITY_DESC' : 'TRENDING_DESC'}
-              onChange={(val) => {
-                setPage(1);
-                setSortBy(val === 'POPULARITY_DESC' ? 'popular' : val === 'TRENDING_DESC' ? 'trending' : 'newest');
-              }}
-              query={query}
-              onQueryChange={(v) => { setPage(1); setQuery(v); }}
-            />
-          </div>
-          <Link href="/submit-theory">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full md:w-auto px-6 py-3 bg-electric-purple hover:bg-neon-violet text-white font-bold rounded-lg shadow-lg shadow-electric-purple/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-            >
-              <span>✨</span>
-              <span>Submit Theory</span>
-            </motion.button>
-          </Link>
-        </div>
-
-        {/* Filters */}
+      <PageLayout>
+        {/* Header */}
         <motion.div
-          className="flex flex-col gap-6 mb-8 p-6 bg-shadow-dark/95 rounded-xl border border-electric-purple/20 backdrop-blur-md"
-          initial={{ opacity: 0, y: 20 }}
+          className="mb-12"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ duration: 0.5 }}
         >
-          {/* Anime Filter */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-electric-purple font-heading font-bold whitespace-nowrap uppercase tracking-wide">Filter by anime:</span>
-            <div className="flex flex-wrap gap-2">
-              {animeOptions.map((anime) => (
-                <button
-                  key={anime}
-                  onClick={() => { setPage(1); setFilter(anime); }}
-                  className={`px-3 py-1.5 rounded-md border transition-all text-sm font-bold tracking-wide ${filter === anime
-                    ? 'bg-electric-purple text-white border-electric-purple shadow-glow'
-                    : 'bg-void-black/50 text-steel-gray border-white/10 hover:border-electric-purple/50 hover:text-white'
-                    }`}
-                >
-                  {anime}
-                </button>
-              ))}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+              <h1 className="text-4xl font-display font-bold mb-2">Theories</h1>
+              <p className="text-text-secondary">Explore and share anime fan theories</p>
             </div>
+            <Link href="/theories/new">
+              <Button size="lg" className="flex items-center gap-2">
+                <Plus size={20} /> Create Theory
+              </Button>
+            </Link>
           </div>
 
-          {/* Sort Options (simple select for mock) */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-steel-gray font-medium whitespace-nowrap">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => { setPage(1); setSortBy(e.target.value); }}
-              className="px-4 py-2 rounded-lg focus:outline-none focus:border-electric-purple bg-void-black text-white border border-electric-purple/30 w-full sm:w-auto"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value} className="text-black">
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          {/* Search & Filter */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 text-text-muted" size={18} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search theories..."
+                className="pl-10 w-full px-4 py-2 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-200"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter size={18} className="text-text-muted" />
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="bg-dark-surface border border-dark-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              >
+                <option value="all">All Categories</option>
+                <option value="one-piece">One Piece</option>
+                <option value="naruto">Naruto</option>
+                <option value="bleach">Bleach</option>
+              </select>
+            </div>
           </div>
         </motion.div>
 
-        {/* Loading State */}
-        {isLoading && theories.length === 0 ? (
-          <div className="flex justify-center items-center py-16">
-            <motion.div
-              className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            />
+        {/* Theories Grid */}
+        {isLoading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <Card key={i} className="animate-pulse">
+                <div className="h-4 bg-dark-border rounded w-3/4 mb-4" />
+                <div className="h-24 bg-dark-border rounded mb-4" />
+                <div className="h-4 bg-dark-border rounded w-1/2" />
+              </Card>
+            ))}
           </div>
         ) : (
-          <>
-            {/* Theories Grid */}
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              {theories.map((theory, index) => (
-                <motion.div
-                  key={theory.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.03 * index, duration: 0.5 }}
-                >
-                  <TheoryCard theory={theory} />
-                </motion.div>
-              ))}
-            </motion.div>
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
+          >
+            {filteredTheories.map((theory) => (
+              <Link key={theory.id} href={`/theories/${theory.id}`}>
+                <Card hover className="h-full flex flex-col">
+                  <CardHeader>
+                    <h3 className="text-xl font-bold line-clamp-2">{theory.title}</h3>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <p className="text-text-secondary text-sm line-clamp-3 mb-4">
+                      {theory.content}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-text-muted mt-auto">
+                      <span>{theory.author}</span>
+                      <span>{new Date(theory.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
 
-            {/* Infinite loader sentinel */}
-            {hasMore && (
-              <div ref={loaderRef} className="py-10 text-center text-gray-500">Loading more…</div>
+            {filteredTheories.length === 0 && (
+              <div className="col-span-full py-20 text-center border-2 border-dashed border-dark-border rounded-xl">
+                <Search size={48} className="mx-auto text-text-muted mb-4 opacity-20" />
+                <h3 className="text-xl font-semibold text-text-secondary">No theories found</h3>
+                <p className="text-text-muted">Try adjusting your search or filters</p>
+              </div>
             )}
-          </>
+          </motion.div>
         )}
-
-        {/* Call to Action - Enhanced with Manga Panel */}
-        <MangaPanel
-          panelNumber="CTA"
-          type="focus"
-          sfx="JOIN US!"
-          className="mt-20 text-center p-12"
-        >
-          <div className="text-4xl mb-4">✨</div>
-          <h2 className="text-3xl font-bold font-manga-header mb-4 text-purple uppercase tracking-widest">
-            Have a Theory?
-          </h2>
-          <p className="text-paper-beige/80 font-manga-body mb-6 max-w-2xl mx-auto">
-            Join our community of theorists and share your insights about your favorite anime series.
-          </p>
-          <Link href="/account/creator">
-            <motion.button
-              className="bg-purple hover:bg-dark-purple text-white px-8 py-3 rounded-lg transition-colors font-manga-header uppercase tracking-wide"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Share Your Theory
-            </motion.button>
-          </Link>
-        </MangaPanel>
-      </div>
-    </div>
+      </PageLayout>
+    </>
   );
 }
