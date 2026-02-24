@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { allowMethods, getRawBody, sendSuccess, sendError, Logger } from '../../../src/lib/api-helpers';
 import { subscriptionService } from '../../../src/lib/services/subscription';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2023-10-16', // Recommended to pin API version
 });
 
@@ -12,14 +12,14 @@ export const config = {
   },
 };
 
-async function handler(req: any, res: any, context: { logger: Logger; cid: string }) {
+async function handler(req, res, context) {
   const sig = req.headers['stripe-signature'];
-  let event: Stripe.Event;
+  let event;
 
   try {
     const buf = await getRawBody(req);
-    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET as string);
-  } catch (err: any) {
+    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
     context.logger.error('Stripe webhook signature verification failed', err);
     return res.status(400).json({
       success: false,
@@ -32,7 +32,7 @@ async function handler(req: any, res: any, context: { logger: Logger; cid: strin
   }
 
   try {
-    const object: any = event.data.object;
+    const object = event.data.object;
     context.logger.info(`Stripe webhook received: ${event.type}`, { eventId: event.id });
 
     switch (event.type) {
