@@ -1,242 +1,124 @@
-# 🌸 Shonen Ark - Mystical Anime Fan Platform
+# 🌸 Shonen Ark - Technical Documentation & Setup Guide
 
-> **A fusion of Design Yokocho × Phantom 980 aesthetics**  
-> Interactive theory hub, animation analysis, and creator community platform with premium subscription tiers.
+Welcome to Shonen Ark, a premium anime fan platform built for high-performance and deep community engagement. This guide outlines how to get the project running locally and maintain its back-office infrastructure.
 
-[![Next.js](https://img.shields.io/badge/Next.js-13.4+-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react)](https://reactjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3+-38b2ac?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com/)
+## 🚀 Local Setup
 
-## 🚀 Quick Start
+### 1. Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+- **Supabase Account**: For database, auth, and storage.
+- **n8n Instance**: (Optional for local) For automation workflows.
 
+### 2. Installation
 ```bash
+# Clone and enter directory
+git clone https://github.com/marimondaa/Shonen-Ark.git
+cd shonen-ark
+
 # Install dependencies
 npm install
+```
 
-# Set up environment variables
+### 3. Environment Configuration
+Copy the template and fill in your secrets:
+```bash
 cp .env.example .env.local
-# Edit .env.local with your credentials
+```
+Refer to the [Environment Variables](#-environment-variables) section for details on each key.
 
-# Run development server
+### 4. Database Setup
+1. Create a new project in the [Supabase Dashboard](https://supabase.com).
+2. Run the migrations located in `./supabase/migrations` via the SQL Editor.
+3. Enable Row Level Security (RLS) on all tables (see `docs/SUPABASE_RLS_STRUCTURE.md`).
+
+### 5. Running the App
+```bash
+# Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
 ```
-
-Visit [http://localhost:3000](http://localhost:3000)
-
-## ✨ Features
-
-### 🎯 Core Features
-- **Authentication**: NextAuth.js with Supabase integration
-- **Theory Hub**: Community-driven anime theories with voting system
-- **Animation Analysis**: Frame-by-frame breakdowns and insights
-- **Release Calendar**: Track anime/manga release schedules
-- **User Profiles**: Personalized dashboards with activity tracking
-- **Premium Subscriptions**: Stripe-powered subscription tiers
-
-### 🎨 Design
-- **Mystical Aesthetics**: Japanese-inspired UI with torii gates and ink brush effects
-- **Responsive**: Mobile-first design with Tailwind CSS
-- **Animations**: Smooth transitions with Framer Motion
-- **Dark Mode**: Full dark theme support
-
-## 🏗️ Tech Stack
-
-### Frontend
-- **Next.js 13.4+** - React framework with App Router
-- **React 18** - UI library
-- **Tailwind CSS 3.3** - Utility-first styling
-- **Framer Motion** - Animation library
-
-### Backend
-- **Next.js API Routes** - Serverless API endpoints
-- **Supabase** - PostgreSQL database with Row Level Security
-- **NextAuth.js** - Authentication solution
-- **Stripe** - Payment processing
-
-### DevOps
-- **Railway** - Deployment platform
-- **GitHub Actions** - CI/CD pipeline
-- **Playwright** - E2E testing
-- **Jest** - Unit testing
-
-## 📁 Project Structure
-
-```
-shonen-ark/
-├── pages/              # Next.js pages and API routes
-│   ├── api/           # API endpoints
-│   ├── account/       # User account pages
-│   └── ...            # Public pages
-├── src/
-│   ├── components/    # React components
-│   │   ├── features/  # Feature-specific components
-│   │   ├── layout/    # Layout components
-│   │   └── ...
-│   └── lib/          # Shared utilities
-│       ├── hooks/    # Custom React hooks
-│       ├── types/    # TypeScript types
-│       └── ...
-├── public/           # Static assets
-├── styles/           # Global styles
-├── supabase/         # Database migrations
-├── tests/            # Test files
-└── docs/             # Documentation
-```
-
-## 🔧 Configuration
-
-### Required Environment Variables
-
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Authentication
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_secret_here
-
-# OAuth Providers (Optional)
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-DISCORD_CLIENT_ID=your_discord_client_id
-DISCORD_CLIENT_SECRET=your_discord_client_secret
-
-# Stripe (Optional)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_key
-STRIPE_SECRET_KEY=your_stripe_secret
-STRIPE_WEBHOOK_SECRET=your_webhook_secret
-
-# Cloudinary (Optional)
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-npm test
-
-# Unit tests
-npm run test:unit
-
-# E2E tests
-npm run test:e2e
-
-# Coverage report
-npm run test:coverage
-```
-
-## 📚 API Documentation
-
-### Health Check
-```
-GET /api/health
-```
-Returns system health status
-
-### Authentication
-```
-POST /api/auth/signin
-POST /api/auth/signout
-GET /api/auth/session
-```
-
-### Theories
-```
-GET /api/theories - List all theories
-POST /api/theories - Create new theory
-POST /api/theories/[id]/like - Like/unlike theory
-```
-
-See [docs/api/](./docs/api/) for full API documentation.
-
-## 🚀 Deployment
-
-### Prerequisites
-- Node.js 18+
-- PostgreSQL (via Supabase)
-- Railway account (or similar)
-
-### Deploy to Railway
-
-1. **Connect GitHub Repository**
-2. **Set Environment Variables** (use .env.example as template)
-3. **Deploy**
-
-```bash
-# Verify deployment readiness
-npm run verify:deploy
-
-# Check health
-npm run health-check
-```
-
-### Build Scripts
-```bash
-npm run build          # Production build
-npm run railway:build  # Railway-specific build
-```
-
-## 🛠️ Development
-
-### Scripts Overview
-```bash
-npm run dev               # Start dev server
-npm run build             # Build for production
-npm run type-check        # TypeScript validation
-npm run lint              # ESLint
-npm run verify:deploy     # Pre-deployment checks
-npm run health-check      # Health verification
-```
-
-### Database
-```bash
-# Migrations are in supabase/migrations/
-# Apply via Supabase Dashboard or CLI
-```
-
-## 📖 Documentation
-
-- [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
-- [API Documentation](./docs/api/)
-- [Infrastructure Status](./docs/INFRASTRUCTURE_STATUS.md)
-- [Technical Audit](./docs/TECHNICAL_AUDIT_REPORT.md)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-MIT License - see LICENSE file for details
-
-## 👤 Author
-
-**marimondaa**
-- GitHub: [@marimondaa](https://github.com/marimondaa)
-- Repository: [Shonen-Ark](https://github.com/marimondaa/Shonen-Ark)
-
-## 🌟 Acknowledgments
-
-- Design inspired by Design Yokocho and Phantom 980
-- Built with Next.js and the React ecosystem
-- Powered by Supabase and Railway
+Open [http://localhost:3000](http://localhost:3000) to see your local instance.
 
 ---
 
-**Status**: ✅ Production Ready | **Version**: 1.0.0 | **Last Updated**: November 2025
+## 🔑 Environment Variables
+
+The application strictly validates environment variables at boot. Missing **Required** variables will prevent the server from starting in development.
+
+### 🛠️ Required Variables
+| Variable | Description | Source / Example |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Dashboard -> Settings -> API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key for client-side access | Dashboard -> Settings -> API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin key for server-side logic | **NEVER EXPOSE ON CLIENT** |
+| `NEXTAUTH_URL` | The base URL of the app | `http://localhost:3000` |
+| `NEXTAUTH_SECRET` | Secret for session signing | `openssl rand -base64 32` |
+| `N8N_URL` | Base URL of your n8n instance | `https://n8n.your-domain.com` |
+| `N8N_API_KEY` | Personal access token for n8n API | n8n Settings -> API Keys |
+| `WEBHOOK_SECRET` | Shared secret for Shonen Ark -> n8n HMAC | Random string (must match n8n config) |
+
+### 💎 Optional Variables (Feature-Specific)
+| Variable | Description | Feature Impact |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key | Checkout & Subscriptions |
+| `STRIPE_SECRET_KEY` | Stripe restricted/secret key | Payment processing |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | Subscription status updates |
+| `OPENAI_API_KEY` | OpenAI API Key | AI Theory Analysis / Chat |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary name | Image/Video hosting |
+| `ANILIST_CLIENT_ID` | AniList API Client ID | Release Calendar metadata |
+
+---
+
+## ⚙️ Back-Office (n8n)
+
+Shonen Ark offloads complex automation (like project approval notifications and user onboarding) to **n8n**.
+
+### Webhook Signatures
+To ensure security, all webhooks sent from Shonen Ark to n8n are signed using **HMAC SHA256**.
+1. The app generates a signature using the `WEBHOOK_SECRET`.
+2. n8n receives the `x-signature` header.
+3. n8n must re-calculate the signature and compare it before processing.
+
+---
+
+## 🩺 Health Check & Debugging
+
+Verify your system status at `/api/health`.
+
+### Response Shape
+```json
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "services": {
+      "supabase": "ok",
+      "n8n": "reachable",
+      "stripe": "configured"
+    }
+  },
+  "cid": "..."
+}
+```
+
+### Common Debugging Commands
+- `npm run lint`: Check for code style/syntax issues.
+- `npx tsc --noEmit`: Run TypeScript type-checks.
+- `DEBUG=true npm run dev`: Enable verbose debug logging.
+
+---
+
+## ⚠️ Common Errors & Fixes
+
+**1. `Missing environment variables` error at boot**
+- **Fix**: Ensure your `.env.local` matches the keys in `.env.example`. Check for typos.
+
+**2. Webhook Signature Mismatch**
+- **Fix**: Verify that `WEBHOOK_SECRET` is identical in both Shonen Ark's environment and your n8n workflow settings.
+
+**3. NextAuth `Invalid session` or `JWT error`**
+- **Fix**: Ensure `NEXTAUTH_SECRET` is a long, random string and `NEXTAUTH_URL` matches your current domain/port.
+
+---
+
+**Status**: ✅ Production Ready | **Backend**: v2 Architecture | **Last Updated**: Feb 2026

@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { allowMethods } from '../../../src/lib/api-helpers';
-import crypto from 'crypto';
+import { validateIncomingWebhook, forwardToN8nWorkflow } from '../../../src/lib/webhook';
+import { allowMethods, getRawBody, sendSuccess, sendError, Logger } from '../../../src/lib/api-helpers';
 import { supabase } from '../../../src/lib/supabase';
 
-/**
- * User Signup Webhook Handler
- * Validates HMAC signature and forwards to n8n workflow
- * Triggered when new users register via NextAuth
- */
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 interface SignupPayload {
   userId: string;
@@ -22,54 +22,9 @@ interface SignupPayload {
   };
 }
 
-/**
- * Verify HMAC signature for webhook security
- */
-function verifySignature(payload: string, signature: string, secret: string): boolean {
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload, 'utf8')
-    .digest('hex');
-  
-  const providedSignature = signature.replace('sha256=', '');
-  return crypto.timingSafeEqual(
-    Buffer.from(expectedSignature, 'hex'),
-    Buffer.from(providedSignature, 'hex')
-  );
-}
-
-/**
- * Forward signup data to n8n workflow
- */
-async function forwardToN8N(payload: SignupPayload): Promise<boolean> {
+async function logSignupEvent(payload: SignupPayload, logger: Logger) {
   try {
-    const response = await fetch(process.env.N8N_SIGNUP_WEBHOOK_URL!, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.N8N_API_KEY}`,
-        'X-Source': 'shonen-ark-api'
-      },
-      body: JSON.stringify({
-        event: 'user.signup',
-        data: payload,
-        timestamp: new Date().toISOString()
-      })
-    });
-
-    return response.ok;
-  } catch (error) {
-    console.error('Failed to forward to n8n:', error);
-    return false;
-  }
-}
-
-/**
- * Log signup event for analytics
- */
-async function logSignupEvent(payload: SignupPayload) {
-  try {
-    await supabase
+    const { error } = await supabase
       .from('user_activity')
       .insert({
         user_id: payload.userId,
@@ -80,111 +35,94 @@ async function logSignupEvent(payload: SignupPayload) {
           timestamp: payload.timestamp
         }
       });
+    if (error) throw error;
   } catch (error) {
-    console.error('Failed to log signup event:', error);
+    logger.error('Failed to log signup event to database', error);
   }
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Only accept POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method not allowed',
-      message: 'Only POST requests are accepted' 
-    });
-  }
-
+async function handler(req: NextApiRequest, res: NextApiResponse, context: { logger: Logger; cid: string }) {
   try {
-    // Get raw body for signature verification
-    const rawBody = JSON.stringify(req.body);
-    const signature = req.headers['x-signature'] as string;
-    
-    if (!signature) {
-      return res.status(401).json({ 
-        error: 'Missing signature',
-        message: 'X-Signature header is required' 
+    // Get raw payload for signature validation
+    const rawBody = await getRawBody(req);
+    const rawPayload = rawBody.toString('utf8');
+
+    // Validate webhook signature
+    const validation = validateIncomingWebhook(rawPayload, req.headers);
+    if (!validation.valid) {
+      context.logger.error('Signup signature verification failed', undefined, {
+        error: validation.error,
+        headers: req.headers
+      });
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'WEBHOOK_VERIFICATION_FAILED',
+          message: 'Invalid webhook signature'
+        },
+        cid: context.cid
       });
     }
 
-    // Verify webhook signature
-    const webhookSecret = process.env.WEBHOOK_SECRET;
-    if (!webhookSecret) {
-      console.error('WEBHOOK_SECRET not configured');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
+    // Parse body manually since bodyParser is disabled
+    const payload: SignupPayload = JSON.parse(rawPayload);
 
-    if (!verifySignature(rawBody, signature, webhookSecret)) {
-      return res.status(401).json({ 
-        error: 'Invalid signature',
-        message: 'Webhook signature verification failed' 
-      });
-    }
-
-    // Parse and validate payload
-    const payload: SignupPayload = req.body;
-    
-    // Basic validation
+    // Detailed payload validation
     if (!payload.userId || !payload.email || !payload.name) {
-      return res.status(400).json({ 
-        error: 'Invalid payload',
-        message: 'userId, email, and name are required' 
+      context.logger.warn('Signup received with missing fields', { payload });
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'BAD_REQUEST',
+          message: 'userId, email, and name are required'
+        },
+        cid: context.cid
       });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(payload.email)) {
-      return res.status(400).json({ 
-        error: 'Invalid email format',
-        message: 'Please provide a valid email address' 
-      });
-    }
-
-    // Log the signup event
-    await logSignupEvent(payload);
+    // Log the signup event to database
+    await logSignupEvent(payload, context.logger);
 
     // Forward to n8n workflow
-    const n8nSuccess = await forwardToN8N(payload);
-    
-    if (!n8nSuccess) {
-      // Log error but don't fail the request
-      console.error('n8n forwarding failed, but signup will continue');
+    const n8nUrl = process.env.N8N_SIGNUP_WEBHOOK_URL || (process.env.N8N_URL ? `${process.env.N8N_URL}/webhook/user-signup` : null);
+
+    let n8nSuccess = false;
+    if (n8nUrl) {
+      const n8nResult = await forwardToN8nWorkflow(n8nUrl, {
+        event: 'user.signup',
+        data: payload,
+        correlationId: context.cid,
+        timestamp: new Date().toISOString()
+      });
+      n8nSuccess = n8nResult.success;
+
+      if (!n8nSuccess) {
+        context.logger.warn('n8n signup workflow failed', { error: n8nResult.error });
+      }
+    } else {
+      context.logger.warn('n8n signup URL not configured');
     }
 
     // Update user record with signup completion
     const { error: updateError } = await supabase
       .from('users')
-      .update({ 
+      .update({
         signup_completed_at: new Date().toISOString(),
         last_activity_at: new Date().toISOString()
       })
       .eq('id', payload.userId);
 
     if (updateError) {
-      console.error('Failed to update user record:', updateError);
+      context.logger.error('Failed to update user record on signup', updateError);
     }
 
-    // Return success response
-    return res.status(200).json({
-      success: true,
+    return sendSuccess(res, {
       message: 'Signup processed successfully',
-      data: {
-        userId: payload.userId,
-        n8nForwarded: n8nSuccess,
-        timestamp: new Date().toISOString()
-      }
-    });
+      details: { n8nForwarded: n8nSuccess }
+    }, 200, context.cid);
 
   } catch (error) {
-    console.error('Signup webhook error:', error);
-    
-    return res.status(500).json({
-      error: 'Internal server error',
-      message: 'Failed to process signup webhook',
-      ...(process.env.NODE_ENV === 'development' && { 
-        details: error instanceof Error ? error.message : 'Unknown error' 
-      })
-    });
+    return sendError(res, error, context.cid);
   }
 }
 

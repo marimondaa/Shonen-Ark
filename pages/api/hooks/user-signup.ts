@@ -1,6 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { validateIncomingWebhook, forwardToN8nWorkflow } from '../../../src/lib/webhook';
-import { allowMethods } from '../../../src/lib/api-helpers';
+import { allowMethods, getRawBody, sendSuccess, sendError, Logger } from '../../../src/lib/api-helpers';
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export interface UserSignupPayload {
   userId: string;
@@ -11,77 +17,86 @@ export interface UserSignupPayload {
   source: 'web' | 'mobile';
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+async function handler(req: NextApiRequest, res: NextApiResponse, context: { logger: Logger; cid: string }) {
   try {
-    // Get raw payload as string for signature validation
-    const rawPayload = JSON.stringify(req.body);
-    
+    // Get raw payload for signature validation
+    const rawBody = await getRawBody(req);
+    const rawPayload = rawBody.toString('utf8');
+
     // Validate webhook signature
     const validation = validateIncomingWebhook(rawPayload, req.headers);
     if (!validation.valid) {
-      console.warn('User signup webhook validation failed:', validation.error);
-      return res.status(401).json({ error: 'Invalid webhook signature' });
-    }
-
-    const payload: UserSignupPayload = req.body;
-
-    // Basic payload validation
-    if (!payload.userId || !payload.email || !payload.username) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: userId, email, username' 
+      context.logger.error('User signup signature verification failed', undefined, {
+        error: validation.error,
+        headers: req.headers
+      });
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'WEBHOOK_VERIFICATION_FAILED',
+          message: 'Invalid webhook signature'
+        },
+        cid: context.cid
       });
     }
 
-    // Log the signup event
-    console.log('User signup webhook received:', {
-      userId: payload.userId,
-      email: payload.email,
-      accountType: payload.accountType,
-      source: payload.source
-    });
+    // Parse body manually since bodyParser is disabled
+    const payload: UserSignupPayload = JSON.parse(rawPayload);
 
-    // Construct n8n webhook URL
-    const n8nBaseUrl = process.env.N8N_URL;
-    if (!n8nBaseUrl) {
-      throw new Error('N8N_URL environment variable not set');
+    // Basic payload validation
+    if (!payload.userId || !payload.email || !payload.username) {
+      context.logger.warn('User signup received with missing fields', { payload });
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'BAD_REQUEST',
+          message: 'Missing required fields: userId, email, username'
+        },
+        cid: context.cid
+      });
     }
 
-    const workflowUrl = `${n8nBaseUrl}/webhook/user-signup`;
+    context.logger.info('User signup webhook received', {
+      userId: payload.userId,
+      email: payload.email,
+      accountType: payload.accountType
+    });
 
     // Forward to n8n workflow
+    const n8nUrl = process.env.N8N_URL;
+    if (!n8nUrl) {
+      context.logger.error('N8N_URL is missing in environment');
+      return sendError(res, new Error('Back-office integration not configured'), context.cid);
+    }
+
+    const workflowUrl = `${n8nUrl}/webhook/user-signup`;
+
     const n8nResult = await forwardToN8nWorkflow(workflowUrl, {
       ...payload,
       webhookSource: 'shonen-ark-api',
+      correlationId: context.cid,
       processedAt: new Date().toISOString()
     });
 
     if (!n8nResult.success) {
-      console.error('Failed to forward to n8n:', n8nResult.error);
-      return res.status(500).json({ 
-        error: 'Failed to process signup workflow',
-        details: n8nResult.error 
+      context.logger.error('Failed to forward user signup to n8n', new Error(n8nResult.error), {
+        workflowUrl
+      });
+      return res.status(502).json({
+        success: false,
+        error: {
+          code: 'INTEGRATION_ERROR',
+          message: 'Failed to notify back-office',
+          details: n8nResult.error
+        },
+        cid: context.cid
       });
     }
 
-    // Return success response
-    res.status(200).json({
-      success: true,
-      message: 'User signup processed successfully',
-      userId: payload.userId,
-      workflowTriggered: true,
-      processedAt: new Date().toISOString()
-    });
+    return sendSuccess(res, { message: 'User signup processed successfully' }, 200, context.cid);
 
   } catch (error) {
-    console.error('User signup webhook error:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return sendError(res, error, context.cid);
   }
 }
 

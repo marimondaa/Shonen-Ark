@@ -41,10 +41,10 @@ export class WebhookUtils {
     try {
       // Remove 'sha256=' prefix if present
       const cleanSignature = signature.replace('sha256=', '');
-      
+
       // Generate expected signature
       const expectedSignature = this.generateSignature(payload, timestamp);
-      
+
       // Compare signatures using timing-safe comparison
       if (!this.timingSafeEqual(cleanSignature, expectedSignature)) {
         console.warn('Webhook signature mismatch');
@@ -55,7 +55,7 @@ export class WebhookUtils {
       if (timestamp && this.config.timestampTolerance) {
         const timestampNum = parseInt(timestamp, 10);
         const currentTime = Math.floor(Date.now() / 1000);
-        
+
         if (Math.abs(currentTime - timestampNum) > this.config.timestampTolerance) {
           console.warn('Webhook timestamp outside tolerance');
           return false;
@@ -75,7 +75,7 @@ export class WebhookUtils {
   extractHeaders(headers: { [key: string]: string | string[] | undefined }) {
     const signature = this.getHeader(headers, this.config.signatureHeader!);
     const timestamp = this.getHeader(headers, this.config.timestampHeader!);
-    
+
     return { signature, timestamp };
   }
 
@@ -87,13 +87,13 @@ export class WebhookUtils {
     headers: { [key: string]: string | string[] | undefined }
   ): { valid: boolean; error?: string } {
     const { signature, timestamp } = this.extractHeaders(headers);
-    
+
     if (!signature) {
       return { valid: false, error: 'Missing signature header' };
     }
 
     const isValid = this.verifySignature(payload, signature, timestamp);
-    
+
     return {
       valid: isValid,
       error: isValid ? undefined : 'Invalid signature or timestamp'
@@ -108,6 +108,9 @@ export class WebhookUtils {
     payload: any,
     headers: { [key: string]: string } = {}
   ): Promise<{ success: boolean; data?: any; error?: string }> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     try {
       const response = await fetch(workflowUrl, {
         method: 'POST',
@@ -116,22 +119,33 @@ export class WebhookUtils {
           'User-Agent': 'Shonen-Ark-Webhook',
           ...headers
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
+      clearTimeout(timeout);
+
       if (!response.ok) {
+        const errorText = await response.text().catch(() => 'No error body');
+        console.error(`[Webhook Forwarding Error] n8n returned ${response.status}:`, errorText);
         return {
           success: false,
           error: `n8n request failed: ${response.status} ${response.statusText}`
         };
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       return { success: true, data };
     } catch (error) {
+      clearTimeout(timeout);
+      const isTimeout = error instanceof Error && error.name === 'AbortError';
+      const errorMessage = isTimeout ? 'Request to n8n timed out (10s)' : (error instanceof Error ? error.message : 'Unknown error');
+
+      console.error(`[Webhook Forwarding Error] ${errorMessage}`);
+
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMessage
       };
     }
   }

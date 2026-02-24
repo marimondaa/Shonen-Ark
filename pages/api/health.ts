@@ -1,59 +1,64 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { allowMethods } from '../../src/lib/api-helpers';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { supabase } from '../../src/lib/supabase';
+import { env, validateEnv } from '../../src/lib/env';
+import { allowMethods, sendSuccess, sendError, Logger } from '../../src/lib/api-helpers';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+async function handler(req: NextApiRequest, res: NextApiResponse, context: { logger: Logger; cid: string }) {
   try {
-    const health = {
-      status: 'healthy',
+    const envStatus = validateEnv();
+    const healthData: any = {
+      app: "ok",
+      status: "unknown",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      environment: process.env.NODE_ENV,
-      version: process.env.npm_package_version || '1.0.0',
+      node_env: process.env.NODE_ENV,
       services: {
-        database: 'unknown', // Will be updated when DB connection is implemented
-        n8n: 'unknown'
-      }
+        supabase: 'unknown',
+        n8n: 'unknown',
+        stripe: envStatus.isStripeConfigured ? 'configured' : 'missing'
+      },
+      features: envStatus
     };
 
-    // Check n8n connectivity
-    if (process.env.N8N_URL) {
+    // 1. Check Supabase Connectivity
+    try {
+      const { error } = await supabase.from('users').select('id').limit(1);
+      healthData.services.supabase = error ? 'error' : 'ok';
+    } catch (err) {
+      context.logger.error('Supabase health check failed', err);
+      healthData.services.supabase = 'unreachable';
+    }
+
+    // 2. Check n8n Connectivity
+    if (envStatus.isN8NConfigured && env.n8n.url) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const response = await fetch(`${process.env.N8N_URL}/healthz`, { 
-          signal: controller.signal 
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const response = await fetch(`${env.n8n.url}/healthz`, {
+          signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        health.services.n8n = response.ok ? 'healthy' : 'unhealthy';
-      } catch {
-        health.services.n8n = 'unreachable';
+        healthData.services.n8n = response.ok ? 'reachable' : 'unhealthy';
+      } catch (err) {
+        healthData.services.n8n = 'unreachable';
       }
+    } else {
+      healthData.services.n8n = envStatus.isN8NConfigured ? 'unreachable' : 'missing_config';
     }
 
-    // Overall health status
-    const allServicesHealthy = Object.values(health.services).every(
-      status => status === 'healthy' || status === 'unknown'
-    );
+    // Overall Status
+    const criticalServices = ['supabase'];
+    const isHealthy = criticalServices.every(s => healthData.services[s] === 'ok');
 
-    if (!allServicesHealthy) {
-      health.status = 'degraded';
-      return res.status(503).json(health);
-    }
+    healthData.status = isHealthy ? 'healthy' : 'degraded';
 
-    res.status(200).json(health);
+    context.logger.info(`Health check performed: ${healthData.status}`, { services: healthData.services });
+
+    return sendSuccess(res, healthData, isHealthy ? 200 : 503, context.cid);
   } catch (error) {
-    console.error('Health check error:', error);
-    res.status(500).json({
-      status: 'error',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return sendError(res, error, context.cid);
   }
 }
 
