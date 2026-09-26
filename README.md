@@ -128,3 +128,7 @@ Comic Sans applies throughout the shared shell, including headings, forms, navig
 ### Release status
 
 Code is prepared on `codex/calendar-cloud-comic-sans`, avoiding the existing main-branch production deployment triggers. No production deployment is requested or performed. Before launch: resolve source rights; configure Supabase and test two-account RLS/persistence/email recovery; review operator/privacy/retention/moderation and artwork permissions; configure mail/abuse controls and shared rate limiting; replace historical Node 18 deployment workflows with a reviewed current-Node pipeline; finish payments only if explicitly selected for scope. Stripe, uploads, AI and historical admin integrations remain unavailable. See `docs/development/calendar-cloud-review.md` for actual checks and limitations.
+
+### Main branch integration
+
+The completed calendar/cloud/Comic Sans work is integrated into main at the owner's request. The integration commit uses [skip ci] to skip push-triggered GitHub Actions for this update only, including automatic production deployment. Workflows remain unchanged; future main pushes may deploy and must be reviewed before proceeding. Existing local test results apply. Backend, legal, data-source and CI modernization launch gates remain open.
