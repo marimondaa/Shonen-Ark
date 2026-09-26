@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-26",
+  "scope": "Explicit solid design token pairs, not a whole-page contrast audit",
+  "pairs": [
+    {
+      "label": "Primary text",
+      "foreground": "#f4f0e9",
+      "background": "#0c0a10",
+      "ratio": 17.33
+    },
+    {
+      "label": "Secondary text",
+      "foreground": "#c0b9c7",
+      "background": "#0c0a10",
+      "ratio": 10.32
+    },
+    {
+      "label": "Button label",
+      "foreground": "#160c24",
+      "background": "#c5a2fa",
+      "ratio": 8.92
+    },
+    {
+      "label": "Control border",
+      "foreground": "#857292",
+      "background": "#18121f",
+      "ratio": 4.21
+    },
+    {
+      "label": "Disabled label",
+      "foreground": "#aaa2b0",
+      "background": "#292330",
+      "ratio": 6.17
+    },
+    {
+      "label": "Error text",
+      "foreground": "#ffcfdb",
+      "background": "#29151e",
+      "ratio": 12.46
+    }
+  ]
+}

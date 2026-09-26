@@ -11,15 +11,15 @@ module.exports = {
       // ===== COLOR PALETTE =====
       colors: {
         // Primary brand colors
-        'brand-primary': '#6366f1', // Indigo
-        'brand-secondary': '#ec4899', // Pink/Magenta
+        'brand-primary': '#8b5cf6', // Indigo
+        'brand-secondary': '#c4b5fd', // Pink/Magenta
         'brand-accent': '#f59e0b', // Amber
 
         // Dark theme - main
-        'dark-bg': '#0f172a', // Darkest
-        'dark-bg-secondary': '#1e293b', // Dark slate
-        'dark-surface': '#334155', // Medium slate
-        'dark-border': '#475569', // Lighter slate
+        'dark-bg': '#09070f', // Darkest
+        'dark-bg-secondary': '#130e1c', // Dark slate
+        'dark-surface': '#1b1426', // Medium slate
+        'dark-border': '#372843', // Lighter slate
 
         // Light theme - main
         'light-bg': '#ffffff', // White
@@ -37,8 +37,8 @@ module.exports = {
         'text-primary': '#f1f5f9', // Light (for dark bg)
         'text-secondary': '#cbd5e1', // Medium light
         'text-muted': '#94a3b8', // Muted
-        'text-dark-primary': '#0f172a', // Dark (for light bg)
-        'text-dark-secondary': '#334155',
+        'text-dark-primary': '#09070f', // Dark (for light bg)
+        'text-dark-secondary': '#1b1426',
         'text-dark-muted': '#64748b',
       },
 
@@ -56,9 +56,9 @@ module.exports = {
 
       // ===== TYPOGRAPHY =====
       fontFamily: {
-        'sans': ['Inter', 'system-ui', 'sans-serif'],
-        'display': ['Poppins', 'system-ui', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'monospace'],
+        'sans': ['Arial', 'Helvetica', 'sans-serif'],
+        'display': ['Arial', 'Helvetica', 'sans-serif'],
+        'mono': ['ui-monospace', 'monospace'],
       },
       fontSize: {
         'xs': ['12px', { lineHeight: '16px' }],

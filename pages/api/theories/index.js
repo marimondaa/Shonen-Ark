@@ -10,11 +10,7 @@ export default async function handler(req, res) {
     if (!title || !content) {
       return res.status(400).json({ error: 'Missing title or content' });
     }
-    return res.status(201).json({
-      success: true,
-      message: 'Theory endpoint ready',
-      theory: { title, content }
-    });
+    return res.status(503).json({ error: 'Publishing is not configured yet. Your theory has not been saved.' });
   }
 
   res.status(405).json({ error: 'Method not allowed' });

@@ -1,0 +1,170 @@
+{
+  "font": "Comic Sans MS (local Windows installation; not redistributed)",
+  "date": "2026-09-26",
+  "characters": [
+    {
+      "character": "É",
+      "supported": true
+    },
+    {
+      "character": "À",
+      "supported": true
+    },
+    {
+      "character": "Ç",
+      "supported": true
+    },
+    {
+      "character": "é",
+      "supported": true
+    },
+    {
+      "character": "è",
+      "supported": true
+    },
+    {
+      "character": "ê",
+      "supported": true
+    },
+    {
+      "character": "ë",
+      "supported": true
+    },
+    {
+      "character": "à",
+      "supported": true
+    },
+    {
+      "character": "â",
+      "supported": true
+    },
+    {
+      "character": "ä",
+      "supported": true
+    },
+    {
+      "character": "ç",
+      "supported": true
+    },
+    {
+      "character": "î",
+      "supported": true
+    },
+    {
+      "character": "ï",
+      "supported": true
+    },
+    {
+      "character": "ô",
+      "supported": true
+    },
+    {
+      "character": "ö",
+      "supported": true
+    },
+    {
+      "character": "ù",
+      "supported": true
+    },
+    {
+      "character": "û",
+      "supported": true
+    },
+    {
+      "character": "ü",
+      "supported": true
+    },
+    {
+      "character": "ÿ",
+      "supported": true
+    },
+    {
+      "character": "œ",
+      "supported": true
+    },
+    {
+      "character": "æ",
+      "supported": true
+    },
+    {
+      "character": "¿",
+      "supported": true
+    },
+    {
+      "character": "¡",
+      "supported": true
+    },
+    {
+      "character": "ñ",
+      "supported": true
+    },
+    {
+      "character": "Ñ",
+      "supported": true
+    },
+    {
+      "character": "á",
+      "supported": true
+    },
+    {
+      "character": "í",
+      "supported": true
+    },
+    {
+      "character": "ó",
+      "supported": true
+    },
+    {
+      "character": "ú",
+      "supported": true
+    },
+    {
+      "character": "ü",
+      "supported": true
+    },
+    {
+      "character": "€",
+      "supported": true
+    },
+    {
+      "character": "£",
+      "supported": true
+    },
+    {
+      "character": "¥",
+      "supported": true
+    },
+    {
+      "character": "©",
+      "supported": true
+    },
+    {
+      "character": "→",
+      "supported": false
+    },
+    {
+      "character": "⌄",
+      "supported": false
+    },
+    {
+      "character": "◐",
+      "supported": false
+    },
+    {
+      "character": "◑",
+      "supported": false
+    },
+    {
+      "character": "日",
+      "supported": false
+    },
+    {
+      "character": "本",
+      "supported": false
+    },
+    {
+      "character": "語",
+      "supported": false
+    }
+  ]
+}

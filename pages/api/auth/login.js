@@ -9,10 +9,5 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing email or password' });
     }
 
-    // TODO: Connect to Supabase auth in Phase 6
-    res.status(200).json({
-        success: true,
-        message: 'Login endpoint ready (backend not yet connected)',
-        email
-    });
+    return res.status(503).json({ error: 'Account sign-in is not configured yet. No session was created.' });
 }

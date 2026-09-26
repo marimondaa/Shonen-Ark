@@ -29,7 +29,7 @@ class ErrorBoundary extends React.Component {
               Something went wrong
             </h2>
             <p className="text-grey mb-6 font-mystical">
-              We're having trouble loading the anime calendar. Please try refreshing the page.
+              We&apos;re having trouble loading the anime calendar. Please try refreshing the page.
             </p>
             <motion.button
               onClick={() => window.location.reload()}

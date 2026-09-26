@@ -45,7 +45,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, context: { log
     if (!validation.valid) {
       context.logger.error('Project approval signature verification failed', undefined, {
         error: validation.error,
-        headers: req.headers
       });
       return res.status(401).json({
         success: false,
@@ -62,7 +61,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, context: { log
 
     // Basic payload validation
     if (!payload.projectId || !payload.userId || !payload.projectTitle || !payload.action) {
-      context.logger.warn('Project approval received with missing fields', { payload });
+      context.logger.warn('Project approval received with missing fields');
       return res.status(400).json({
         success: false,
         error: {
@@ -73,6 +72,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse, context: { log
       });
     }
 
+    if (!['submit', 'approve', 'reject'].includes(payload.action)) {
+      return res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Invalid action' } });
+    }
     context.logger.info('Project approval webhook received', {
       projectId: payload.projectId,
       userId: payload.userId,

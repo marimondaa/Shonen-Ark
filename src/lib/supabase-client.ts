@@ -6,11 +6,15 @@ export function getSupabaseClient(): SupabaseClient | null {
   if (cachedClient) return cachedClient;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined;
-  if (!url || !anon) {
+  if (!url || !anon || /your-|placeholder|example\.com/.test(url)) {
     // Do not throw at import/build time. Return null and let callers handle it at runtime.
     return null;
   }
-  cachedClient = createClient(url, anon);
+  try {
+    cachedClient = createClient(url, anon, { global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(12000) }) } });
+  } catch {
+    return null;
+  }
   return cachedClient;
 }
 

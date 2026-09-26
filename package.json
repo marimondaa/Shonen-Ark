@@ -1,13 +1,13 @@
 {
   "name": "shonen-ark",
   "version": "1.0.0",
-  "description": "Mystical anime fan platform featuring fusion UI design (Design Yokocho × Phantom 980). Interactive theory hub, animation analysis, creator community with subscription tiers. Built with Next.js, Tailwind CSS, and Framer Motion.",
+  "description": "Anime and manga discovery, fan theories, private collections and creator collaboration. Next.js Pages Router with Supabase community persistence and the AniList catalog.",
   "main": "pages/index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint pages components src lib tests __tests__ proxy.ts",
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:unit": "jest --testPathPattern=__tests__",
@@ -27,7 +27,8 @@
     "health-check": "node scripts/health-check.js",
     "railway:install": "npm install --legacy-peer-deps --force --no-audit",
     "railway:build": "bash build.sh",
-    "clean": "rm -rf .next node_modules/.cache"
+    "clean": "rm -rf .next node_modules/.cache",
+    "audit:a11y": "node scripts/audit-accessibility.cjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.4.0",
@@ -44,8 +45,8 @@
     "lucide-react": "^0.554.0",
     "micro": "^10.0.1",
     "multer": "^1.4.5-lts.1",
-    "next": "^13.4.0",
-    "next-auth": "^4.24.11",
+    "next": "^16.3.6",
+    "next-auth": "^4.24.15",
     "openai": "^6.24.0",
     "pg": "^8.13.1",
     "postcss": "^8.4.0",
@@ -56,10 +57,10 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.8.3",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.50.0",
+    "@playwright/test": "^1.51.1",
     "@types/basic-auth": "^1.1.8",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.13",
@@ -67,11 +68,13 @@
     "@types/node-fetch": "^2.6.12",
     "@types/pg": "^8.11.10",
     "@types/supertest": "^6.0.2",
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^13.4.0",
+    "axe-core": "4.10.3",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^16.3.6",
     "eslint-plugin-import": "^2.29.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "20.0.3",
     "node-mocks-http": "^1.17.2",
     "supertest": "^7.0.0"
   },
@@ -87,7 +90,7 @@
     "langchain": "^0.1.0"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.9.0",
     "npm": ">=8.0.0"
   },
   "repository": {

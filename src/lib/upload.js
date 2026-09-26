@@ -258,7 +258,7 @@ export const UPLOAD_PRESETS = {
   USER_CONTENT: 'user_uploads',
 };
 
-export default {
+const uploadTools = {
   uploadToCloudinary,
   getSignedUploadUrl,
   uploadMultipleFiles,
@@ -269,3 +269,4 @@ export default {
   FILE_TYPES,
   UPLOAD_PRESETS,
 };
+export default uploadTools;

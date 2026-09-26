@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -12,15 +12,10 @@ export default function NewsIndexPage() {
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function load(nextCursor?: string | null) {
+  const load = useCallback(async (nextCursor: string | null = null) => {
     setIsLoading(true);
     try {
-      const data = await listNews({ cursor: nextCursor ?? cursor, limit: 12 });
+      const data = await listNews({ cursor: nextCursor, limit: 12 });
       setItems(prev => (nextCursor ? [...prev, ...data] : data));
       if (data.length > 0) setCursor(data[data.length - 1].published_at ?? null);
       setHasMore(data.length === 12);
@@ -29,7 +24,9 @@ export default function NewsIndexPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -39,7 +36,7 @@ export default function NewsIndexPage() {
     }, { threshold: 0.2 });
     obs.observe(el);
     return () => obs.disconnect();
-  }, [cursor, hasMore, isLoading]);
+  }, [cursor, hasMore, isLoading, load]);
 
   return (
     <div className="min-h-screen transition-colors dark:bg-background dark:text-text-light">

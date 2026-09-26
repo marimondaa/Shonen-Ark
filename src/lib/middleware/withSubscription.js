@@ -43,7 +43,7 @@ export function withSubscription(WrappedComponent, requiredTier = 'creator') {
       };
 
       checkSubscription();
-    }, [session, status, router, requiredTier]);
+    }, [session, status, router]);
 
     // Loading state
     if (status === 'loading' || isLoading) {

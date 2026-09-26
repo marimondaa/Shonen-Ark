@@ -1,0 +1,125 @@
+{
+  "date": "2026-09-26",
+  "method": "axe-core on JSDOM server HTML; color contrast disabled; not browser certification",
+  "results": [
+    {
+      "route": "/",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/discovery",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/theories",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/calendar",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/characters",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/gigs",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/collections",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/login",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/register",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/forgot-password",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/reset-password",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/submit-theory",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/account/fan",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/contact",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/about",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/privacy",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/terms",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/home-preview",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/design-preview",
+      "violations": [],
+      "incomplete": [
+        "form-field-multiple-labels"
+      ]
+    },
+    {
+      "route": "/integrations",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "route": "/500",
+      "violations": [],
+      "incomplete": []
+    }
+  ]
+}

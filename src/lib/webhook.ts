@@ -39,6 +39,7 @@ export class WebhookUtils {
     timestamp?: string
   ): boolean {
     try {
+      if (!this.config.secret) return false;
       // Remove 'sha256=' prefix if present
       const cleanSignature = signature.replace('sha256=', '');
 
@@ -53,10 +54,10 @@ export class WebhookUtils {
 
       // Verify timestamp if provided
       if (timestamp && this.config.timestampTolerance) {
-        const timestampNum = parseInt(timestamp, 10);
+        const timestampNum = Number(timestamp);
         const currentTime = Math.floor(Date.now() / 1000);
 
-        if (Math.abs(currentTime - timestampNum) > this.config.timestampTolerance) {
+        if (!Number.isFinite(timestampNum) || Math.abs(currentTime - timestampNum) > this.config.timestampTolerance) {
           console.warn('Webhook timestamp outside tolerance');
           return false;
         }
@@ -174,7 +175,7 @@ export class WebhookUtils {
 
 // Default webhook utility instance
 export const webhookUtils = new WebhookUtils({
-  secret: process.env.WEBHOOK_SECRET || 'default-secret-change-in-production'
+  secret: process.env.WEBHOOK_SECRET || ''
 });
 
 // Helper functions for common use cases

@@ -7,10 +7,12 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
+    roots: ['<rootDir>/__tests__', '<rootDir>/tests'],
     // Add more setup options before each test is run
     // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
-    testEnvironment: 'jest-environment-jsdom',
+    testEnvironment: 'node',
+    setupFiles: ['<rootDir>/tests/setup-env.js'],
 
     // Ignore Playwright tests
     testPathIgnorePatterns: ['/node_modules/', '/tests/e2e/'],

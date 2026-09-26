@@ -12,18 +12,7 @@ const AdminDashboard = () => {
   const [flaggedContent, setFlaggedContent] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Redirect if not admin
-    if (status === 'loading') return;
-    if (!session?.user || session.user.role !== 'admin') {
-      router.push('/');
-      return;
-    }
-
-    loadDashboardData();
-  }, [session, status, router]);
-
-  const loadDashboardData = async () => {
+  async function loadDashboardData() {
     try {
       setIsLoading(true);
       
@@ -46,6 +35,15 @@ const AdminDashboard = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (!session?.user || session.user.role !== 'admin') {
+      router.push('/');
+      return;
+    }
+    loadDashboardData();
+  }, [session, status, router]);
 
   const handleModerateContent = async (contentId, action) => {
     try {

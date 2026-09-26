@@ -92,7 +92,7 @@ const AnimeSuggestionForm = ({ onSubmit, className = '' }) => {
         >
           <div className="text-green-400 text-center">
             <div className="text-2xl mb-2">🎉</div>
-            <p>Thank you for your suggestion! We'll consider it for future content.</p>
+            <p>Thank you for your suggestion! We&apos;ll consider it for future content.</p>
           </div>
         </motion.div>
       )}

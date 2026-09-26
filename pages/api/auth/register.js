@@ -10,10 +10,5 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing fields' });
     }
 
-    // TODO: Connect to Supabase auth in Phase 6
-    res.status(200).json({
-        success: true,
-        message: 'Registration endpoint ready (backend not yet connected)',
-        email
-    });
+    return res.status(503).json({ error: 'Registration is not configured yet. No account was created.' });
 }

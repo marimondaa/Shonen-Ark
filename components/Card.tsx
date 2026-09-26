@@ -9,7 +9,7 @@ interface CardProps {
 export function Card({ children, className = '', hover = false }: CardProps) {
     return (
         <div
-            className={`bg-dark-surface border border-dark-border rounded-xl p-6 shadow-md ${hover ? 'hover:shadow-lg hover:border-brand-primary transition-all duration-200' : ''
+            className={`ark-content-card ${hover ? 'ink-card-hover' : ''
                 } ${className}`}
         >
             {children}

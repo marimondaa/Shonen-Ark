@@ -175,10 +175,11 @@ export function scoreContentQuality(text) {
   return Math.min(score, 100);
 }
 
-export default {
+const aiTools = {
   autoTagContent,
   flagContent,
   generateTheorySuggestions,
   extractAnimeReferences,
   scoreContentQuality
 };
+export default aiTools;
